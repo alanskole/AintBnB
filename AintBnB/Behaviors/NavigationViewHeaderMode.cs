@@ -1,0 +1,9 @@
+﻿namespace AintBnB.Behaviors
+{
+    public enum NavigationViewHeaderMode
+    {
+        Always,
+        Never,
+        Minimal
+    }
+}
