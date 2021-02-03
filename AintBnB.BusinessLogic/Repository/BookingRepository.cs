@@ -16,24 +16,24 @@ namespace AintBnB.BusinessLogic.Repository
 
         public void Create(Booking booking)
         {
-            _databaseContext.Bookings.Add(booking);
+            _databaseContext.Booking.Add(booking);
             _databaseContext.SaveChanges();
         }
 
         public void Delete(int id)
         {
-            _databaseContext.Bookings.Remove(Read(id));
+            _databaseContext.Booking.Remove(Read(id));
             _databaseContext.SaveChanges();
         }
 
         public List<Booking> GetAll()
         {
-            return _databaseContext.Bookings.Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).ToList();
+            return _databaseContext.Booking.Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).ToList();
         }
 
         public Booking Read(int id)
         {
-            return _databaseContext.Bookings.Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).FirstOrDefault(bk => bk.Id == id);
+            return _databaseContext.Booking.Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).FirstOrDefault(bk => bk.Id == id);
         }
 
         public void Update(int id, Booking t)
