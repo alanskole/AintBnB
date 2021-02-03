@@ -9,10 +9,10 @@ namespace AintBnB.Database.DbCtx
 {
     public class DatabaseContext  : DbContext
     {
-        public DbSet<Accommodation> Accommodations { get; set; }
-        public DbSet<Address> Addresses { get; set; }
-        public DbSet<Booking> Bookings { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<Accommodation> Accommodation { get; set; }
+        public DbSet<Address> Address { get; set; }
+        public DbSet<Booking> Booking { get; set; }
+        public DbSet<User> User { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
