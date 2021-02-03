@@ -21,27 +21,27 @@ namespace AintBnB.BusinessLogic.Repository
             if (!europe[FormatName(accommodation.Address.Country)].Any(city => city.Equals(accommodation.Address.City, StringComparison.OrdinalIgnoreCase)))
                 throw new ArgumentException("City not valid");
 
-            _databaseContext.Addresses.Add(accommodation.Address);
-            _databaseContext.Accommodations.Add(accommodation);
+            _databaseContext.Address.Add(accommodation.Address);
+            _databaseContext.Accommodation.Add(accommodation);
             _databaseContext.SaveChanges();
         }
 
         public void Delete(int id)
         {
-            var acc = _databaseContext.Accommodations.Find(id);
-            _databaseContext.Addresses.Remove(acc.Address);
-            _databaseContext.Accommodations.Remove(Read(id));
+            var acc = _databaseContext.Accommodation.Find(id);
+            _databaseContext.Address.Remove(acc.Address);
+            _databaseContext.Accommodation.Remove(Read(id));
             _databaseContext.SaveChanges();
         }
 
         public List<Accommodation> GetAll()
         {
-            return _databaseContext.Accommodations.Include(ac => ac.Address).Include(ac => ac.Owner).ToList();
+            return _databaseContext.Accommodation.Include(ac => ac.Address).Include(ac => ac.Owner).ToList();
         }
 
         public Accommodation Read(int id)
         {
-            return _databaseContext.Accommodations.Include(ac => ac.Address).Include(ac => ac.Owner).FirstOrDefault(ac => ac.Id == id);
+            return _databaseContext.Accommodation.Include(ac => ac.Address).Include(ac => ac.Owner).FirstOrDefault(ac => ac.Id == id);
         }
 
         public void Update(int id, Accommodation accommodation)
@@ -53,7 +53,7 @@ namespace AintBnB.BusinessLogic.Repository
 
 
 
-            var acc = _databaseContext.Accommodations.Find(id);
+            var acc = _databaseContext.Accommodation.Find(id);
             acc.Address.Street = accommodation.Address.Street;
             acc.Address.Number = accommodation.Address.Number;
             acc.Address.Zip = accommodation.Address.Zip;

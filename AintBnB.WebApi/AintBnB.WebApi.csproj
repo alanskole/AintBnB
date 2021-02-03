@@ -9,8 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AintBnB.Data\AintBnB.BusinessLogic.csproj" />
+    <ProjectReference Include="..\AintBnB.BusinessLogic\AintBnB.BusinessLogic.csproj" />
   </ItemGroup>
-
 
 </Project>

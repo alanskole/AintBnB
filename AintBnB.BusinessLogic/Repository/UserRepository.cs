@@ -15,29 +15,29 @@ namespace AintBnB.BusinessLogic.Repository
 
         public void Create(User humanoid)
         {
-            _databaseContext.Users.Add(humanoid);
+            _databaseContext.User.Add(humanoid);
             _databaseContext.SaveChanges();
         }
 
         public void Delete(int id)
         {
-            _databaseContext.Users.Remove(Read(id));
+            _databaseContext.User.Remove(Read(id));
             _databaseContext.SaveChanges();
         }
 
         public List<User> GetAll()
         {
-            return _databaseContext.Users.ToList();
+            return _databaseContext.User.ToList();
         }
 
         public User Read(int id)
         {
-            return _databaseContext.Users.Find(id);
+            return _databaseContext.User.Find(id);
         }
 
         public void Update(int id, User humanoid)
         {
-            var user = _databaseContext.Users.Find(id);
+            var user = _databaseContext.User.Find(id);
             user.UserName = humanoid.UserName;
             user.Password = humanoid.Password;
             user.FirstName = humanoid.FirstName;

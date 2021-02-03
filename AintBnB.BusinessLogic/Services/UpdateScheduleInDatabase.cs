@@ -7,7 +7,7 @@ namespace AintBnB.BusinessLogic.Services
     {
         public static void UpdateScheduleInDb(int id, SortedDictionary<string, bool> schedule)
         {
-            var acc = ProvideDependencyFactory.databaseContext.Accommodations.Find(id);
+            var acc = ProvideDependencyFactory.databaseContext.Accommodation.Find(id);
             acc.Schedule = new SortedDictionary<string, bool>(schedule);
             ProvideDependencyFactory.databaseContext.SaveChanges();
         }
