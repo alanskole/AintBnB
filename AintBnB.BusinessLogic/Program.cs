@@ -1,4 +1,5 @@
 ﻿using System;
+using static AintBnB.BusinessLogic.Services.AllCountiresAndCitiesEurope;
 
 namespace AintBnB.BusinessLogic
 {
@@ -6,7 +7,6 @@ namespace AintBnB.BusinessLogic
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
         }
     }
 }
