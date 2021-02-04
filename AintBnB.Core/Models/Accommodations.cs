@@ -127,7 +127,7 @@ namespace AintBnB.Core.Models
             SquareMeters = squareMeters;
             AmountOfBedrooms = amountOfBedroooms;
             KilometersFromCenter = kilometersFromCenter;
-            Description = description;
+            Description = description.Trim();
             PricePerNight = pricePerNight;
         }
 

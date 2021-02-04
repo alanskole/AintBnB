@@ -84,10 +84,10 @@ namespace AintBnB.Core.Models
 
         public User(string userName, string password, string firstName, string lastName)
         {
-            UserName = userName;
-            Password = password;
-            FirstName = firstName;
-            LastName = lastName;
+            UserName = userName.Trim();
+            Password = password.Trim();
+            FirstName = firstName.Trim();
+            LastName = lastName.Trim();
         }
 
         public User()

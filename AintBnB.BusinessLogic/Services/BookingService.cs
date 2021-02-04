@@ -48,6 +48,8 @@ namespace AintBnB.BusinessLogic.Services
         {
             if (nights < 1)
                 throw new ArgumentException("Must book for at least a night");
+            
+            startDate = startDate.Trim();
 
             if (AreAllDatesAvailable(accommodation.Schedule, startDate, nights))
             {

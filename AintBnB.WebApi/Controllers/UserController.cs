@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using AintBnB.BusinessLogic.Services;
+using static AintBnB.BusinessLogic.Services.AuthenticationService;
 using AintBnB.BusinessLogic.DependencyProviderFactory;
 using AintBnB.Core.Models;
 
@@ -24,6 +25,8 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
+                IsUserNameFree(user.UserName);
+                IsPasswordValid(user.Password);
                 User newUser = _userService.CreateUser(user.UserName, user.Password, user.FirstName, user.LastName);
                 return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + newUser.Id, newUser);
             }

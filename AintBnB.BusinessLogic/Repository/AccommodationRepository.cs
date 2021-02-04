@@ -15,7 +15,7 @@ namespace AintBnB.BusinessLogic.Repository
 
         public void Create(Accommodation accommodation)
         {
-            IsCountryAndCityCorrect(accommodation.Address.Country, accommodation.Address.City);
+            IsCountryAndCityCorrect(accommodation.Address.Country.Trim(), accommodation.Address.City.Trim());
 
 
             _databaseContext.Address.Add(accommodation.Address);
@@ -43,7 +43,7 @@ namespace AintBnB.BusinessLogic.Repository
 
         public void Update(int id, Accommodation accommodation)
         {
-            IsCountryAndCityCorrect(accommodation.Address.Country, accommodation.Address.City);
+            IsCountryAndCityCorrect(accommodation.Address.Country.Trim(), accommodation.Address.City.Trim());
 
             var acc = _databaseContext.Accommodation.Find(id);
             acc.Address.Street = accommodation.Address.Street;
