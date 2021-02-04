@@ -34,7 +34,8 @@ namespace AintBnB.BusinessLogic.Services
 
         public User CreateUser(string username, string password, string firstName, string lastName)
         {
-            //IsUserNameFree(username);
+            IsUserNameFree(username);
+            IsPasswordValid(password);
             string hashed = HashPassword(password);
             User human = new User(username, hashed, firstName, lastName);
             _iUserRepository.Create(human);

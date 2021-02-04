@@ -71,6 +71,8 @@ namespace AintBnB.BusinessLogic.Services
 
         public static void IsPasswordValid(string password)
         {
+            if (password.Trim().Contains(" "))
+                throw new ArgumentException("Cannot contain space");
             if (password.Trim().Length < 6)
                 throw new ArgumentException("Minimum 6 characters");
             if (password.Trim().Length > 50)
