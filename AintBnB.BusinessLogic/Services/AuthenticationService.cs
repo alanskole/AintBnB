@@ -68,5 +68,13 @@ namespace AintBnB.BusinessLogic.Services
                 }
             }   
         }
+
+        public static void IsPasswordValid(string password)
+        {
+            if (password.Trim().Length < 6)
+                throw new ArgumentException("Minimum 6 characters");
+            if (password.Trim().Length > 50)
+                throw new ArgumentException("Maximum 50 characters");
+        }
     }
 }

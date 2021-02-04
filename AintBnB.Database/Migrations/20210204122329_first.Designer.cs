@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AintBnB.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210204004250_first")]
+    [Migration("20210204122329_first")]
     partial class first
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

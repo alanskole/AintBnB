@@ -105,12 +105,12 @@ namespace AintBnB.Core.Models
 
         public Address(string street, int number, int zip, string area, string city, string country)
         {
-            Street = street;
+            Street = street.Trim();
             Number = number;
             Zip = zip;
-            Area = area;
-            City = city;
-            Country = country;
+            Area = area.Trim();
+            City = city.Trim();
+            Country = country.Trim();
         }
 
         public Address()
