@@ -1,15 +1,25 @@
 ﻿using System.Collections.Generic;
+using System.Data;
+using Newtonsoft.Json;
+using System;
+using System.Linq;
+using AintBnB.BusinessLogic.DependencyProviderFactory;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace AintBnB.BusinessLogic.Services
 {
     public static class AllCountiresAndCitiesEurope
     {
-        public static Dictionary<string, List<string>> europe = new Dictionary<string, List<string>>();
-
-        public static Dictionary<string, List<string>> AllEuropeanCities()
+        private static string conString = ProvideDependencyFactory.databaseContext.Database.GetConnectionString();
+        private static SqlConnection con = new SqlConnection(conString);
+        public static void AllEuropeanCities()
         {
-            if (europe.Count != 0) 
-                return europe;
+            if (AreThereCountriesAndCitiesInDatabaseTable())
+                return;
+
+            DataTable dt = new DataTable("City");
+            Dictionary<string, List<string>> europe = new Dictionary<string, List<string>>();
 
             List<string> allOfEurope = new List<string>()
                 {
@@ -66461,6 +66471,10 @@ namespace AintBnB.BusinessLogic.Services
                     "Kosovo, Lloqan"
                 };
 
+
+
+
+
             foreach (string countryAndCity in allOfEurope)
             {
                 string[] splitInTwo = countryAndCity.Split(new char[] { ',' }, 2);
@@ -66471,7 +66485,95 @@ namespace AintBnB.BusinessLogic.Services
                 else
                     europe.Add(splitInTwo[0], new List<string>() { splitInTwo[1] });
             }
-            return europe;
+
+            dt.Columns.Add("CountryId", typeof(int));
+            dt.Columns.Add("Country", typeof(string));
+            dt.Columns.Add("Cities", typeof(string));
+
+            int i = 1;
+            foreach (var kvp in europe)
+            {
+                var output = JsonConvert.SerializeObject(kvp.Value);
+
+                var dr = dt.NewRow();
+                dr["CountryId"] = i;
+                dr["Country"] = kvp.Key;
+                dr["Cities"] = output;
+                i++;
+                dt.Rows.Add(dr);
+
+
+            }
+
+            using (var bulk = new SqlBulkCopy(ProvideDependencyFactory.databaseContext.Database.GetConnectionString()))
+            {
+                bulk.DestinationTableName = "City";
+                bulk.WriteToServer(dt);
+            }
+        }
+
+        public static List<string> GetCitiesOfACountry(string countryName)
+        {
+            if (!AreThereCountriesAndCitiesInDatabaseTable())
+                AllEuropeanCities();
+
+            con.Open();
+            using (SqlCommand cmd = new SqlCommand())
+            {
+                cmd.Connection = con;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SELECT Cities FROM dbo.City WHERE Country = @Country";
+                cmd.Parameters.Add("@Country", SqlDbType.NVarChar);
+                cmd.Parameters["@Country"].Value = countryName;
+                string reader = cmd.ExecuteScalar().ToString(); 
+                List<string> output = JsonConvert.DeserializeObject<List<string>>(reader);
+                con.Close();
+                return output;
+            }
+        }
+
+        public static bool AreThereCountriesAndCitiesInDatabaseTable()
+        {
+            con.Open();
+            using (SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM dbo.City", con))
+            {
+                Int32 count = (Int32)cmd.ExecuteScalar();
+                con.Close();
+                if (count > 0)
+                    return true;
+
+                return false;
+            }
+        }
+
+        public static void IsCountryAndCityCorrect(string countryName, string cityName)
+        {
+            con.Open();
+            using (SqlCommand cmd = new SqlCommand())
+            {
+                cmd.Connection = con;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SELECT COUNT(*) FROM dbo.City WHERE Country = @Country";
+                cmd.Parameters.Add("@Country", SqlDbType.NVarChar);
+                cmd.Parameters["@Country"].Value = countryName;
+
+                Int32 count = (Int32)cmd.ExecuteScalar();
+                if (count < 1)
+                {
+                    con.Close();
+                    throw new ArgumentException("Country not found!");
+                }
+
+                cmd.CommandText = "SELECT Cities FROM dbo.City WHERE Country = @Country";
+
+                string reader = cmd.ExecuteScalar().ToString();
+                List<string> output = JsonConvert.DeserializeObject<List<string>>(reader);
+                
+                con.Close();
+
+                if (!output.Any(city => city.Equals(cityName, StringComparison.OrdinalIgnoreCase)))
+                    throw new ArgumentException("City not found");
+            }
         }
     }
 }

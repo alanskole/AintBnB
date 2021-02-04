@@ -2,7 +2,6 @@
 using AintBnB.Database.DbCtx;
 using AintBnB.BusinessLogic.DependencyProviderFactory;
 using System.Collections.Generic;
-using static AintBnB.BusinessLogic.Services.CountryNameFormatter;
 using static AintBnB.BusinessLogic.Services.AllCountiresAndCitiesEurope;
 using System.Linq;
 using System;
@@ -16,10 +15,8 @@ namespace AintBnB.BusinessLogic.Repository
 
         public void Create(Accommodation accommodation)
         {
-            if (!AllEuropeanCities().ContainsKey(FormatName(accommodation.Address.Country)))
-                throw new ArgumentException("Country not valid");
-            if (!europe[FormatName(accommodation.Address.Country)].Any(city => city.Equals(accommodation.Address.City, StringComparison.OrdinalIgnoreCase)))
-                throw new ArgumentException("City not valid");
+            IsCountryAndCityCorrect(accommodation.Address.Country, accommodation.Address.City);
+
 
             _databaseContext.Address.Add(accommodation.Address);
             _databaseContext.Accommodation.Add(accommodation);
@@ -46,12 +43,7 @@ namespace AintBnB.BusinessLogic.Repository
 
         public void Update(int id, Accommodation accommodation)
         {
-            if (!AllEuropeanCities().ContainsKey(FormatName(accommodation.Address.Country)))
-                throw new ArgumentException("Country not valid");
-            if (!europe[FormatName(accommodation.Address.Country)].Any(city => city.Equals(accommodation.Address.City, StringComparison.OrdinalIgnoreCase)))
-                throw new ArgumentException("City not valid");
-
-
+            IsCountryAndCityCorrect(accommodation.Address.Country, accommodation.Address.City);
 
             var acc = _databaseContext.Accommodation.Find(id);
             acc.Address.Street = accommodation.Address.Street;
