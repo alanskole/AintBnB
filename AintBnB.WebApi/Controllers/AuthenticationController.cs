@@ -49,6 +49,19 @@ namespace AintBnB.WebApi.Controllers
         }
 
         [HttpGet]
+        [Route("api/[controller]/logout")]
+        public IActionResult LogoutUser()
+        {
+            Logout();
+
+            if (LoggedInAs == null)
+                return Ok("Logout ok!");
+            else
+                return BadRequest("Failed to logout!");
+        }
+
+
+        [HttpGet]
         [Route("api/[controller]/login/{check}")]
         public IActionResult LogIn([FromRoute] string check)
         {

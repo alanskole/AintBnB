@@ -18,8 +18,6 @@ namespace AintBnB.Core.Models
             get { return _id; }
             set
             {
-                if (value == 0)
-                    throw new ArgumentException("Id name cannot be zero");
                 _id = value;
                 NotifyPropertyChanged("Id");
             }
@@ -82,12 +80,18 @@ namespace AintBnB.Core.Models
             }
         }
 
+        public override string ToString()
+        {
+            return _id + " " + _userName + " " + _firstName + " " + _lastName + " " + _userType;
+        }
+
         public User(string userName, string password, string firstName, string lastName)
         {
             UserName = userName.Trim();
             Password = password.Trim();
             FirstName = firstName.Trim();
             LastName = lastName.Trim();
+            UserType = UserTypes.Customer;
         }
 
         public User()

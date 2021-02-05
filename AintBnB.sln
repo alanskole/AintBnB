@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AintBnB.WebApi", "AintBnB.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AintBnB.BusinessLogic", "AintBnB.BusinessLogic\AintBnB.BusinessLogic.csproj", "{E46CAB7A-F468-44EB-B90E-A4BBB1E6175A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AintBnB.Database", "AintBnB.Database\AintBnB.Database.csproj", "{6AB7A556-D7B6-4963-A185-18E08D5DE375}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AintBnB.Database", "AintBnB.Database\AintBnB.Database.csproj", "{6AB7A556-D7B6-4963-A185-18E08D5DE375}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +28,8 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F3B969D9-7175-46FF-8673-270D39E24DF7}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{F3B969D9-7175-46FF-8673-270D39E24DF7}.Debug|Any CPU.Build.0 = Debug|x86
+		{F3B969D9-7175-46FF-8673-270D39E24DF7}.Debug|Any CPU.Deploy.0 = Debug|x86
 		{F3B969D9-7175-46FF-8673-270D39E24DF7}.Debug|ARM.ActiveCfg = Debug|ARM
 		{F3B969D9-7175-46FF-8673-270D39E24DF7}.Debug|ARM.Build.0 = Debug|ARM
 		{F3B969D9-7175-46FF-8673-270D39E24DF7}.Debug|ARM.Deploy.0 = Debug|ARM

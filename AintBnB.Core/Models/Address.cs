@@ -19,8 +19,6 @@ namespace AintBnB.Core.Models
 
             set
             {
-                if (value == 0)
-                    throw new ArgumentException("Id cannot be zero");
                 _id = value;
                 NotifyPropertyChanged("Id");
             }
