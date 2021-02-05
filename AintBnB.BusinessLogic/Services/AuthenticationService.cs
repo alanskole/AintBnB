@@ -41,6 +41,11 @@ namespace AintBnB.BusinessLogic.Services
             return BCrypt.Net.BCrypt.Verify(password, correctHash);
         }
 
+        public static void Logout()
+        {
+            LoggedInAs = null;
+        }
+
         public static void TryToLogin(string userName, string password)
         {
             foreach (User user in ProvideDependencyFactory.userRepository.GetAll())

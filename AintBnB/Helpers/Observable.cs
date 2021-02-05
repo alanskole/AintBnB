@@ -6,9 +6,8 @@ namespace AintBnB.Helpers
 {
     public class Observable : INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void Set<T>(ref T storage, T value, [CallerMemberName]string propertyName = null)
+        protected void Set<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
         {
             if (Equals(storage, value))
             {
@@ -16,9 +15,14 @@ namespace AintBnB.Helpers
             }
 
             storage = value;
-            OnPropertyChanged(propertyName);
+            NotifyPropertyChanged(propertyName);
         }
 
-        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 }
