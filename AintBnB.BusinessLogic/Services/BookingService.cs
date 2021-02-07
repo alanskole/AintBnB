@@ -5,6 +5,7 @@ using static AintBnB.BusinessLogic.Services.DateParser;
 using static AintBnB.BusinessLogic.Services.UpdateScheduleInDatabase;
 using System;
 using System.Collections.Generic;
+using AintBnB.BusinessLogic.CustomExceptions;
 
 namespace AintBnB.BusinessLogic.Services
 {
@@ -36,18 +37,28 @@ namespace AintBnB.BusinessLogic.Services
 
         public Booking GetBooking(int id)
         {
-            return _iBookingRepository.Read(id);
+            Booking booking = _iBookingRepository.Read(id);
+
+            if (booking == null)
+                throw new IdNotFoundException("Booking", id);
+
+            return booking;
         }
 
         public List<Booking> GetAllBookings()
         {
-            return _iBookingRepository.GetAll();
+            List<Booking> all = _iBookingRepository.GetAll();
+
+            if (all.Count == 0)
+                throw new NoneFoundInDatabaseTableException("bookings");
+
+            return all;
         }
 
         public Booking Book(string startDate, User booker, int nights, Accommodation accommodation)
         {
             if (nights < 1)
-                throw new ArgumentException("Must book for at least a night");
+                throw new ParameterException("Nights", "less than one");
             
             startDate = startDate.Trim();
 
@@ -62,7 +73,7 @@ namespace AintBnB.BusinessLogic.Services
                 return booking;
             }
             else
-                throw new ArgumentException("Dates aren't available");
+                throw new DateException("Dates aren't available");
         }
 
         private void AddDatesToList(List<string> datesBooked, string startDate, int nights)

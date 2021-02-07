@@ -2,6 +2,7 @@
 using System;
 using AintBnB.BusinessLogic.DependencyProviderFactory;
 using BCrypt.Net;
+using AintBnB.BusinessLogic.CustomExceptions;
 
 namespace AintBnB.BusinessLogic.Services
 {
@@ -12,7 +13,7 @@ namespace AintBnB.BusinessLogic.Services
         public static void AnyoneLoggedIn()
         {
             if (LoggedInAs == null)
-                throw new ArgumentException("Not logged in!");
+                throw new LoginExcrption("Not logged in!");
         }
 
         public static void AdminChecker()
@@ -20,7 +21,7 @@ namespace AintBnB.BusinessLogic.Services
             AnyoneLoggedIn();
 
             if (LoggedInAs.UserType != UserTypes.Admin)
-                throw new ArgumentException("Administrator only!");
+                throw new AccessException();
         }
 
         public static void CorrectUser(int id)
@@ -28,7 +29,16 @@ namespace AintBnB.BusinessLogic.Services
             AnyoneLoggedIn();
 
             if (id != LoggedInAs.Id)
-                AdminChecker();
+            {
+                try
+                {
+                    AdminChecker();
+                }
+                catch (Exception)
+                {
+                    throw new AccessException(id);
+                }
+            }
         }
 
         public static string HashPassword(string password)
@@ -48,6 +58,20 @@ namespace AintBnB.BusinessLogic.Services
 
         public static void TryToLogin(string userName, string password)
         {
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                LoginUser(userName, password);
+                return;
+            }
+            throw new AlreadyLoggedInException();
+        }
+
+        private static void LoginUser(string userName, string password)
+        {
             foreach (User user in ProvideDependencyFactory.userRepository.GetAll())
             {
                 if (string.Equals(user.UserName, userName))
@@ -57,31 +81,9 @@ namespace AintBnB.BusinessLogic.Services
                         LoggedInAs = user;
                         return;
                     }
-                    throw new ArgumentException("Password not correct!");
                 }
             }
-            throw new ArgumentException("Username and/or password not correct!");
-        }
-
-        public static void IsUserNameFree(string userName)
-        {
-            foreach (User user in ProvideDependencyFactory.userRepository.GetAll())
-            {
-                if (string.Equals(user.UserName, userName, StringComparison.OrdinalIgnoreCase))
-                {
-                    throw new ArgumentException("Username already taken!");
-                }
-            }   
-        }
-
-        public static void IsPasswordValid(string password)
-        {
-            if (password.Trim().Contains(" "))
-                throw new ArgumentException("Cannot contain space");
-            if (password.Trim().Length < 6)
-                throw new ArgumentException("Minimum 6 characters");
-            if (password.Trim().Length > 50)
-                throw new ArgumentException("Maximum 50 characters");
+            throw new LoginExcrption("Username and/or password not correct!");
         }
     }
 }

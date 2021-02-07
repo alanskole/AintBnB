@@ -27,8 +27,6 @@ namespace AintBnB.Core.Models
             get { return _userName; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Username cannot be null");
                 _userName = value;
                 NotifyPropertyChanged("UserName");
             }
@@ -39,8 +37,6 @@ namespace AintBnB.Core.Models
             get { return _password; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Password cannot be null");
                 _password = value;
                 NotifyPropertyChanged("Password");
             }
@@ -51,8 +47,6 @@ namespace AintBnB.Core.Models
             get { return _firstName; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("First name cannot be null");
                 _firstName = value;
                 NotifyPropertyChanged("FirstName");
             }
@@ -63,8 +57,6 @@ namespace AintBnB.Core.Models
             get { return _lastName; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Last name cannot be null");
                 _lastName = value;
                 NotifyPropertyChanged("LastName");
             }

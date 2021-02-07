@@ -28,8 +28,6 @@ namespace AintBnB.Core.Models
             get { return _bookedBy; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Booked by cannot be null");
                 _bookedBy = value;
                 NotifyPropertyChanged("BookedBy");
             }
@@ -40,8 +38,6 @@ namespace AintBnB.Core.Models
             get { return _accommodation; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Accommodation cannot be null");
                 _accommodation = value;
                 NotifyPropertyChanged("Accommodation");
             }
@@ -52,8 +48,6 @@ namespace AintBnB.Core.Models
             get { return _dates; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Dates cannot be null");
                 _dates = value;
                 NotifyPropertyChanged("Dates");
             }
@@ -64,8 +58,6 @@ namespace AintBnB.Core.Models
             get { return _price; }
             set
             {
-                if (value == 0)
-                    throw new ArgumentException("Price name cannot be zero");
                 _price = value;
                 NotifyPropertyChanged("Price");
             }

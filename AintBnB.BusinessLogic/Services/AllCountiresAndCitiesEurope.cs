@@ -6,6 +6,7 @@ using System.Linq;
 using AintBnB.BusinessLogic.DependencyProviderFactory;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using AintBnB.BusinessLogic.CustomExceptions;
 
 namespace AintBnB.BusinessLogic.Services
 {
@@ -66561,7 +66562,7 @@ namespace AintBnB.BusinessLogic.Services
                 if (count < 1)
                 {
                     con.Close();
-                    throw new ArgumentException("Country not found!");
+                    throw new GeographicalException(countryName);
                 }
 
                 cmd.CommandText = "SELECT Cities FROM dbo.City WHERE Country = @Country";
@@ -66572,7 +66573,7 @@ namespace AintBnB.BusinessLogic.Services
                 con.Close();
 
                 if (!output.Any(city => city.Equals(cityName, StringComparison.OrdinalIgnoreCase)))
-                    throw new ArgumentException("City not found");
+                    throw new GeographicalException(countryName, cityName);
             }
         }
     }
