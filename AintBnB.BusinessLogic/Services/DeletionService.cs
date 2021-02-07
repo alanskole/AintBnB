@@ -5,6 +5,7 @@ using AintBnB.BusinessLogic.DependencyProviderFactory;
 using static AintBnB.BusinessLogic.Services.DateParser;
 using static AintBnB.BusinessLogic.Services.UpdateScheduleInDatabase;
 using static AintBnB.BusinessLogic.Services.AuthenticationService;
+using AintBnB.BusinessLogic.CustomExceptions;
 
 namespace AintBnB.BusinessLogic.Services
 {
@@ -62,6 +63,11 @@ namespace AintBnB.BusinessLogic.Services
 
         public void DeleteUser(int id)
         {
+            User user = _iUserRepository.Read(id);
+
+            if (user == null)
+                throw new IdNotFoundException("User", id);
+
             //CorrectUser(id);
             DeleteUsersAccommodations(id);
             DeleteUsersBookings(id);
@@ -73,11 +79,8 @@ namespace AintBnB.BusinessLogic.Services
         {
             foreach (Accommodation accommodation in _iAccommodationRepository.GetAll())
             {
-
                 if (accommodation.Owner == _iUserRepository.Read(id))
-                {
-                    DeleteAccommodation(accommodation.Id);
-                }
+                    DeleteAccommodation(accommodation.Id);  
             }
         }
 
@@ -88,13 +91,25 @@ namespace AintBnB.BusinessLogic.Services
 
                 if (booking.BookedBy == _iUserRepository.Read(id))
                 {
-                    DeleteBooking(booking.Id);
+                    try
+                    {
+                        DeleteBooking(booking.Id);
+                    }
+                    catch (Exception)
+                    {
+                        throw new CancelBookingException("user", id);
+                    }
                 }
             }
         }
 
         public void DeleteAccommodation(int id)
         {
+            Accommodation accommodation = _iAccommodationRepository.Read(id);
+
+            if (accommodation == null)
+                throw new IdNotFoundException("Accommodation", id);
+
             //int idOfOwner = _iAccommodationRepository.Read(id).Owner.Id;
             //CorrectUser(idOfOwner);
 
@@ -109,13 +124,25 @@ namespace AintBnB.BusinessLogic.Services
 
                 if (booking.Accommodation == _iAccommodationRepository.Read(id))
                 {
-                    DeleteBooking(booking.Id);
+                    try
+                    {
+                        DeleteBooking(booking.Id);
+                    }
+                    catch (Exception)
+                    {
+                        throw new CancelBookingException("accommodation", id);
+                    }
                 }
             }
         }
 
         public void DeleteBooking(int id)
         {
+            Booking booking = _iBookingRepository.Read(id);
+
+            if (booking == null)
+                throw new IdNotFoundException("Booking", id);
+
             /*if (_iBookingRepository.Read(id).Accommodation.Owner.Id != LoggedInAs.Id)
             {
                 int idOfBookedBy = _iBookingRepository.Read(id).BookedBy.Id;
@@ -131,7 +158,7 @@ namespace AintBnB.BusinessLogic.Services
                 _iBookingRepository.Delete(id);
             /*}
             else 
-                throw new ArgumentException("Cannot delete a booking less than five days away!");*/
+                throw new CancelBookingException(id);*/
         }
 
         private void ResetAvailableStatusAfterDeletingBooking(int id)

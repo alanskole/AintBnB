@@ -25,8 +25,8 @@ namespace AintBnB.Views
     /// </summary>
     public sealed partial class UserInfoPage : Page
     {
-        public UserInfoViewModel ViewModel { get; } = new UserInfoViewModel();
-        public LoginViewModel LoginViewModel { get; } = new LoginViewModel();
+        public UserViewModel ViewModel { get; } = new UserViewModel();
+        public AuthenticationViewModel LoginViewModel { get; } = new AuthenticationViewModel();
 
         public UserInfoPage()
         {
@@ -40,12 +40,17 @@ namespace AintBnB.Views
             await ViewModel.GetAUser();
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click_UpdateUser(object sender, RoutedEventArgs e)
         {
 
         }
 
-        private void Button_Click_1(object sender, RoutedEventArgs e)
+        private void Button_Click_ChangePass(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_DeleteUser(object sender, RoutedEventArgs e)
         {
 
         }

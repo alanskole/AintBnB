@@ -30,24 +30,23 @@ namespace AintBnB.WebApi.Controllers
                 Accommodation newAccommodation = _accommodationService.CreateAccommodation(owner, accommodation.Address, accommodation.SquareMeters, accommodation.AmountOfBedrooms, accommodation.KilometersFromCenter, accommodation.Description, accommodation.PricePerNight, days);
                 return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + accommodation.Id, accommodation);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound("Accommodation could not be created");
+                return BadRequest(ex.Message);
             }
         }
 
         [HttpGet]
         [Route("api/[controller]/{country}/{municipality}/{startdate}/{nights}")]
-        public IActionResult FindAvailable([FromRoute] string municipality, [FromRoute] string country, [FromRoute] string startdate, [FromRoute] int nights)
+        public IActionResult FindAvailable([FromRoute] string city, [FromRoute] string country, [FromRoute] string startdate, [FromRoute] int nights)
         {
             try
             {
-                List<Accommodation> result = _accommodationService.FindAvailable(country, municipality, startdate, nights);
-                return Ok(result);
+                return Ok(_accommodationService.FindAvailable(country, city, startdate, nights));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound($"No available accommodations found in {country}, {municipality} from {startdate} for {nights} nights");
+                return NotFound(ex.Message);
             }
         }
 
@@ -60,9 +59,9 @@ namespace AintBnB.WebApi.Controllers
                 _accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDays(id, days);
                 return Ok(_accommodationService.GetAccommodation(id));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound($"Couldn't expand the schedule for the accommodation with id {id}");
+                return BadRequest($"Couldn't expand the schedule for the accommodation with id {id}. {ex.Message}");
             }
         }
 
@@ -75,9 +74,9 @@ namespace AintBnB.WebApi.Controllers
                 _accommodationService.UpdateAccommodation(id, accommodation);
                 return Ok(accommodation);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound($"Accommodation with id {id} could not be updated");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -85,7 +84,14 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]")]
         public IActionResult GetAllAccommodations()
         {
-            return Ok(_accommodationService.GetAllAccommodations());
+            try
+            {
+                return Ok(_accommodationService.GetAllAccommodations());
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpGet]
@@ -96,9 +102,9 @@ namespace AintBnB.WebApi.Controllers
             {
                 return Ok(_accommodationService.GetAccommodation(id));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound($"Accommodation with id {id} could not be found");
+                return NotFound(ex.Message);
             }
         }
 
@@ -111,9 +117,9 @@ namespace AintBnB.WebApi.Controllers
                 _deletionService.DeleteAccommodation(id);
                 return Ok("Deletion ok");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound($"Accommodation with id {id} could not be deleted");
+                return BadRequest(ex.Message);
             }
         }
     }

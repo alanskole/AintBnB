@@ -30,8 +30,6 @@ namespace AintBnB.Core.Models
 
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Street cannot be null");
                 _street = value;
                 NotifyPropertyChanged("Street");
             }
@@ -43,8 +41,6 @@ namespace AintBnB.Core.Models
 
             set
             {
-                if (value == 0)
-                    throw new ArgumentException("Number cannot be zero");
                 _number = value;
                 NotifyPropertyChanged("Number");
             }
@@ -56,8 +52,6 @@ namespace AintBnB.Core.Models
 
             set
             {
-                if (value == 0)
-                    throw new ArgumentException("Zip cannot be zero");
                 _zip = value;
                 NotifyPropertyChanged("Zip");
             }
@@ -69,8 +63,6 @@ namespace AintBnB.Core.Models
 
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Area cannot be null");
                 _area = value;
                 NotifyPropertyChanged("Area");
             }
@@ -82,8 +74,6 @@ namespace AintBnB.Core.Models
 
             set
             {
-                if (value == null)
-                    throw new ArgumentException("City cannot be null");
                 _city = value;
                 NotifyPropertyChanged("City");
             }
@@ -94,8 +84,6 @@ namespace AintBnB.Core.Models
             get { return _country; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Country cannot be null");
                 _country = value;
                 NotifyPropertyChanged("Country");
             }

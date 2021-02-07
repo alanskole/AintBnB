@@ -24,7 +24,7 @@ namespace AintBnB.Views
     /// </summary>
     public sealed partial class LogoutPage : Page
     {
-        public LoginViewModel ViewModel { get; } = new LoginViewModel();
+        public AuthenticationViewModel ViewModel { get; } = new AuthenticationViewModel();
 
         public LogoutPage()
         {

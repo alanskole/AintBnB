@@ -12,7 +12,7 @@ namespace AintBnB.Views
     /// </summary>
     public sealed partial class CreateUserPage : Page
     {
-        public MainViewModel ViewModel { get; } = new MainViewModel();
+        public UserViewModel ViewModel { get; } = new UserViewModel();
         public CreateUserPage()
         {
             this.InitializeComponent();

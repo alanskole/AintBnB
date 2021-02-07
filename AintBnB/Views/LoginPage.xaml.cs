@@ -24,7 +24,7 @@ namespace AintBnB.Views
     /// </summary>
     public sealed partial class LoginPage : Page
     {
-        public LoginViewModel ViewModel { get; } = new LoginViewModel();
+        public AuthenticationViewModel ViewModel { get; } = new AuthenticationViewModel();
 
         public LoginPage()
         {
@@ -33,12 +33,28 @@ namespace AintBnB.Views
 
         private async void Button_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new MessageDialog("Wrong, try again or create a new user you don't have one!");
-
-            if (await ViewModel.Login())
+            try {
+                await ViewModel.Login();
                 this.Frame.Navigate(typeof(UserInfoPage));
-            else
-                await dialog.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await ViewModel.IdOfLoggedInUser();
+            }
+            catch (Exception)
+            {
+                return;
+            }
+            await new MessageDialog("Already logged in").ShowAsync();
+            this.Frame.Navigate(typeof(UserInfoPage));
         }
     }
 }
