@@ -84,13 +84,11 @@ namespace AintBnB.ViewModels
             throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
 
-        public async Task<bool> LogoutFromApp()
+        public async Task LogoutFromApp()
         {
             _uniquePartOfUri = "logout";
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            if (response.IsSuccessStatusCode)
-                return true;
-            return false;
+            ResponseChecker(response);
         }
     }
 }

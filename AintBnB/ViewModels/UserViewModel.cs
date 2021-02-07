@@ -38,15 +38,13 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-
         public async Task CreateTheUser()
         {
-
-
             string userJson = JsonConvert.SerializeObject(User);
             HttpResponseMessage response = await _clientProvider.client.PostAsync(
                 _uri, new StringContent(userJson, Encoding.UTF8, "application/json"));
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
 
         public async Task GetAUser()
@@ -61,6 +59,8 @@ namespace AintBnB.ViewModels
                 _user = JsonConvert.DeserializeObject<User>(jsonUser);
                 NotifyPropertyChanged("User");
             }
+            else
+                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
 
         public async Task<List<User>> GetAllUsers()
@@ -73,8 +73,9 @@ namespace AintBnB.ViewModels
             {
                 string jsonUsers = await response.Content.ReadAsStringAsync();
                 _all = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
+                return _all;
             }
-            return _all;
+            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
     }
 }

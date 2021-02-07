@@ -1,4 +1,6 @@
 ﻿using AintBnB.ViewModels;
+using System;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -17,7 +19,14 @@ namespace AintBnB.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            listView.ItemsSource = await ViewModel.GetAllUsers();
+            try
+            {
+                listView.ItemsSource = await ViewModel.GetAllUsers();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
         }
     }
 }

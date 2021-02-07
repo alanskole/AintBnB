@@ -28,9 +28,9 @@ namespace AintBnB.Views
 
                 this.Frame.Navigate(typeof(LoginPage));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                await new MessageDialog("Wrong, try again!").ShowAsync();
+                await new MessageDialog(ex.Message).ShowAsync();
             }
         }
     }
