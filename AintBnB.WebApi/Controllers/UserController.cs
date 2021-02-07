@@ -27,9 +27,9 @@ namespace AintBnB.WebApi.Controllers
                 User newUser = _userService.CreateUser(user.UserName, user.Password, user.FirstName, user.LastName);
                 return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + newUser.Id, newUser);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound("User could not be created");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -42,9 +42,9 @@ namespace AintBnB.WebApi.Controllers
                 _userService.UpdateUser(id, user);
                 return Ok(user);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound($"User with id {id} could not be updated");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -52,7 +52,14 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]")]
         public IActionResult GetAllUsers()
         {
-            return Ok(_userService.GetAllUsers());
+            try
+            {
+                return Ok(_userService.GetAllUsers());
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpGet]
@@ -63,9 +70,9 @@ namespace AintBnB.WebApi.Controllers
             {
                 return Ok(_userService.GetUser(id));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound($"User with id {id} could not be found");
+                return NotFound(ex.Message);
             }
         }
 
@@ -78,9 +85,9 @@ namespace AintBnB.WebApi.Controllers
                 _deletionService.DeleteUser(id);
                 return Ok("Deletion ok");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound($"User with id {id} could not be deleted");
+                return BadRequest(ex.Message);
             }
         }
     }

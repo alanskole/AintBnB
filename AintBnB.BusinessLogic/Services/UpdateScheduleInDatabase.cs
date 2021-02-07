@@ -1,4 +1,5 @@
-﻿using AintBnB.BusinessLogic.DependencyProviderFactory;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.DependencyProviderFactory;
 using System.Collections.Generic;
 
 namespace AintBnB.BusinessLogic.Services
@@ -8,6 +9,10 @@ namespace AintBnB.BusinessLogic.Services
         public static void UpdateScheduleInDb(int id, SortedDictionary<string, bool> schedule)
         {
             var acc = ProvideDependencyFactory.databaseContext.Accommodation.Find(id);
+
+            if (acc == null)
+                throw new IdNotFoundException("Accommodation", id);
+
             acc.Schedule = new SortedDictionary<string, bool>(schedule);
             ProvideDependencyFactory.databaseContext.SaveChanges();
         }

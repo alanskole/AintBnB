@@ -32,8 +32,6 @@ namespace AintBnB.Core.Models
             get { return _owner; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Owner name cannot be null");
                 _owner = value;
                 NotifyPropertyChanged("Owner");
             }
@@ -45,8 +43,6 @@ namespace AintBnB.Core.Models
 
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Address cannot be null");
                 _address = value;
                 NotifyPropertyChanged("Address");
             }
@@ -57,8 +53,6 @@ namespace AintBnB.Core.Models
             get { return _squareMeters; }
             set
             {
-                if (value == 0)
-                    throw new ArgumentException("Square meters cannot be zero");
                 _squareMeters = value;
                 NotifyPropertyChanged("SquareMeters");
             }
@@ -89,8 +83,6 @@ namespace AintBnB.Core.Models
             get { return _description; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Description cannot be null");
                 _description = value;
                 NotifyPropertyChanged("Description");
             }
@@ -101,8 +93,6 @@ namespace AintBnB.Core.Models
             get { return _pricePerNight; }
             set
             {
-                if (value == 0)
-                    throw new ArgumentException("Price per night cannot be zero");
                 _pricePerNight = value;
                 NotifyPropertyChanged("PricePerNight");
             }
@@ -128,15 +118,6 @@ namespace AintBnB.Core.Models
             Description = description.Trim();
             PricePerNight = pricePerNight;
         }
-
-        /*public Accommodation(int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight)
-        {
-            _squareMeters = squareMeters;
-            _amountOfBedrooms = amountOfBedroooms;
-            _kilometersFromCenter = kilometersFromCenter;
-            _description = description;
-            _pricePerNight = pricePerNight;
-        }*/
 
         public Accommodation()
         {

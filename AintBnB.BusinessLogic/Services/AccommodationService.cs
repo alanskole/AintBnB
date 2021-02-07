@@ -3,9 +3,11 @@ using AintBnB.BusinessLogic.DependencyProviderFactory;
 using AintBnB.BusinessLogic.Repository;
 using static AintBnB.BusinessLogic.Services.DateParser;
 using static AintBnB.BusinessLogic.Services.UpdateScheduleInDatabase;
+using static AintBnB.BusinessLogic.Services.AllCountiresAndCitiesEurope;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AintBnB.BusinessLogic.CustomExceptions;
 
 namespace AintBnB.BusinessLogic.Services
 {
@@ -34,9 +36,43 @@ namespace AintBnB.BusinessLogic.Services
             _iAccommodationRepository = accommodationRepo;
         }
 
+        public void ValidateAccommodation(Accommodation accommodation)
+        {
+            if (accommodation.Owner.Id == 0)
+                throw new IdNotFoundException("User");
+            if(accommodation.Address.Street == null || accommodation.Address.Street.Trim().Length == 0)
+                throw new ParameterException("Street", "empty");
+            if (accommodation.Address.Number == 0)
+                throw new ParameterException("Number", "zero");
+            if (accommodation.Address.Zip == 0)
+                throw new ParameterException("Zip", "zero");
+            if (accommodation.Address.Area == null || accommodation.Address.Area.Trim().Length == 0)
+                throw new ParameterException("Area", "empty");
+            IsCountryAndCityCorrect(accommodation.Address.Country.Trim(), accommodation.Address.City.Trim());
+            if (accommodation.SquareMeters == 0)
+                throw new ParameterException("SquareMeters", "zero");
+            if (accommodation.Description == null || accommodation.Description.Trim().Length == 0)
+                throw new ParameterException("Description", "empty");
+            if (accommodation.PricePerNight == 0)
+                throw new ParameterException("PricePerNight", "zero");
+        }
+
         public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int daysToCreateScheduleFor)
         {
             Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight);
+
+            if (daysToCreateScheduleFor < 1)
+                daysToCreateScheduleFor = 1;
+            
+            try
+            {
+                ValidateAccommodation(accommodation);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             CreateScheduleForXAmountOfDays(accommodation, daysToCreateScheduleFor);
             _iAccommodationRepository.Create(accommodation);
             return accommodation;
@@ -44,37 +80,58 @@ namespace AintBnB.BusinessLogic.Services
 
         public Accommodation GetAccommodation(int id)
         {
-            return _iAccommodationRepository.Read(id);
+            Accommodation acc = _iAccommodationRepository.Read(id);
+
+            if (acc == null)
+                throw new IdNotFoundException("Accommodation", id);
+
+            return acc;
         }
 
         public List<Accommodation> GetAllAccommodations()
         {
-            return _iAccommodationRepository.GetAll();
+            List<Accommodation> all = _iAccommodationRepository.GetAll();
+
+            if (all.Count == 0)
+                throw new NoneFoundInDatabaseTableException("accommodations");
+
+            return all;
         }
 
         public void UpdateAccommodation(int id, Accommodation updatedAccommodation)
         {
-            _iAccommodationRepository.Update(id, updatedAccommodation);
-        }
-        
-        public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days)
-        {
-            if (days < 1)
+            try
             {
-                days = 1;
+                GetAccommodation(id);
+                ValidateAccommodation(updatedAccommodation);
+            }
+            catch (Exception)
+            {
+                throw;
             }
 
+            _iAccommodationRepository.Update(id, updatedAccommodation);
+        }
 
+        public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days)
+        {
             SortedDictionary<string, bool> dateAndStatusOriginal = _iAccommodationRepository.Read(id).Schedule;
             SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
-            
+
             DateTime fromDate = DateTime.Parse(dateAndStatusOriginal.Keys.Last()).AddDays(1);
 
             addDaysToDate(days, fromDate, dateAndStatus);
 
             MergeTwoSortedDictionaries(dateAndStatusOriginal, dateAndStatus);
 
-            UpdateScheduleInDb(id, dateAndStatusOriginal);
+            try
+            {
+                UpdateScheduleInDb(id, dateAndStatusOriginal);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private static void MergeTwoSortedDictionaries(SortedDictionary<string, bool> dateAndStatusOriginal, SortedDictionary<string, bool> dateAndStatus)
@@ -87,11 +144,6 @@ namespace AintBnB.BusinessLogic.Services
 
         private void CreateScheduleForXAmountOfDays(Accommodation accommodation, int days)
         {
-            if (days < 1)
-            {
-                days = 1;
-            }
-
             DateTime todaysDate = DateTime.Today;
             SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
             addDaysToDate(days, todaysDate, dateAndStatus);
@@ -106,28 +158,27 @@ namespace AintBnB.BusinessLogic.Services
             {
                 newDate = date.AddDays(i);
                 dateAndStatus.Add(DateFormatterCustomDate(newDate), true);
-
             }
         }
 
-        public List<Accommodation> FindAvailable(string country, string municipality, string startdate, int nights)
+        public List<Accommodation> FindAvailable(string country, string city, string startdate, int nights)
         {
             List<Accommodation> availableOnes = new List<Accommodation>();
 
-            SearchInCountryAndMunicipality(country, municipality, startdate, nights, availableOnes);
+            SearchInCountryAndCity(country, city, startdate, nights, availableOnes);
 
             if (availableOnes.Count > 0)
                 return availableOnes;
             else
-                throw new ArgumentException("Couldn't find any available dates!");
+                throw new DateException(($"No available accommodations found in {country}, {city} from {startdate} for {nights} nights"));
         }
 
-        private void SearchInCountryAndMunicipality(string country, string municipality, string startdate, int nights, List<Accommodation> availableOnes)
+        private void SearchInCountryAndCity(string country, string city, string startdate, int nights, List<Accommodation> availableOnes)
         {
             foreach (Accommodation accommodation in _iAccommodationRepository.GetAll())
             {
-                if (string.Equals(accommodation.Address.Country, country, StringComparison.OrdinalIgnoreCase) && 
-                    string.Equals(accommodation.Address.City, municipality, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(accommodation.Address.Country, country, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(accommodation.Address.City, city, StringComparison.OrdinalIgnoreCase))
                     AreDatesWithinRangeOfScheduleOfTheAccommodation(availableOnes, accommodation, startdate, nights);
             }
         }

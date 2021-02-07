@@ -3,6 +3,7 @@ using AintBnB.BusinessLogic.Repository;
 using System;
 using System.Collections.Generic;
 using AintBnB.BusinessLogic.DependencyProviderFactory;
+using AintBnB.BusinessLogic.CustomExceptions;
 using static AintBnB.BusinessLogic.Services.AuthenticationService;
 
 namespace AintBnB.BusinessLogic.Services
@@ -32,28 +33,101 @@ namespace AintBnB.BusinessLogic.Services
             _iUserRepository = userRepo;
         }
 
-        public User CreateUser(string username, string password, string firstName, string lastName)
+        public User CreateUser(string userName, string password, string firstName, string lastName)
         {
-            IsUserNameFree(username);
-            IsPasswordValid(password);
-            string hashed = HashPassword(password);
-            User human = new User(username, hashed, firstName, lastName);
-            _iUserRepository.Create(human);
-            return human;
+
+            try
+            {
+                ValidateUser(userName, password, firstName, lastName);  
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            User user = new User();
+            user.Password = HashPassword(password.Trim());
+            user.UserName = userName.Trim();
+            user.FirstName = firstName.Trim();
+            user.LastName = lastName.Trim();
+
+            _iUserRepository.Create(user);
+            return user;
+        }
+
+        public void ValidateUser(string userName, string password, string firstName, string lastName)
+        {
+            try
+            {
+                IsUserNameFree(userName);
+                ValidatePassword(password);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            if (userName == null || userName.Trim().Length == 0)
+                throw new ParameterException("UserName", "empty");
+            if (firstName == null || firstName.Trim().Length == 0)
+                throw new ParameterException("FirstName", "empty");
+            if (lastName == null || lastName.Trim().Length == 0)
+                throw new ParameterException("LastName", "empty");
+        }
+
+        private void IsUserNameFree(string userName)
+        {
+            foreach (User user in GetAllUsers())
+            {
+                if (string.Equals(user.UserName, userName, StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new LoginExcrption("Username already taken!");
+                }
+            }
+        }
+
+        private static void ValidatePassword(string password)
+        {
+            if (password.Trim().Contains(" "))
+                throw new LoginExcrption("Cannot contain space");
+            if (password.Trim().Length < 6)
+                throw new LoginExcrption("Minimum 6 characters");
+            if (password.Trim().Length > 50)
+                throw new LoginExcrption("Maximum 50 characters");
         }
 
         public User GetUser(int id)
         {
-            return _iUserRepository.Read(id);
+            User user = _iUserRepository.Read(id);
+
+            if (user == null)
+                throw new IdNotFoundException("User", id);
+
+            return user;
         }
 
         public List<User> GetAllUsers()
         {
-            return _iUserRepository.GetAll();
+            List<User> all = _iUserRepository.GetAll();
+
+            if (all.Count == 0)
+                throw new NoneFoundInDatabaseTableException("users");
+
+            return all;
         }
 
         public void UpdateUser(int id, User updatedUser)
         {
+            try
+            {
+                GetUser(id);
+                ValidateUser(updatedUser.UserName, updatedUser.Password, updatedUser.FirstName, updatedUser.LastName);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             _iUserRepository.Update(id, updatedUser);
         }
     }

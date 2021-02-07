@@ -8,7 +8,7 @@ namespace AintBnB.Views
 {
     public sealed partial class AllUsersPage : Page
     {
-        public UserInfoViewModel ViewModel { get; } = new UserInfoViewModel();
+        public UserViewModel ViewModel { get; } = new UserViewModel();
 
         public AllUsersPage()
         {

@@ -2,7 +2,6 @@
 using AintBnB.Database.DbCtx;
 using AintBnB.BusinessLogic.DependencyProviderFactory;
 using System.Collections.Generic;
-using static AintBnB.BusinessLogic.Services.AllCountiresAndCitiesEurope;
 using System.Linq;
 using System;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +14,6 @@ namespace AintBnB.BusinessLogic.Repository
 
         public void Create(Accommodation accommodation)
         {
-            IsCountryAndCityCorrect(accommodation.Address.Country.Trim(), accommodation.Address.City.Trim());
-
-
             _databaseContext.Address.Add(accommodation.Address);
             _databaseContext.Accommodation.Add(accommodation);
             _databaseContext.SaveChanges();
@@ -43,8 +39,6 @@ namespace AintBnB.BusinessLogic.Repository
 
         public void Update(int id, Accommodation accommodation)
         {
-            IsCountryAndCityCorrect(accommodation.Address.Country.Trim(), accommodation.Address.City.Trim());
-
             var acc = _databaseContext.Accommodation.Find(id);
             acc.Address.Street = accommodation.Address.Street;
             acc.Address.Number = accommodation.Address.Number;

@@ -26,10 +26,9 @@ namespace AintBnB.WebApi.Controllers
                 CorrectUser(id);
                 return Ok("User can access");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                return BadRequest("User not allowed to access");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -42,9 +41,9 @@ namespace AintBnB.WebApi.Controllers
                 AdminChecker();
                 return Ok("User is admin");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return BadRequest("User isn't admin");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -73,9 +72,9 @@ namespace AintBnB.WebApi.Controllers
 
                 return Ok("Login ok!");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return BadRequest("Login failed!");
+                return BadRequest(ex.Message);
             }
         }
     }

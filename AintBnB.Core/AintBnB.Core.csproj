@@ -4,8 +4,4 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>AintBnB.Core</RootNamespace>
   </PropertyGroup>
-
-   <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
 </Project>

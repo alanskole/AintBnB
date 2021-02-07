@@ -29,9 +29,9 @@ namespace AintBnB.WebApi.Controllers
                 Booking booking = _bookingService.Book(startDate, booker, nights, accommodation);
                 return Ok(booking);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound("Booking could not be created");
+                return BadRequest(ex.Message);
             }
         }
 
@@ -43,9 +43,9 @@ namespace AintBnB.WebApi.Controllers
             {
                 return Ok(_bookingService.GetBooking(id));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound($"Booking with id {id} found");
+                return NotFound(ex.Message);
             }
         }
 
@@ -57,9 +57,9 @@ namespace AintBnB.WebApi.Controllers
             {
                 return Ok(_bookingService.GetAllBookings());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound("No bookings found");
+                return NotFound(ex.Message);
             }
         }
 
@@ -72,9 +72,9 @@ namespace AintBnB.WebApi.Controllers
                 _deletionService.DeleteBooking(id);
                 return Ok("Deletion ok");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return NotFound($"Booking with id {id} could not be deleted");
+                return BadRequest(ex.Message);
             }
         }
     }

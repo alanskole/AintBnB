@@ -10,11 +10,12 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
         <Grid>
             <TextBlock Text="{x:Bind ViewModel.User.Id, Mode=TwoWay}" Name="userId" HorizontalAlignment="Left" Margin="260,37,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBlock Text="{x:Bind ViewModel.User.UserName, Mode=TwoWay}" Name="userName" HorizontalAlignment="Left" Margin="260,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBlock Text="{x:Bind ViewModel.User.FirstName, Mode=TwoWay}" Name="firstName" HorizontalAlignment="Left" Margin="260,237,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBlock Text="{x:Bind ViewModel.User.LastName, Mode=TwoWay}" Name="lastName" HorizontalAlignment="Left" Margin="260,337,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <Button Content="Update User" Margin="291,468,0,0" VerticalAlignment="Top" Click="Button_Click"  Width="95"/>
-            <Button Content="Delete User" Margin="291,536,0,0" VerticalAlignment="Top" Click="Button_Click_1" Width="95"/>
+            <TextBox Text="{x:Bind ViewModel.User.UserName, Mode=TwoWay}" Name="userName" HorizontalAlignment="Left" Margin="260,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Text="{x:Bind ViewModel.User.FirstName, Mode=TwoWay}" Name="firstName" HorizontalAlignment="Left" Margin="260,237,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Text="{x:Bind ViewModel.User.LastName, Mode=TwoWay}" Name="lastName" HorizontalAlignment="Left" Margin="260,337,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <Button Content="Update User" Margin="291,450,0,0" VerticalAlignment="Top" Click="Button_Click_UpdateUser"  Width="95"/>
+            <Button Content="Change Password" Margin="291,500,0,0" VerticalAlignment="Top" Click="Button_Click_ChangePass" Width="95"/>
+            <Button Content="Delete User" Margin="291,550,0,0" VerticalAlignment="Top" Click="Button_Click_DeleteUser" Width="95"/>
         </Grid>
     </ScrollViewer>
 </Page>
