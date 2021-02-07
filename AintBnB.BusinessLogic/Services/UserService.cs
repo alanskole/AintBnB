@@ -77,7 +77,7 @@ namespace AintBnB.BusinessLogic.Services
 
         private void IsUserNameFree(string userName)
         {
-            foreach (User user in GetAllUsers())
+            foreach (User user in _iUserRepository.GetAll())
             {
                 if (string.Equals(user.UserName, userName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -108,6 +108,16 @@ namespace AintBnB.BusinessLogic.Services
 
         public List<User> GetAllUsers()
         {
+            try
+            {
+                AdminChecker();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
             List<User> all = _iUserRepository.GetAll();
 
             if (all.Count == 0)

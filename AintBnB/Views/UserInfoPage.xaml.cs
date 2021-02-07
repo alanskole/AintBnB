@@ -8,6 +8,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -35,9 +36,17 @@ namespace AintBnB.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ViewModel.UserId = await LoginViewModel.IdOfLoggedInUser();
+            try
+            {
+                ViewModel.UserId = await LoginViewModel.IdOfLoggedInUser();
 
-            await ViewModel.GetAUser();
+                await ViewModel.GetAUser();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
+
         }
 
         private void Button_Click_UpdateUser(object sender, RoutedEventArgs e)

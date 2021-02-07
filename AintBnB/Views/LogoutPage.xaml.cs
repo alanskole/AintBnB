@@ -33,18 +33,17 @@ namespace AintBnB.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            if (await ViewModel.LogoutFromApp())
+            try
             {
+                await ViewModel.LogoutFromApp();
                 await new MessageDialog("Logout ok!").ShowAsync();
                 this.Frame.Navigate(typeof(LoginPage));
             }
-            else
+            catch (Exception)
             {
                 await new MessageDialog("Logout not ok!").ShowAsync();
-                this.Frame.Navigate(typeof(UserInfoPage));
+                this.Frame.GoBack();
             }
-
-
         }
     }
 }
