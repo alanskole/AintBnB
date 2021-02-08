@@ -10,10 +10,10 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
         <Grid>
-            <TextBox Text="{x:Bind ViewModel.User.UserName, Mode=TwoWay}" PlaceholderText="Username" Name="userName" HorizontalAlignment="Left" Margin="260,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <PasswordBox Password="{x:Bind ViewModel.User.Password, Mode=TwoWay}" PlaceholderText="Password" Name="password" HorizontalAlignment="Left" Margin="260,200,0,0" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Text="{x:Bind ViewModel.User.FirstName, Mode=TwoWay}" PlaceholderText="First name" Name="firstName" HorizontalAlignment="Left" Margin="260,300,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Text="{x:Bind ViewModel.User.LastName, Mode=TwoWay}" PlaceholderText="Last name" Name="lastName" HorizontalAlignment="Left" Margin="260,400,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Header="Username" Text="{x:Bind ViewModel.User.UserName, Mode=TwoWay}" Name="userName" HorizontalAlignment="Left" Margin="260,100,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <PasswordBox Header="Password"  Password="{x:Bind ViewModel.User.Password, Mode=TwoWay}" Name="password" HorizontalAlignment="Left" Margin="260,200,0,0" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Header="Firstname" Text="{x:Bind ViewModel.User.FirstName, Mode=TwoWay}" Name="firstName" HorizontalAlignment="Left" Margin="260,300,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Header="Lastname" Text="{x:Bind ViewModel.User.LastName, Mode=TwoWay}" Name="lastName" HorizontalAlignment="Left" Margin="260,400,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
             <Button Click="Button_Click" Content="Create User" Margin="313,500,0,0" VerticalAlignment="Top" Width="106"/>
         </Grid>
     </ScrollViewer>

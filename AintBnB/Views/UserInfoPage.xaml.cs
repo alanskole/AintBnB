@@ -27,7 +27,7 @@ namespace AintBnB.Views
     public sealed partial class UserInfoPage : Page
     {
         public UserViewModel ViewModel { get; } = new UserViewModel();
-        public AuthenticationViewModel LoginViewModel { get; } = new AuthenticationViewModel();
+        public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
 
         public UserInfoPage()
         {
@@ -38,7 +38,7 @@ namespace AintBnB.Views
         {
             try
             {
-                ViewModel.UserId = await LoginViewModel.IdOfLoggedInUser();
+                ViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
 
                 await ViewModel.GetAUser();
             }
@@ -49,19 +49,37 @@ namespace AintBnB.Views
 
         }
 
-        private void Button_Click_UpdateUser(object sender, RoutedEventArgs e)
+        private async void Button_Click_UpdateUser(object sender, RoutedEventArgs e)
         {
-
+            try
+            {
+                await ViewModel.UpdateAUser();
+                await new MessageDialog("Update ok!").ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
         }
 
         private void Button_Click_ChangePass(object sender, RoutedEventArgs e)
         {
-
+            this.Frame.Navigate(typeof(PasswordChangePage));
         }
 
-        private void Button_Click_DeleteUser(object sender, RoutedEventArgs e)
+        private async void Button_Click_DeleteUser(object sender, RoutedEventArgs e)
         {
+            var dialog = new MessageDialog("This will make your account vanish instantly! Are you sure?");
+            dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
+            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
+            var res = await dialog.ShowAsync();
 
+            if ((int)res.Id == 0)
+            { 
+                await ViewModel.DeleteAUser();
+                await AuthenticationViewModel.LogoutFromApp();
+                this.Frame.Navigate(typeof(MainPage));
+            }
         }
     }
 }

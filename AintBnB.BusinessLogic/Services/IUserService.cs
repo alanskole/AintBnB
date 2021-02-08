@@ -5,7 +5,9 @@ namespace AintBnB.BusinessLogic.Services
 {
     public interface IUserService
     {
-        void ValidateUser(string userName, string password, string firstName, string lastName);
+        void ValidateUser(string userName, string firstName, string lastName);
+        void ValidatePassword(string password);
+        void ChangePassword(string old, int userId, string new1, string new2);
         User CreateUser(string userName, string password, string firstName, string lastName);
         List<User> GetAllUsers();
         User GetUser(int id);

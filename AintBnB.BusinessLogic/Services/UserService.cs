@@ -38,7 +38,9 @@ namespace AintBnB.BusinessLogic.Services
 
             try
             {
-                ValidateUser(userName, password, firstName, lastName);  
+                IsUserNameFree(userName);
+                ValidateUser(userName, firstName, lastName);
+                ValidatePassword(password);
             }
             catch (Exception)
             {
@@ -55,18 +57,8 @@ namespace AintBnB.BusinessLogic.Services
             return user;
         }
 
-        public void ValidateUser(string userName, string password, string firstName, string lastName)
+        public void ValidateUser(string userName, string firstName, string lastName)
         {
-            try
-            {
-                IsUserNameFree(userName);
-                ValidatePassword(password);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
             if (userName == null || userName.Trim().Length == 0)
                 throw new ParameterException("UserName", "empty");
             if (firstName == null || firstName.Trim().Length == 0)
@@ -86,7 +78,7 @@ namespace AintBnB.BusinessLogic.Services
             }
         }
 
-        private static void ValidatePassword(string password)
+        public void ValidatePassword(string password)
         {
             if (password.Trim().Contains(" "))
                 throw new LoginExcrption("Cannot contain space");
@@ -98,6 +90,16 @@ namespace AintBnB.BusinessLogic.Services
 
         public User GetUser(int id)
         {
+            try
+            {
+                CorrectUser(id);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
             User user = _iUserRepository.Read(id);
 
             if (user == null)
@@ -128,17 +130,57 @@ namespace AintBnB.BusinessLogic.Services
 
         public void UpdateUser(int id, User updatedUser)
         {
+            User old;
+
             try
             {
-                GetUser(id);
-                ValidateUser(updatedUser.UserName, updatedUser.Password, updatedUser.FirstName, updatedUser.LastName);
+                CorrectUser(id);
+                old = GetUser(id);
+                ValidateUser(old.UserName, updatedUser.FirstName, updatedUser.LastName);
             }
             catch (Exception)
             {
                 throw;
             }
 
+            updatedUser.UserName = old.UserName;
+
             _iUserRepository.Update(id, updatedUser);
+        }
+
+        public void ChangePassword(string old, int userId, string new1, string new2)
+        {
+            try
+            {
+                CorrectUser(userId);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            if (old == new1)
+                throw new PasswordChangeException();
+
+            string hashedOriginalPassword = GetUser(userId).Password;
+
+            if (new1 != new2)
+                throw new PasswordChangeException("new");
+
+            try
+            {
+                ValidatePassword(new1);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            if (UnHashPassword(old, hashedOriginalPassword))
+                GetUser(userId).Password = HashPassword(new1);
+            else
+                throw new PasswordChangeException("old");
         }
     }
 }

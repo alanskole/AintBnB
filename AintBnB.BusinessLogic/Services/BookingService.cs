@@ -59,14 +59,27 @@ namespace AintBnB.BusinessLogic.Services
         {
             if (nights < 1)
                 throw new ParameterException("Nights", "less than one");
-            
+
+            if (booker.Id == 0)
+                throw new IdNotFoundException("Booker");
+
             startDate = startDate.Trim();
 
             if (AreAllDatesAvailable(accommodation.Schedule, startDate, nights))
             {
                 List<string> datesBooked = new List<string>();
                 AddDatesToList(datesBooked, startDate, nights);
-                SetStatusToUnavailable(accommodation, datesBooked);
+                
+                try
+                {
+                    SetStatusToUnavailable(accommodation, datesBooked);
+                }
+                catch (Exception)
+                {
+
+                    throw;
+                }
+
                 int totalPrice = nights * accommodation.PricePerNight;
                 Booking booking = new Booking(booker, accommodation, datesBooked, totalPrice);
                 _iBookingRepository.Create(booking);
@@ -88,11 +101,17 @@ namespace AintBnB.BusinessLogic.Services
         private void SetStatusToUnavailable(Accommodation accommodation, List<string> datesBooked)
         {
             for (int i = 0; i < datesBooked.Count; i++)
-            {
                 accommodation.Schedule[datesBooked[i]] = false;
-            }
 
-            UpdateScheduleInDb(accommodation.Id, accommodation.Schedule);
+            try
+            {
+                UpdateScheduleInDb(accommodation.Id, accommodation.Schedule);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }

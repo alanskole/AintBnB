@@ -49,6 +49,24 @@ namespace AintBnB.WebApi.Controllers
         }
 
         [HttpGet]
+        [Route("api/[controller]/change/{elements}")]
+        public IActionResult GetUser([FromRoute] string elements)
+        {
+            try
+            {
+                string[] words = elements.Split(' ');
+
+                _userService.ChangePassword(words[0], Int32.Parse(words[1]), words[2], words[3]);
+
+                return Ok("Password change ok!");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("api/[controller]")]
         public IActionResult GetAllUsers()
         {
