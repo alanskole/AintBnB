@@ -13,14 +13,11 @@ namespace AintBnB.ViewModels
     public class BookingViewModel : Observable
     {
         private string _startDate;
-        private int _bookerId;
         private int _night;
-        private int _accommodationId;
         private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
         private string _uniquePartOfUri;
-        private Booking _booking;
-        private int _bookingId;
+        private Booking _booking = new Booking {BookedBy = new User(), Accommodation = new Accommodation(), Dates = new List<string>()};
         private int _userId;
 
         public string StartDate
@@ -30,16 +27,6 @@ namespace AintBnB.ViewModels
             {
                 _startDate = value;
                 NotifyPropertyChanged("StartDate");
-            }
-        }
-
-        public int BookerId
-        {
-            get { return _bookerId; }
-            set
-            {
-                _bookerId = value;
-                NotifyPropertyChanged("BookerId");
             }
         }
 
@@ -53,16 +40,6 @@ namespace AintBnB.ViewModels
             }
         }
 
-        public int AccommodationId
-        {
-            get { return _accommodationId; }
-            set
-            {
-                _accommodationId = value;
-                NotifyPropertyChanged("AccommodationId");
-            }
-        }
-
         public Booking Booking
         {
             get { return _booking; }
@@ -70,16 +47,6 @@ namespace AintBnB.ViewModels
             {
                 _booking = value;
                 NotifyPropertyChanged("Booking");
-            }
-        }
-
-        public int BookingId
-        {
-            get {return _bookingId; }
-            set
-            {
-                _bookingId = value;
-                NotifyPropertyChanged("BookingId");
             }
         }
 
@@ -101,7 +68,7 @@ namespace AintBnB.ViewModels
 
         public async Task BookAccommodation()
         {
-            _uniquePartOfUri = StartDate + "/" + BookerId.ToString() + "/" + Nights.ToString() + "/" + AccommodationId.ToString();
+            _uniquePartOfUri = StartDate + "/" + Booking.BookedBy.Id.ToString() + "/" + Nights.ToString() + "/" + Booking.Accommodation.Id.ToString();
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             if (response.IsSuccessStatusCode)
@@ -116,7 +83,7 @@ namespace AintBnB.ViewModels
 
         public async Task GetABooking()
         {
-            _uniquePartOfUri = BookingId.ToString();
+            _uniquePartOfUri = Booking.Id.ToString();
 
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
@@ -164,7 +131,7 @@ namespace AintBnB.ViewModels
 
         public async Task DeleteABooking()
         {
-            _uniquePartOfUri = BookingId.ToString();
+            _uniquePartOfUri = Booking.Id.ToString();
 
             HttpResponseMessage response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
             if (!response.IsSuccessStatusCode)

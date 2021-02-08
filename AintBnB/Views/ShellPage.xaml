@@ -26,12 +26,6 @@
         IsSettingsVisible="False"
         Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
         <winui:NavigationView.MenuItems>
-            <!--
-            TODO WTS: Change the symbols for each item as appropriate for your app
-            More on Segoe UI Symbol icons: https://docs.microsoft.com/windows/uwp/style/segoe-ui-symbol-font
-            Or to use an IconElement instead of a Symbol see https://github.com/Microsoft/WindowsTemplateStudio/blob/release/docs/UWP/projectTypes/navigationpane.md
-            Edit String/en-US/Resources.resw: Add a menu item title for each page
-            -->
             <winui:NavigationViewItem x:Uid="Shell_Main" Icon="Document" helpers:NavHelper.NavigateTo="views:MainPage"/>
             <winui:NavigationViewItem x:Uid="Shell_CreateUser" Icon="Document" helpers:NavHelper.NavigateTo="views:CreateUserPage" Content="Create User"/>
             <winui:NavigationViewItem x:Uid="Shell_Login" Icon="Document" helpers:NavHelper.NavigateTo="views:LoginPage" Content="Log in"/>
@@ -41,6 +35,9 @@
             <winui:NavigationViewItem x:Uid="Shell_AccommodationInfo" Icon="Document" helpers:NavHelper.NavigateTo="views:AccommodationInfoPage" Content="Accommodation Info"/>
             <winui:NavigationViewItem x:Uid="Shell_AllAccommodations" Icon="Document" helpers:NavHelper.NavigateTo="views:AllAccommodationsPage" Content="All Accommodations"/>
             <winui:NavigationViewItem x:Uid="Shell_Search" Icon="Document" helpers:NavHelper.NavigateTo="views:SearchPage" Content="Search"/>
+            <winui:NavigationViewItem x:Uid="Shell_BookingInfo" Icon="Document" helpers:NavHelper.NavigateTo="views:BookingInfoPage" Content="Booking Info"/>
+            <winui:NavigationViewItem x:Uid="Shell_AllBookings" Icon="Document" helpers:NavHelper.NavigateTo="views:AllBookingsPage" Content="All Bookings"/>
+            <winui:NavigationViewItem x:Uid="Shell_BookingOfOwnAccommodation" Icon="Document" helpers:NavHelper.NavigateTo="views:AllBookingsOfOwnedAccommodations" Content="All Bookings Of Owned Accommodations"/>
             <winui:NavigationViewItem x:Uid="Shell_Logout" Icon="Document" helpers:NavHelper.NavigateTo="views:LogoutPage" Content="Logout"/>
         </winui:NavigationView.MenuItems>
         <i:Interaction.Behaviors>
