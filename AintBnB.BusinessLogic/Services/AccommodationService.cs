@@ -4,6 +4,7 @@ using AintBnB.BusinessLogic.Repository;
 using static AintBnB.BusinessLogic.Services.DateParser;
 using static AintBnB.BusinessLogic.Services.UpdateScheduleInDatabase;
 using static AintBnB.BusinessLogic.Services.AllCountiresAndCitiesEurope;
+using static AintBnB.BusinessLogic.Services.AuthenticationService;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,6 +60,15 @@ namespace AintBnB.BusinessLogic.Services
 
         public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int daysToCreateScheduleFor)
         {
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight);
 
             if (daysToCreateScheduleFor < 1)
@@ -80,6 +90,15 @@ namespace AintBnB.BusinessLogic.Services
 
         public Accommodation GetAccommodation(int id)
         {
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             Accommodation acc = _iAccommodationRepository.Read(id);
 
             if (acc == null)
@@ -89,6 +108,60 @@ namespace AintBnB.BusinessLogic.Services
         }
 
         public List<Accommodation> GetAllAccommodations()
+        {
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            if (LoggedInAs.UserType == UserTypes.Admin)
+            {
+                try
+                {
+                    return GetAllInSystem();
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+            else
+            {
+                try
+                {
+                    return GetOnlyOnesOwnedByUser();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+        }
+
+        private List<Accommodation> GetOnlyOnesOwnedByUser()
+        {
+            List<Accommodation> accommodationsOfLoggedInUser = new List<Accommodation>();
+
+            foreach (var acc in _iAccommodationRepository.GetAll())
+            {
+                if (acc.Owner.Id == LoggedInAs.Id)
+                {
+                    accommodationsOfLoggedInUser.Add(acc);
+                }
+            }
+
+            if (accommodationsOfLoggedInUser.Count == 0)
+                throw new NoneFoundInDatabaseTableException(LoggedInAs.Id, "accommodations");
+
+            return accommodationsOfLoggedInUser;
+        }
+
+        private List<Accommodation> GetAllInSystem()
         {
             List<Accommodation> all = _iAccommodationRepository.GetAll();
 
@@ -102,6 +175,7 @@ namespace AintBnB.BusinessLogic.Services
         {
             try
             {
+                CorrectUser(_iAccommodationRepository.Read(id).Owner.Id);
                 GetAccommodation(id);
                 ValidateUpdatedFields(accommodation.SquareMeters, accommodation.Description, accommodation.PricePerNight);
             }
@@ -126,6 +200,15 @@ namespace AintBnB.BusinessLogic.Services
 
         public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days)
         {
+            try
+            {
+                CorrectUser(_iAccommodationRepository.Read(id).Owner.Id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             SortedDictionary<string, bool> dateAndStatusOriginal = _iAccommodationRepository.Read(id).Schedule;
             SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
 
@@ -174,6 +257,15 @@ namespace AintBnB.BusinessLogic.Services
 
         public List<Accommodation> FindAvailable(string country, string city, string startdate, int nights)
         {
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             List<Accommodation> availableOnes = new List<Accommodation>();
 
             SearchInCountryAndCity(country, city, startdate, nights, availableOnes);
