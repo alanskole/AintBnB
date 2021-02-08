@@ -17,7 +17,14 @@ namespace AintBnB.BusinessLogic.Services
 
         public static void AdminChecker()
         {
-            AnyoneLoggedIn();
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             if (LoggedInAs.UserType != UserTypes.Admin)
                 throw new AccessException();
@@ -25,7 +32,14 @@ namespace AintBnB.BusinessLogic.Services
 
         public static void CorrectUser(int id)
         {
-            AnyoneLoggedIn();
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
 
             if (id != LoggedInAs.Id)
             {

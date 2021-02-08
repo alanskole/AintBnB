@@ -21,6 +21,7 @@ namespace AintBnB.ViewModels
         private string _uniquePartOfUri;
         private Booking _booking;
         private int _bookingId;
+        private int _userId;
 
         public string StartDate
         {
@@ -82,6 +83,16 @@ namespace AintBnB.ViewModels
             }
         }
 
+        public int UserId
+        {
+            get { return _userId; }
+            set
+            {
+                _userId = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
+
         public BookingViewModel()
         {
             _clientProvider.ControllerPartOfUri = "api/booking/";
@@ -124,6 +135,23 @@ namespace AintBnB.ViewModels
             List<Booking> all = new List<Booking>();
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri));
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonBookings = await response.Content.ReadAsStringAsync();
+                all = JsonConvert.DeserializeObject<List<Booking>>(jsonBookings);
+                return all;
+            }
+            else
+                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+        }
+
+        public async Task<List<Booking>> GetAllBookingsOfOwnedAccommodations()
+        {
+            List<Booking> all = new List<Booking>();
+
+            _uniquePartOfUri = UserId.ToString() + "/" + "bookingsownaccommodation";
+
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             if (response.IsSuccessStatusCode)
             {
                 string jsonBookings = await response.Content.ReadAsStringAsync();

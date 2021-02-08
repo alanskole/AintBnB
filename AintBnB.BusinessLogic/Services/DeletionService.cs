@@ -168,13 +168,17 @@ namespace AintBnB.BusinessLogic.Services
                 try
                 {
                     CorrectUser(booking.BookedBy.Id);
+                    CancelationDeadlineCheck(id);
                 }
                 catch (Exception)
                 {
                     throw;
                 }
             }
+        }
 
+        private void CancelationDeadlineCheck(int id)
+        {
             string firstDateBooked = _iBookingRepository.Read(id).Dates[0];
             string today = DateFormatterTodaysDate();
 
