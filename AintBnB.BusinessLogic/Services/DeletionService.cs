@@ -168,12 +168,19 @@ namespace AintBnB.BusinessLogic.Services
                 try
                 {
                     CorrectUser(booking.BookedBy.Id);
-                    CancelationDeadlineCheck(id);
                 }
                 catch (Exception)
                 {
                     throw;
                 }
+            }
+            try
+            {
+                CancelationDeadlineCheck(id);
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 

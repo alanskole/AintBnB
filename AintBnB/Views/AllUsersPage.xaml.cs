@@ -6,13 +6,12 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-// The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
-
 namespace AintBnB.Views
 {
     public sealed partial class AllUsersPage : Page
     {
         public UserViewModel ViewModel { get; } = new UserViewModel();
+        public PasswordChangerViewModel PasswordChangerViewModel { get; } = new PasswordChangerViewModel();
 
         public AllUsersPage()
         {
@@ -54,8 +53,29 @@ namespace AintBnB.Views
                 Margin = new Thickness(0, 15, 0, 0)
             };
 
+            PasswordBox oldBox = new PasswordBox()
+            {
+                Header = "Only fill if you want to change the password. otherwise leave the three next fields empty! \n\nOriginal password",
+                Margin = new Thickness(0, 15, 0, 0)
+            };
+
+            PasswordBox new1Box = new PasswordBox()
+            {
+                Header = "New password",
+                Margin = new Thickness(0, 15, 0, 0)
+            };
+
+            PasswordBox new2Box = new PasswordBox()
+            {
+                Header = "Confirm new password",
+                Margin = new Thickness(0, 15, 0, 0)
+            };
+
             container.Children.Add(firstNameBox);
             container.Children.Add(lastNameBox);
+            container.Children.Add(oldBox);
+            container.Children.Add(new1Box);
+            container.Children.Add(new2Box);
 
             var contentDialog = new ContentDialog
             {
@@ -87,7 +107,26 @@ namespace AintBnB.Views
                 ViewModel.User.LastName = lastNameBox.Text;
                 ViewModel.User.UserName = user.UserName;
                 ViewModel.User.Password = user.Password;
+
                 await ViewModel.UpdateAUser();
+
+                if (oldBox.Password.Trim().Length > 0)
+                {
+                    PasswordChangerViewModel.Old = oldBox.Password;
+                    PasswordChangerViewModel.New1 = new1Box.Password;
+                    PasswordChangerViewModel.New2 = new2Box.Password;
+                    PasswordChangerViewModel.UserId = user.Id;
+
+                    try
+                    {
+                        await PasswordChangerViewModel.ChangePassword();
+                        await new MessageDialog("Password changed!").ShowAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        await new MessageDialog(ex.Message).ShowAsync();
+                    }
+                }
             }
 
             Frame.Navigate(typeof(AllUsersPage));

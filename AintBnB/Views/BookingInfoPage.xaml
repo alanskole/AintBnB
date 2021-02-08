@@ -8,7 +8,30 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
+        <Grid>
+            <Grid>
+                <TextBox Header="Booking Id" Text="{x:Bind ViewModel.Booking.Id, Mode=TwoWay}" Name="bookingId" HorizontalAlignment="Left" Margin="260,16,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <Button Click="Button_Click_Get" Content="Get booking" Margin="538,40,0,0" VerticalAlignment="Top" Width="140" Height="35"/>
+                <TextBox IsReadOnly="True" Header="Id of the booker" Text="{x:Bind ViewModel.Booking.BookedBy.Id, Mode=TwoWay}" Name="bookedById" HorizontalAlignment="Left" Margin="259,84,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Username of the booker" Text="{x:Bind ViewModel.Booking.BookedBy.UserName, Mode=TwoWay}" Name="bookedByUsername" HorizontalAlignment="Left" Margin="538,84,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="First name of the booker" Text="{x:Bind ViewModel.Booking.BookedBy.FirstName, Mode=TwoWay}" Name="bookedByFirstname" HorizontalAlignment="Left" Margin="259,147,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Last name of the booker" Text="{x:Bind ViewModel.Booking.BookedBy.LastName, Mode=TwoWay}" Name="bookedByLastname" HorizontalAlignment="Left" Margin="538,147,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Streetaddress" Text="{x:Bind ViewModel.Booking.Accommodation.Address.Street, Mode=TwoWay}" Name="streetOfAccommodation" HorizontalAlignment="Left" Margin="259,210,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Number of the building" Text="{x:Bind ViewModel.Booking.Accommodation.Address.Number, Mode=TwoWay}" Name="numberOfAccommodation" HorizontalAlignment="Left" Margin="538,210,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Zip" Text="{x:Bind ViewModel.Booking.Accommodation.Address.Zip, Mode=TwoWay}" Name="zipOfAccommodation" HorizontalAlignment="Left" Margin="259,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Area" Text="{x:Bind ViewModel.Booking.Accommodation.Address.Area, Mode=TwoWay}" Name="areaOfAccommodation" HorizontalAlignment="Left" Margin="538,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="City" Text="{x:Bind ViewModel.Booking.Accommodation.Address.City, Mode=TwoWay}" Name="cityOfAccommodation" HorizontalAlignment="Left" Margin="259,326,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Country" Text="{x:Bind ViewModel.Booking.Accommodation.Address.Country, Mode=TwoWay}" Name="countryOfAccommodation" HorizontalAlignment="Left" Margin="538,326,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Price of the booking" Text="{x:Bind ViewModel.Booking.Price, Mode=TwoWay}" Name="priceOfBooking" HorizontalAlignment="Left" Margin="259,389,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="55" Width="211"/>
+                <TextBlock Text="Dates booked:" Margin="259,449,1140,524" />
+                <ListView x:Name="listView"
+                    Margin="259,473,750,0"
+                    IsItemClickEnabled="True"
+                    SelectionMode="Single"/>
 
-    </Grid>
+                <Button Click="Button_Click_Delete" Content="Delete booking" Margin="574,409,0,0" VerticalAlignment="Top" Width="140" Height="35"/>
+            </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>
