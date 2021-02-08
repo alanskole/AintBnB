@@ -9,7 +9,6 @@ namespace AintBnB.BusinessLogic.Services
     static public class AuthenticationService
     {
         public static User LoggedInAs;
-
         public static void AnyoneLoggedIn()
         {
             if (LoggedInAs == null)
@@ -46,7 +45,7 @@ namespace AintBnB.BusinessLogic.Services
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
-        public static bool ValidatePassword(string password, string correctHash)
+        public static bool UnHashPassword(string password, string correctHash)
         {
             return BCrypt.Net.BCrypt.Verify(password, correctHash);
         }
@@ -76,7 +75,7 @@ namespace AintBnB.BusinessLogic.Services
             {
                 if (string.Equals(user.UserName, userName))
                 {
-                    if (ValidatePassword(password, user.Password))
+                    if (UnHashPassword(password, user.Password))
                     {
                         LoggedInAs = user;
                         return;

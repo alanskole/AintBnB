@@ -68,9 +68,17 @@ namespace AintBnB.BusinessLogic.Services
             if (user == null)
                 throw new IdNotFoundException("User", id);
 
-            //CorrectUser(id);
-            DeleteUsersAccommodations(id);
-            DeleteUsersBookings(id);
+            try
+            {
+                CorrectUser(id);
+                DeleteUsersAccommodations(id);
+                DeleteUsersBookings(id);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
             _iUserRepository.Delete(id);
         }
 
@@ -80,7 +88,16 @@ namespace AintBnB.BusinessLogic.Services
             foreach (Accommodation accommodation in _iAccommodationRepository.GetAll())
             {
                 if (accommodation.Owner == _iUserRepository.Read(id))
-                    DeleteAccommodation(accommodation.Id);  
+                {
+                    try
+                    {
+                        DeleteAccommodation(accommodation.Id);
+                    }
+                    catch (Exception)
+                    {
+                        throw;
+                    }
+                }
             }
         }
 
@@ -88,7 +105,6 @@ namespace AintBnB.BusinessLogic.Services
         {
             foreach (Booking booking in _iBookingRepository.GetAll())
             {
-
                 if (booking.BookedBy == _iUserRepository.Read(id))
                 {
                     try
@@ -110,10 +126,15 @@ namespace AintBnB.BusinessLogic.Services
             if (accommodation == null)
                 throw new IdNotFoundException("Accommodation", id);
 
-            //int idOfOwner = _iAccommodationRepository.Read(id).Owner.Id;
-            //CorrectUser(idOfOwner);
-
-            DeleteAccommodationBookings(id);
+            try
+            {
+                CorrectUser(accommodation.Owner.Id);
+                DeleteAccommodationBookings(id);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             _iAccommodationRepository.Delete(id);
         }
 
@@ -121,7 +142,6 @@ namespace AintBnB.BusinessLogic.Services
         {
             foreach (Booking booking in _iBookingRepository.GetAll())
             {
-
                 if (booking.Accommodation == _iAccommodationRepository.Read(id))
                 {
                     try
@@ -143,36 +163,39 @@ namespace AintBnB.BusinessLogic.Services
             if (booking == null)
                 throw new IdNotFoundException("Booking", id);
 
-            /*if (_iBookingRepository.Read(id).Accommodation.Owner.Id != LoggedInAs.Id)
+            if (booking.Accommodation.Owner.Id != LoggedInAs.Id)
             {
-                int idOfBookedBy = _iBookingRepository.Read(id).BookedBy.Id;
-                CorrectUser(idOfBookedBy);
-            }*/
+                try
+                {
+                    CorrectUser(booking.BookedBy.Id);
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
 
             string firstDateBooked = _iBookingRepository.Read(id).Dates[0];
             string today = DateFormatterTodaysDate();
 
-            /*if (DateTime.Parse(today) < DateTime.Parse(firstDateBooked).AddDays(-4))
-            {*/
+            if (DateTime.Parse(today) < DateTime.Parse(firstDateBooked).AddDays(-4))
+            {
                 ResetAvailableStatusAfterDeletingBooking(id);
                 _iBookingRepository.Delete(id);
-            /*}
-            else 
-                throw new CancelBookingException(id);*/
+            }
+            else
+                throw new CancelBookingException(id);
         }
 
         private void ResetAvailableStatusAfterDeletingBooking(int id)
         {
             Booking booking = _iBookingRepository.Read(id);
-            if (booking != null)
+            foreach (string datesBooked in _iBookingRepository.Read(id).Dates)
             {
-                foreach (string datesBooked in _iBookingRepository.Read(id).Dates)
-                {
-                    if (booking.Accommodation.Schedule.ContainsKey(datesBooked))
-                        booking.Accommodation.Schedule[datesBooked] = true;
-                }
-                UpdateScheduleInDb(booking.Accommodation.Id, booking.Accommodation.Schedule);
+                if (booking.Accommodation.Schedule.ContainsKey(datesBooked))
+                    booking.Accommodation.Schedule[datesBooked] = true;
             }
+            UpdateScheduleInDb(booking.Accommodation.Id, booking.Accommodation.Schedule);
         }
     }
 }

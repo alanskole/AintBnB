@@ -77,5 +77,26 @@ namespace AintBnB.ViewModels
             }
             throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
+
+        public async Task DeleteAUser()
+        {
+            _uniquePartOfUri = UserId.ToString();
+
+            HttpResponseMessage response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
+            if (!response.IsSuccessStatusCode)
+                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+        }
+
+        public async Task UpdateAUser()
+        {
+            _uniquePartOfUri = UserId.ToString();
+
+            string userJson = JsonConvert.SerializeObject(User);
+
+            HttpResponseMessage response = await _clientProvider.client.PutAsync(
+                new Uri(_uri + _uniquePartOfUri), new StringContent(userJson, Encoding.UTF8, "application/json"));
+            if (!response.IsSuccessStatusCode)
+                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace AintBnB.Core.Models
         private string _password;
         private string _firstName;
         private string _lastName;
-        private UserTypes _userType;
+        private UserTypes _userType = UserTypes.Customer;
 
         public int Id
         {
@@ -83,7 +83,6 @@ namespace AintBnB.Core.Models
             Password = password.Trim();
             FirstName = firstName.Trim();
             LastName = lastName.Trim();
-            UserType = UserTypes.Customer;
         }
 
         public User()
