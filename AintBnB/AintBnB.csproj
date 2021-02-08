@@ -146,11 +146,30 @@
     <Compile Include="ViewModels\AccommodationViewModel.cs" />
     <Compile Include="ViewModels\AuthenticationViewModel.cs" />
     <Compile Include="ViewModels\BookingViewModel.cs" />
+    <Compile Include="ViewModels\EuropeViewModel.cs" />
     <Compile Include="ViewModels\PasswordChangerViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
+    <Compile Include="Views\AccommodationInfoPage.xaml.cs">
+      <DependentUpon>AccommodationInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AllAccommodationsPage.xaml.cs">
+      <DependentUpon>AllAccommodationsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AllBookingsOfOwnedAccommodations.xaml.cs">
+      <DependentUpon>AllBookingsOfOwnedAccommodations.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AllBookingsPage.xaml.cs">
+      <DependentUpon>AllBookingsPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AllUsersPage.xaml.cs">
       <DependentUpon>AllUsersPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\BookingInfoPage.xaml.cs">
+      <DependentUpon>BookingInfoPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\CreateAccommodationPage.xaml.cs">
+      <DependentUpon>CreateAccommodationPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\CreateUserPage.xaml.cs">
       <DependentUpon>CreateUserPage.xaml</DependentUpon>
@@ -166,6 +185,9 @@
     </Compile>
     <Compile Include="Views\PasswordChangePage.xaml.cs">
       <DependentUpon>PasswordChangePage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SearchPage.xaml.cs">
+      <DependentUpon>SearchPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ShellPage.xaml.cs">
       <DependentUpon>ShellPage.xaml</DependentUpon>
@@ -201,9 +223,33 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\AccommodationInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AllAccommodationsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AllBookingsOfOwnedAccommodations.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AllBookingsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AllUsersPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\BookingInfoPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\CreateAccommodationPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\CreateUserPage.xaml">
       <SubType>Designer</SubType>

@@ -37,7 +37,7 @@ namespace AintBnB.WebApi.Controllers
         }
 
         [HttpGet]
-        [Route("api/[controller]/{country}/{municipality}/{startdate}/{nights}")]
+        [Route("api/[controller]/{country}/{city}/{startdate}/{nights}")]
         public IActionResult FindAvailable([FromRoute] string city, [FromRoute] string country, [FromRoute] string startdate, [FromRoute] int nights)
         {
             try

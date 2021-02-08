@@ -16,7 +16,7 @@ namespace AintBnB.Core.Models
         private string _description;
         private int _pricePerNight;
         private SortedDictionary<string, bool> _schedule;
-
+        
         public int Id
         {
             get { return _id; }
@@ -106,6 +106,14 @@ namespace AintBnB.Core.Models
                 _schedule = value;
                 NotifyPropertyChanged("Schedule");
             }
+        }
+
+        public override string ToString()
+        {
+            return ($"ID: {Id}. Owner's name {Owner.FirstName} {Owner.LastName}. " +
+                $"Address {Address.Street} {Address.Number} {Address.Zip} {Address.Area} {Address.City} {Address.Country}. " +
+                $"Square meters {SquareMeters}. Bedrooms {AmountOfBedrooms}. Kilometers from center {KilometersFromCenter} " +
+                $"Nightly price {PricePerNight}");
         }
 
         public Accommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight)

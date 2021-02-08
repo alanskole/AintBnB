@@ -98,19 +98,30 @@ namespace AintBnB.BusinessLogic.Services
             return all;
         }
 
-        public void UpdateAccommodation(int id, Accommodation updatedAccommodation)
+        public void UpdateAccommodation(int id, Accommodation accommodation)
         {
             try
             {
                 GetAccommodation(id);
-                ValidateAccommodation(updatedAccommodation);
+                ValidateUpdatedFields(accommodation.SquareMeters, accommodation.Description, accommodation.PricePerNight);
             }
             catch (Exception)
             {
                 throw;
             }
+            Accommodation acc = new Accommodation { Id = id, SquareMeters = accommodation.SquareMeters, AmountOfBedrooms = accommodation.AmountOfBedrooms, Description = accommodation.Description, PricePerNight = accommodation.PricePerNight };
 
-            _iAccommodationRepository.Update(id, updatedAccommodation);
+            _iAccommodationRepository.Update(id, acc);
+        }
+
+        private static void ValidateUpdatedFields(int squareMeters, string description, int pricePerNight)
+        {
+            if (squareMeters == 0)
+                throw new ParameterException("SquareMeters", "zero");
+            if (description == null || description.Trim().Length == 0)
+                throw new ParameterException("Description", "empty");
+            if (pricePerNight == 0)
+                throw new ParameterException("PricePerNight", "zero");
         }
 
         public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days)

@@ -40,15 +40,8 @@ namespace AintBnB.BusinessLogic.Repository
         public void Update(int id, Accommodation accommodation)
         {
             var acc = _databaseContext.Accommodation.Find(id);
-            acc.Address.Street = accommodation.Address.Street;
-            acc.Address.Number = accommodation.Address.Number;
-            acc.Address.Zip = accommodation.Address.Zip;
-            acc.Address.Area = accommodation.Address.Area;
-            acc.Address.City = accommodation.Address.City;
-            acc.Address.Country = accommodation.Address.Country;
             acc.SquareMeters = accommodation.SquareMeters;
             acc.AmountOfBedrooms = accommodation.AmountOfBedrooms;
-            acc.KilometersFromCenter = accommodation.KilometersFromCenter;
             acc.Description = accommodation.Description;
             acc.PricePerNight = accommodation.PricePerNight;
             _databaseContext.SaveChanges();
