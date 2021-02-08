@@ -21,8 +21,6 @@ namespace AintBnB.ViewModels
             get { return _userName; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Username cannot be null");
                 _userName = value;
                 NotifyPropertyChanged("UserName");
             }
@@ -33,8 +31,6 @@ namespace AintBnB.ViewModels
             get { return _password; }
             set
             {
-                if (value == null)
-                    throw new ArgumentException("Password cannot be null");
                 _password = value;
                 NotifyPropertyChanged("Password");
             }
