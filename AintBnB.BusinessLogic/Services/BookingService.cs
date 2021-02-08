@@ -3,6 +3,7 @@ using AintBnB.BusinessLogic.DependencyProviderFactory;
 using AintBnB.BusinessLogic.Repository;
 using static AintBnB.BusinessLogic.Services.DateParser;
 using static AintBnB.BusinessLogic.Services.UpdateScheduleInDatabase;
+using static AintBnB.BusinessLogic.Services.AuthenticationService;
 using System;
 using System.Collections.Generic;
 using AintBnB.BusinessLogic.CustomExceptions;
@@ -37,6 +38,15 @@ namespace AintBnB.BusinessLogic.Services
 
         public Booking GetBooking(int id)
         {
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             Booking booking = _iBookingRepository.Read(id);
 
             if (booking == null)
@@ -45,7 +55,87 @@ namespace AintBnB.BusinessLogic.Services
             return booking;
         }
 
+        public List<Booking> GetBookingsOnOwnedAccommodation(int userid)
+        {
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            List<Booking> bookingsOfOwnedAccommodation = new List<Booking>();
+
+            foreach (var booking in _iBookingRepository.GetAll())
+            {
+                if (booking.Accommodation.Owner.Id == userid)
+                    bookingsOfOwnedAccommodation.Add(booking);
+            }
+
+            if (bookingsOfOwnedAccommodation.Count == 0)
+                throw new NoneFoundInDatabaseTableException(userid, "bookings of owned accommodations");
+
+            return bookingsOfOwnedAccommodation;
+        }
+
         public List<Booking> GetAllBookings()
+        {
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            if (LoggedInAs.UserType == UserTypes.Admin)
+            {
+                try
+                {
+                    return GetAllInSystem();
+
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+            else
+            {
+                try
+                {
+                    return GetOnlyOnesOwnedByUser();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+            }
+            
+        }
+
+        private List<Booking> GetOnlyOnesOwnedByUser()
+        {
+            List<Booking> bookingsOfLoggedInUser = new List<Booking>();
+
+            foreach (var booking in _iBookingRepository.GetAll())
+            {
+                if (booking.BookedBy.Id == LoggedInAs.Id)
+                {
+                    bookingsOfLoggedInUser.Add(booking);
+                }
+            }
+
+            if (bookingsOfLoggedInUser.Count == 0)
+                throw new NoneFoundInDatabaseTableException(LoggedInAs.Id, "bookings");
+
+            return bookingsOfLoggedInUser;
+        }
+
+        private List<Booking> GetAllInSystem()
         {
             List<Booking> all = _iBookingRepository.GetAll();
 
@@ -57,6 +147,15 @@ namespace AintBnB.BusinessLogic.Services
 
         public Booking Book(string startDate, User booker, int nights, Accommodation accommodation)
         {
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
             if (nights < 1)
                 throw new ParameterException("Nights", "less than one");
 

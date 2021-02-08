@@ -50,6 +50,20 @@ namespace AintBnB.WebApi.Controllers
         }
 
         [HttpGet]
+        [Route("api/[controller]/{id}/bookingsownaccommodation")]
+        public IActionResult GetBookingOnOwnedAccommodations([FromRoute] int id)
+        {
+            try
+            {
+                return Ok(_bookingService.GetBookingsOnOwnedAccommodation(id));
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("api/[controller]")]
         public IActionResult GetAllBookings()
         {
