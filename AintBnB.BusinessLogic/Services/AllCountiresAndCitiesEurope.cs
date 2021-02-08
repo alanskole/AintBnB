@@ -14,6 +14,106 @@ namespace AintBnB.BusinessLogic.Services
     {
         private static string conString = ProvideDependencyFactory.databaseContext.Database.GetConnectionString();
         private static SqlConnection con = new SqlConnection(conString);
+
+        public static List<string> GetCitiesOfACountry(string countryName)
+        {
+            if (!AreThereCountriesAndCitiesInDatabaseTable())
+                AllEuropeanCities();
+
+            con.Open();
+            using (SqlCommand cmd = new SqlCommand())
+            {
+                cmd.Connection = con;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SELECT Cities FROM dbo.City WHERE Country = @Country";
+                cmd.Parameters.Add("@Country", SqlDbType.NVarChar);
+                cmd.Parameters["@Country"].Value = countryName;
+                string reader = cmd.ExecuteScalar().ToString();
+                List<string> output = JsonConvert.DeserializeObject<List<string>>(reader);
+                con.Close();
+
+                if (output.Count == 0)
+                    throw new GeographicalException("Cities", countryName);
+
+                return output;
+            }
+        }
+
+        public static List<string> GetAllTheCountries()
+        {
+            if (!AreThereCountriesAndCitiesInDatabaseTable())
+                AllEuropeanCities();
+
+            con.Open();
+
+            List<string> all = new List<string>();
+
+            using (SqlCommand cmd = new SqlCommand())
+            {
+                cmd.Connection = con;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SELECT Country FROM dbo.City";
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        all.Add(reader["Country"].ToString());
+                    }
+                }
+                
+                con.Close();
+
+                if (all.Count == 0)
+                    throw new GeographicalException();
+
+                return all;
+            }
+        }
+
+        public static bool AreThereCountriesAndCitiesInDatabaseTable()
+        {
+            con.Open();
+            using (SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM dbo.City", con))
+            {
+                Int32 count = (Int32)cmd.ExecuteScalar();
+                con.Close();
+                if (count > 0)
+                    return true;
+
+                return false;
+            }
+        }
+
+        public static void IsCountryAndCityCorrect(string countryName, string cityName)
+        {
+            con.Open();
+            using (SqlCommand cmd = new SqlCommand())
+            {
+                cmd.Connection = con;
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = "SELECT COUNT(*) FROM dbo.City WHERE Country = @Country";
+                cmd.Parameters.Add("@Country", SqlDbType.NVarChar);
+                cmd.Parameters["@Country"].Value = countryName;
+
+                Int32 count = (Int32)cmd.ExecuteScalar();
+                if (count < 1)
+                {
+                    con.Close();
+                    throw new GeographicalException(countryName);
+                }
+
+                cmd.CommandText = "SELECT Cities FROM dbo.City WHERE Country = @Country";
+
+                string reader = cmd.ExecuteScalar().ToString();
+                List<string> output = JsonConvert.DeserializeObject<List<string>>(reader);
+
+                con.Close();
+
+                if (!output.Any(city => city.Equals(cityName, StringComparison.OrdinalIgnoreCase)))
+                    throw new GeographicalException(countryName, cityName);
+            }
+        }
+
         public static void AllEuropeanCities()
         {
             if (AreThereCountriesAndCitiesInDatabaseTable())
@@ -66510,70 +66610,6 @@ namespace AintBnB.BusinessLogic.Services
             {
                 bulk.DestinationTableName = "City";
                 bulk.WriteToServer(dt);
-            }
-        }
-
-        public static List<string> GetCitiesOfACountry(string countryName)
-        {
-            if (!AreThereCountriesAndCitiesInDatabaseTable())
-                AllEuropeanCities();
-
-            con.Open();
-            using (SqlCommand cmd = new SqlCommand())
-            {
-                cmd.Connection = con;
-                cmd.CommandType = CommandType.Text;
-                cmd.CommandText = "SELECT Cities FROM dbo.City WHERE Country = @Country";
-                cmd.Parameters.Add("@Country", SqlDbType.NVarChar);
-                cmd.Parameters["@Country"].Value = countryName;
-                string reader = cmd.ExecuteScalar().ToString(); 
-                List<string> output = JsonConvert.DeserializeObject<List<string>>(reader);
-                con.Close();
-                return output;
-            }
-        }
-
-        public static bool AreThereCountriesAndCitiesInDatabaseTable()
-        {
-            con.Open();
-            using (SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM dbo.City", con))
-            {
-                Int32 count = (Int32)cmd.ExecuteScalar();
-                con.Close();
-                if (count > 0)
-                    return true;
-
-                return false;
-            }
-        }
-
-        public static void IsCountryAndCityCorrect(string countryName, string cityName)
-        {
-            con.Open();
-            using (SqlCommand cmd = new SqlCommand())
-            {
-                cmd.Connection = con;
-                cmd.CommandType = CommandType.Text;
-                cmd.CommandText = "SELECT COUNT(*) FROM dbo.City WHERE Country = @Country";
-                cmd.Parameters.Add("@Country", SqlDbType.NVarChar);
-                cmd.Parameters["@Country"].Value = countryName;
-
-                Int32 count = (Int32)cmd.ExecuteScalar();
-                if (count < 1)
-                {
-                    con.Close();
-                    throw new GeographicalException(countryName);
-                }
-
-                cmd.CommandText = "SELECT Cities FROM dbo.City WHERE Country = @Country";
-
-                string reader = cmd.ExecuteScalar().ToString();
-                List<string> output = JsonConvert.DeserializeObject<List<string>>(reader);
-                
-                con.Close();
-
-                if (!output.Any(city => city.Equals(cityName, StringComparison.OrdinalIgnoreCase)))
-                    throw new GeographicalException(countryName, cityName);
             }
         }
     }
