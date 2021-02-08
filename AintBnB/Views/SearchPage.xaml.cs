@@ -1,17 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
 using AintBnB.ViewModels;
 using AintBnB.Core.Models;
 using Windows.UI.Popups;
@@ -69,9 +59,9 @@ namespace AintBnB.Views
             if (result == ContentDialogResult.Primary)
             {
                 BookingViewModel.StartDate = ViewModel.FromDate;
-                BookingViewModel.BookerId = await AuthenticationViewModel.IdOfLoggedInUser();
+                BookingViewModel.Booking.BookedBy.Id = await AuthenticationViewModel.IdOfLoggedInUser();
                 BookingViewModel.Nights = int.Parse(nights.Text);
-                BookingViewModel.AccommodationId = acc.Id;
+                BookingViewModel.Booking.Accommodation.Id = acc.Id;
                 try
                 {
                     await BookingViewModel.BookAccommodation();

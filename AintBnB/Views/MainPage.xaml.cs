@@ -1,6 +1,4 @@
-﻿using System;
-using AintBnB.ViewModels;
-using Windows.UI.Xaml.Controls;
+﻿using Windows.UI.Xaml.Controls;
 
 namespace AintBnB.Views
 {
