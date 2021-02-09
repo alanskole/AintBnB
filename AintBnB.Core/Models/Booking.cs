@@ -63,6 +63,11 @@ namespace AintBnB.Core.Models
             }
         }
 
+        public override string ToString()
+        {
+            return ($"Booking ID: {Id}. Booked by: {BookedBy}. \nAccommodation: {Accommodation}. \nDates Booked: {string.Join(", ", Dates.ToArray())}. \nTotal price: {Price}");
+        }
+
         public Booking(User bookedBy, Accommodation accommodation, List<string> dates, int price)
         {
             BookedBy = bookedBy;

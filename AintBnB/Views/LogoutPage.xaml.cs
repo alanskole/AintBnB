@@ -21,12 +21,12 @@ namespace AintBnB.Views
             {
                 await ViewModel.LogoutFromApp();
                 await new MessageDialog("Logout ok!").ShowAsync();
-                this.Frame.Navigate(typeof(LoginPage));
+                Frame.Navigate(typeof(MainPage));
             }
             catch (Exception)
             {
                 await new MessageDialog("Logout not ok!").ShowAsync();
-                this.Frame.GoBack();
+                Frame.GoBack();
             }
         }
     }

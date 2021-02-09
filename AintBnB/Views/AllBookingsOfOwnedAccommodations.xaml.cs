@@ -11,6 +11,7 @@ namespace AintBnB.Views
     public sealed partial class AllBookingsOfOwnedAccommodations : Page
     {
         public BookingViewModel ViewModel { get; } = new BookingViewModel();
+        public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
 
         public AllBookingsOfOwnedAccommodations()
         {
@@ -21,6 +22,8 @@ namespace AintBnB.Views
         {
             try
             {
+                ViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+
                 listView.ItemsSource = await ViewModel.GetAllBookingsOfOwnedAccommodations();
             }
             catch (Exception ex)

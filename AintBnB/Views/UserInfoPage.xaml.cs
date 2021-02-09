@@ -60,7 +60,7 @@ namespace AintBnB.Views
             { 
                 await ViewModel.DeleteAUser();
                 await AuthenticationViewModel.LogoutFromApp();
-                this.Frame.Navigate(typeof(MainPage));
+                Frame.Navigate(typeof(MainPage));
             }
         }
     }

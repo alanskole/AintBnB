@@ -74,7 +74,7 @@ namespace AintBnB.Core.Models
 
         public override string ToString()
         {
-            return _id + " " + _userName + " " + _firstName + " " + _lastName + " " + _userType;
+            return "User ID: " + _id + ", Username: " + _userName + ", Firstname: " + _firstName + ", Lastname: " + _lastName + ", Usertype: " + _userType;
         }
 
         public User(string userName, string password, string firstName, string lastName)
