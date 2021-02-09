@@ -28,8 +28,8 @@
             <TextBox Header="Price per night" Text="{x:Bind ViewModel.Accommodation.PricePerNight, Mode=TwoWay}" Name="pricePerNight" HorizontalAlignment="Left" Margin="538,310,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
             <TextBox Header="Expand the schudle by days" Text="{x:Bind ViewModel.ExpandScheduleByDays, Mode=TwoWay}" Name="expand" HorizontalAlignment="Left" Margin="538,388,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="63" Width="212"/>
             <Button Click="Button_Click_Expand" Content="Expand schedule" Margin="574,478,0,0" VerticalAlignment="Top" Width="140" Height="35"/>
-            <Button Click="Button_Click_Update" Content="Update accommodation" Margin="295,833,0,0" VerticalAlignment="Top" Width="140" Height="35"/>
-            <Button Click="Button_Click_Delete" Content="Delete accommodation" Margin="574,838,0,0" VerticalAlignment="Top" Width="140" Height="35"/>
+            <Button Click="Button_Click_Update" Content="Update accommodation" Margin="295,833,0,0" VerticalAlignment="Top" Width="176" Height="40"/>
+            <Button Click="Button_Click_Delete" Content="Delete accommodation" Margin="574,838,0,0" VerticalAlignment="Top" Width="176" Height="35"/>
         </Grid>
     </ScrollViewer>
 </Page>
