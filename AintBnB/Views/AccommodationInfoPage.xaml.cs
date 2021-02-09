@@ -1,5 +1,6 @@
 ﻿using AintBnB.ViewModels;
 using System;
+using System.Collections.Generic;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -10,6 +11,7 @@ namespace AintBnB.Views
     public sealed partial class AccommodationInfoPage : Page
     {
         public AccommodationViewModel ViewModel { get; } = new AccommodationViewModel();
+        public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
 
         public AccommodationInfoPage()
         {
@@ -55,7 +57,7 @@ namespace AintBnB.Views
                 {
                     await ViewModel.DeleteAccommodation();
                     await new MessageDialog("Deletion ok!").ShowAsync();
-                    this.Frame.Navigate(typeof(AccommodationInfoPage));
+                    Frame.Navigate(typeof(AccommodationInfoPage));
                 }
             }
             catch (Exception ex)
@@ -64,11 +66,34 @@ namespace AintBnB.Views
             }
         }
 
-        private async void Button_Click_Get(object sender, RoutedEventArgs e)
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
+                ViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+
+                List<int> ids = new List<int>();
+
+                foreach (var acc in await ViewModel.GetAllAccommodationsOfAUser())
+                    ids.Add(acc.Id);
+
+                ComboBoxAccommodations.ItemsSource = ids;
+
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
+        }
+
+        private async void ComboBoxAccommodations_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                ViewModel.Accommodation.Id = int.Parse(ComboBoxAccommodations.SelectedValue.ToString());
+
                 await ViewModel.GetAccommodation();
+
             }
             catch (Exception ex)
             {

@@ -9,11 +9,12 @@ using Windows.UI.Xaml.Controls;
 
 namespace AintBnB.Views
 {
-    public sealed partial class AllAccommodationsPage : Page
+    public sealed partial class AllAccommodationsOfAUserPage : Page
     {
         public AccommodationViewModel ViewModel { get; } = new AccommodationViewModel();
+        public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
 
-        public AllAccommodationsPage()
+        public AllAccommodationsOfAUserPage()
         {
             this.InitializeComponent();
         }
@@ -22,7 +23,9 @@ namespace AintBnB.Views
         {
             try
             {
-                listView.ItemsSource = await ViewModel.GetAllAccommodations();
+                ViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+
+                listView.ItemsSource = await ViewModel.GetAllAccommodationsOfAUser();
             }
             catch (Exception ex)
             {
@@ -35,7 +38,9 @@ namespace AintBnB.Views
 
             int index = listView.SelectedIndex;
 
-            List<Accommodation> accList = await ViewModel.GetAllAccommodations();
+            ViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+
+            List<Accommodation> accList = await ViewModel.GetAllAccommodationsOfAUser();
 
             Accommodation acc = accList[index];
 
@@ -86,20 +91,28 @@ namespace AintBnB.Views
             ContentDialogResult result = await contentDialog.ShowAsync();
             if (result == ContentDialogResult.Secondary)
             {
-                var dialog = new MessageDialog("This will make the account vanish instantly! Are you sure?");
+                var dialog = new MessageDialog("This will delete the accommodation! Are you sure?");
                 dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
                 dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
                 var res = await dialog.ShowAsync();
 
                 if ((int)res.Id == 0)
                 {
-                    ViewModel.AccommodationId = acc.Id;
-                    await ViewModel.DeleteAccommodation();
+                    ViewModel.Accommodation.Id = acc.Id;
+                    try
+                    {
+                        await ViewModel.DeleteAccommodation();
+                        await new MessageDialog("Deletion ok!").ShowAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        await new MessageDialog(ex.Message).ShowAsync();
+                    }
                 }
             }
             else if (result == ContentDialogResult.Primary)
             {
-                ViewModel.AccommodationId = acc.Id;
+                ViewModel.Accommodation.Id = acc.Id;
                 ViewModel.Accommodation.SquareMeters = int.Parse(sqrmBox.Text);
                 ViewModel.Accommodation.AmountOfBedrooms = int.Parse(bedroomsBox.Text);
                 ViewModel.Accommodation.PricePerNight = int.Parse(nightlyPriceBox.Text);
@@ -107,7 +120,7 @@ namespace AintBnB.Views
                 await ViewModel.UpdateAccommodation();
             }
 
-            Frame.Navigate(typeof(AllAccommodationsPage));
+            Frame.Navigate(typeof(AllAccommodationsOfAUserPage));
         }
     }
 }

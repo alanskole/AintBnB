@@ -9,6 +9,7 @@ namespace AintBnB.BusinessLogic.Services
         Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int daysToCreateScheduleFor);
         Accommodation GetAccommodation(int id);
         List<Accommodation> GetAllAccommodations();
+        List<Accommodation> GetAllOwnedAccommodations(int userid);
         void UpdateAccommodation(int id, Accommodation accommodation);
         public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days);
         List<Accommodation> FindAvailable(string country, string municipality, string startdate, int nights);

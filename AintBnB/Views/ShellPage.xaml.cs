@@ -1,7 +1,5 @@
-﻿using System;
-
+﻿
 using AintBnB.ViewModels;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
