@@ -38,8 +38,6 @@ namespace AintBnB.Views
 
             int index = listView.SelectedIndex;
 
-            ViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
-
             List<Accommodation> accList = await ViewModel.GetAllAccommodationsOfAUser();
 
             Accommodation acc = accList[index];
