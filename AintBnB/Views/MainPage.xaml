@@ -9,8 +9,8 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
         <Grid>
-            <Button Content="Create A New User" Margin="124,176,0,0" VerticalAlignment="Top" Click="Button_Click" Height="35" Width="142"/>
-            <Button Content="Login" Margin="301,176,0,0" VerticalAlignment="Top" Click="Button_Click1" Height="35" Width="142"/>
+            <Button Click="Button_Click_CreateUser" Content="Create A New User" Margin="280,166,0,0" VerticalAlignment="Top" Height="35" Width="142"/>
+            <Button Click="Button_Click_Login" Content="Login" Margin="479,166,0,0" VerticalAlignment="Top" Height="35" Width="142"/>
         </Grid>
     </ScrollViewer>
 </Page>

@@ -17,6 +17,7 @@ namespace AintBnB.ViewModels
         private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
         private string _uniquePartOfUri;
+        private string _passwordConfirm;
         public int UserId
         {
             get { return _userId; }
@@ -32,6 +33,16 @@ namespace AintBnB.ViewModels
             get { return _user; }
         }
 
+        public string PasswordConfirm
+        {
+            get { return _passwordConfirm; }
+            set
+            {
+                _passwordConfirm = value;
+                NotifyPropertyChanged("PasswordConfirm");
+            }
+        }
+
         public UserViewModel()
         {
             _clientProvider.ControllerPartOfUri = "api/user/";
@@ -40,6 +51,9 @@ namespace AintBnB.ViewModels
 
         public async Task CreateTheUser()
         {
+            if (User.Password != PasswordConfirm)
+                throw new Exception("The passwords don't match!");
+
             string userJson = JsonConvert.SerializeObject(User);
             HttpResponseMessage response = await _clientProvider.client.PostAsync(
                 _uri, new StringContent(userJson, Encoding.UTF8, "application/json"));

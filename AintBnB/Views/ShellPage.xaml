@@ -10,14 +10,13 @@
     xmlns:views="using:AintBnB.Views"
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
-    mc:Ignorable="d">
+    mc:Ignorable="d" >
 
     <i:Interaction.Behaviors>
         <ic:EventTriggerBehavior EventName="Loaded">
             <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
         </ic:EventTriggerBehavior>
     </i:Interaction.Behaviors>
-
     <winui:NavigationView
         x:Name="navigationView"
         IsBackButtonVisible="Visible"
@@ -26,9 +25,6 @@
         IsSettingsVisible="False"
         Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
         <winui:NavigationView.MenuItems>
-            <winui:NavigationViewItem x:Uid="Shell_Main" Icon="Document" helpers:NavHelper.NavigateTo="views:MainPage"/>
-            <winui:NavigationViewItem x:Uid="Shell_CreateUser" Icon="Document" helpers:NavHelper.NavigateTo="views:CreateUserPage" Content="Create User"/>
-            <winui:NavigationViewItem x:Uid="Shell_Login" Icon="Document" helpers:NavHelper.NavigateTo="views:LoginPage" Content="Log in"/>
             <winui:NavigationViewItem x:Uid="Shell_UserInfo" Icon="Document" helpers:NavHelper.NavigateTo="views:UserInfoPage" Content="User Info"/>
             <winui:NavigationViewItem x:Uid="Shell_AllUsers" Icon="Document" helpers:NavHelper.NavigateTo="views:AllUsersPage" Content="All Users"/>
             <winui:NavigationViewItem x:Uid="Shell_CreateAccommodation" Icon="Document" helpers:NavHelper.NavigateTo="views:CreateAccommodationPage" Content="Create Accommodation"/>
@@ -59,7 +55,7 @@
             </ic:EventTriggerBehavior>
         </i:Interaction.Behaviors>
         <Grid>
-            <Frame x:Name="shellFrame" />
+            <Frame x:Name="shellFrame" Navigated="Frame_Navigated" />
         </Grid>
     </winui:NavigationView>
 </Page>
