@@ -15,16 +15,21 @@ namespace AintBnB.Views
             this.InitializeComponent();
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private async void Button_Click_Login(object sender, RoutedEventArgs e)
         {
             try {
                 await ViewModel.Login();
-                this.Frame.Navigate(typeof(UserInfoPage));
+                this.Frame.Navigate(typeof(SearchPage));
             }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
+        }
+
+        private void Button_Click_CreateUser(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(CreateUserPage));
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)

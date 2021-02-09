@@ -13,6 +13,7 @@ namespace AintBnB.Core.Models
         private string _area;
         private string _city;
         private string _country;
+
         public int Id
         {
             get { return _id; }
@@ -87,6 +88,11 @@ namespace AintBnB.Core.Models
                 _country = value;
                 NotifyPropertyChanged("Country");
             }
+        }
+
+        public override string ToString()
+        {
+            return ($"Address: {Street} {Number}, {Zip} {Area}, {City}, {Country}");
         }
 
         public Address(string street, int number, int zip, string area, string city, string country)

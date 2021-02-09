@@ -13,7 +13,12 @@ namespace AintBnB.Views
             this.InitializeComponent();
         }
 
-        private async void Button_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void Button_Click_Login(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(LoginPage));
+        }
+
+        private async void Button_Click_CreateUser(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             try
             {
