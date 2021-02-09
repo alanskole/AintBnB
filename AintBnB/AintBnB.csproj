@@ -153,8 +153,11 @@
     <Compile Include="Views\AccommodationInfoPage.xaml.cs">
       <DependentUpon>AccommodationInfoPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\AllAccommodationsPage.xaml.cs">
-      <DependentUpon>AllAccommodationsPage.xaml</DependentUpon>
+    <Compile Include="Views\AllAccommodationsInTheSystemPage.xaml.cs">
+      <DependentUpon>AllAccommodationsInTheSystemPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AllAccommodationsOfAUserPage.xaml.cs">
+      <DependentUpon>AllAccommodationsOfAUserPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\AllBookingsOfOwnedAccommodations.xaml.cs">
       <DependentUpon>AllBookingsOfOwnedAccommodations.xaml</DependentUpon>
@@ -227,7 +230,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\AllAccommodationsPage.xaml">
+    <Page Include="Views\AllAccommodationsInTheSystemPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AllAccommodationsOfAUserPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -80,6 +80,17 @@ namespace AintBnB.ViewModels
             throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
 
+        public async Task IsCurrentUserAdmin()
+        {
+            User user = new User();
+
+            _uniquePartOfUri = "admin";
+
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            if (!response.IsSuccessStatusCode)
+                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+        }
+
         public async Task LogoutFromApp()
         {
             _uniquePartOfUri = "logout";

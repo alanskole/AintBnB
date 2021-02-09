@@ -150,7 +150,7 @@ namespace AintBnB.BusinessLogic.Services
                     }
                     catch (Exception)
                     {
-                        throw new CancelBookingException("accommodation", id);
+                        throw new CancelBookingException("accommodation", booking.Id);
                     }
                 }
             }

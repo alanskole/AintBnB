@@ -109,64 +109,26 @@ namespace AintBnB.BusinessLogic.Services
 
         public List<Accommodation> GetAllAccommodations()
         {
-            try
-            {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            if (LoggedInAs.UserType == UserTypes.Admin)
-            {
-                try
-                {
-                    return GetAllInSystem();
-
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
-            else
-            {
-                try
-                {
-                    return GetOnlyOnesOwnedByUser();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
-            }
-        }
-
-        private List<Accommodation> GetOnlyOnesOwnedByUser()
-        {
-            List<Accommodation> accommodationsOfLoggedInUser = new List<Accommodation>();
-
-            foreach (var acc in _iAccommodationRepository.GetAll())
-            {
-                if (acc.Owner.Id == LoggedInAs.Id)
-                {
-                    accommodationsOfLoggedInUser.Add(acc);
-                }
-            }
-
-            if (accommodationsOfLoggedInUser.Count == 0)
-                throw new NoneFoundInDatabaseTableException(LoggedInAs.Id, "accommodations");
-
-            return accommodationsOfLoggedInUser;
-        }
-
-        private List<Accommodation> GetAllInSystem()
-        {
             List<Accommodation> all = _iAccommodationRepository.GetAll();
 
             if (all.Count == 0)
                 throw new NoneFoundInDatabaseTableException("accommodations");
+
+            return all;
+        }
+
+        public List<Accommodation> GetAllOwnedAccommodations(int userid)
+        {
+            List<Accommodation> all = new List<Accommodation>();
+
+            foreach (var acc in GetAllAccommodations())
+            {
+                if (acc.Owner.Id == userid)
+                    all.Add(acc);
+            }
+
+            if (all.Count == 0)
+                throw new NoneFoundInDatabaseTableException(userid, "accommodations");
 
             return all;
         }
