@@ -29,7 +29,8 @@
             <winui:NavigationViewItem x:Uid="Shell_AllUsers" Icon="Document" helpers:NavHelper.NavigateTo="views:AllUsersPage" Content="All Users"/>
             <winui:NavigationViewItem x:Uid="Shell_CreateAccommodation" Icon="Document" helpers:NavHelper.NavigateTo="views:CreateAccommodationPage" Content="Create Accommodation"/>
             <winui:NavigationViewItem x:Uid="Shell_AccommodationInfo" Icon="Document" helpers:NavHelper.NavigateTo="views:AccommodationInfoPage" Content="Accommodation Info"/>
-            <winui:NavigationViewItem x:Uid="Shell_AllAccommodations" Icon="Document" helpers:NavHelper.NavigateTo="views:AllAccommodationsPage" Content="All Accommodations"/>
+            <winui:NavigationViewItem x:Uid="Shell_AllAccommodationsOfAUser" Icon="Document" helpers:NavHelper.NavigateTo="views:AllAccommodationsOfAUserPage" Content="All Accommodations Of A User"/>
+            <winui:NavigationViewItem x:Uid="Shell_AllAccommodationsInTheSystem" Icon="Document" helpers:NavHelper.NavigateTo="views:AllAccommodationsInTheSystemPage" Content="All Accommodations"/>
             <winui:NavigationViewItem x:Uid="Shell_Search" Icon="Document" helpers:NavHelper.NavigateTo="views:SearchPage" Content="Search"/>
             <winui:NavigationViewItem x:Uid="Shell_BookingInfo" Icon="Document" helpers:NavHelper.NavigateTo="views:BookingInfoPage" Content="Booking Info"/>
             <winui:NavigationViewItem x:Uid="Shell_AllBookings" Icon="Document" helpers:NavHelper.NavigateTo="views:AllBookingsPage" Content="All Bookings"/>

@@ -82,11 +82,25 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]")]
-        public IActionResult GetAllAccommodations()
+        public IActionResult GetAllAccommodationsInTheSystem()
         {
             try
             {
                 return Ok(_accommodationService.GetAllAccommodations());
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/{userid}/allaccommodations")]
+        public IActionResult GetAllAccommodationsOfAUser([FromRoute] int userid)
+        {
+            try
+            {
+                return Ok(_accommodationService.GetAllOwnedAccommodations(userid));
             }
             catch (Exception ex)
             {
