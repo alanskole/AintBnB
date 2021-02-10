@@ -11,11 +11,11 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
         <Grid>
             <Button Click="Button_Click_Login" Content="Login" Margin="295,120,0,0" VerticalAlignment="Top" Height="35" Width="142"/>
-            <TextBox Header="Username" Text="{x:Bind ViewModel.User.UserName, Mode=TwoWay}" Name="userName" HorizontalAlignment="Left" Margin="260,181,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <PasswordBox Header="Password"  Password="{x:Bind ViewModel.User.Password, Mode=TwoWay}" Name="password" HorizontalAlignment="Left" Margin="260,244,0,0" VerticalAlignment="Top" Height="58" Width="212"/>
-            <PasswordBox Header="Confirm password"  Password="{x:Bind Mode=TwoWay, Path=ViewModel.PasswordConfirm}" x:Name="passwordConfirm" HorizontalAlignment="Left" Margin="260,307,0,0" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Firstname" Text="{x:Bind ViewModel.User.FirstName, Mode=TwoWay}" Name="firstName" HorizontalAlignment="Left" Margin="260,370,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Lastname" Text="{x:Bind ViewModel.User.LastName, Mode=TwoWay}" Name="lastName" HorizontalAlignment="Left" Margin="260,433,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Header="Username" Text="{x:Bind UserViewModel.User.UserName, Mode=TwoWay}" Name="userName" HorizontalAlignment="Left" Margin="260,181,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <PasswordBox Header="Password"  Password="{x:Bind UserViewModel.User.Password, Mode=TwoWay}" Name="password" HorizontalAlignment="Left" Margin="260,244,0,0" VerticalAlignment="Top" Height="58" Width="212"/>
+            <PasswordBox Header="Confirm password"  Password="{x:Bind UserViewModel.PasswordConfirm, Mode=TwoWay}" x:Name="passwordConfirm" HorizontalAlignment="Left" Margin="260,307,0,0" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Header="Firstname" Text="{x:Bind UserViewModel.User.FirstName, Mode=TwoWay}" Name="firstName" HorizontalAlignment="Left" Margin="260,370,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Header="Lastname" Text="{x:Bind UserViewModel.User.LastName, Mode=TwoWay}" Name="lastName" HorizontalAlignment="Left" Margin="260,433,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
             <Button Click="Button_Click_CreateUser" Content="Create User" Margin="313,523,0,0" VerticalAlignment="Top" Width="106" RenderTransformOrigin="0.467,-0.113"/>
         </Grid>
     </ScrollViewer>

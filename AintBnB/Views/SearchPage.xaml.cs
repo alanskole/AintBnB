@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using AintBnB.ViewModels;
@@ -10,14 +9,28 @@ namespace AintBnB.Views
 {
     public sealed partial class SearchPage : Page
     {
-        public AccommodationViewModel ViewModel { get; } = new AccommodationViewModel();
+        public AccommodationViewModel AccommodationViewModel { get; } = new AccommodationViewModel();
         public EuropeViewModel EuropeViewModel { get; } = new EuropeViewModel();
         public BookingViewModel BookingViewModel { get; } = new BookingViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
-
+        private bool _skipSelectionChanged;
         public SearchPage()
         {
             this.InitializeComponent();
+        }
+
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await AuthenticationViewModel.IsAnyoneLoggedIn();
+
+                ComboBoxCountries.ItemsSource = await EuropeViewModel.GetAllCountriesInEurope();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
         }
 
         private async void ComboBoxCountries_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -32,18 +45,16 @@ namespace AintBnB.Views
             EuropeViewModel.City = ComboBoxCities.SelectedValue.ToString();
         }
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            ComboBoxCountries.ItemsSource = await EuropeViewModel.GetAllCountriesInEurope();
-        }
-
         private async void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int index = listView.SelectedIndex;
+            if (_skipSelectionChanged)
+            {
+                _skipSelectionChanged = false;
 
-            List<Accommodation> availableAccs = await ViewModel.GetAllAccommodations();
+                return;
+            }
 
-            Accommodation acc = availableAccs[index];
+            Accommodation acc = (Accommodation)listView.SelectedItem;
 
             var container = new StackPanel();
 
@@ -52,13 +63,17 @@ namespace AintBnB.Views
                 Title = "Book Accommodation",
                 Content = container,
                 PrimaryButtonText = "Book",
-                CloseButtonText = "Cancel"
+                CloseButtonText = "Cancel",
             };
 
             ContentDialogResult result = await contentDialog.ShowAsync();
+
+            _skipSelectionChanged = true;
+            listView.SelectedItem = null;
+
             if (result == ContentDialogResult.Primary)
             {
-                BookingViewModel.StartDate = ViewModel.FromDate;
+                BookingViewModel.StartDate = AccommodationViewModel.FromDate;
                 BookingViewModel.Booking.BookedBy.Id = await AuthenticationViewModel.IdOfLoggedInUser();
                 BookingViewModel.Nights = int.Parse(nights.Text);
                 BookingViewModel.Booking.Accommodation.Id = acc.Id;
@@ -72,18 +87,17 @@ namespace AintBnB.Views
                     await new MessageDialog(ex.Message).ShowAsync();
                 }
             }
-
         }
 
         private async void Button_Click_Search(object sender, RoutedEventArgs e)
         {
-            ViewModel.Accommodation.Address.Country = EuropeViewModel.Country;
+            AccommodationViewModel.Accommodation.Address.Country = EuropeViewModel.Country;
 
-            ViewModel.Accommodation.Address.City = EuropeViewModel.City;
+            AccommodationViewModel.Accommodation.Address.City = EuropeViewModel.City;
 
             try
             {
-                listView.ItemsSource = await ViewModel.GetAvailable();
+                listView.ItemsSource = await AccommodationViewModel.GetAvailable();
 
             }
             catch (Exception ex)
@@ -98,7 +112,7 @@ namespace AintBnB.Views
 
             DateTime dt = date.Value.DateTime;
 
-            ViewModel.FromDate = dt.ToString("yyyy-MM-dd");
+            AccommodationViewModel.FromDate = dt.ToString("yyyy-MM-dd");
         }
     }
 }

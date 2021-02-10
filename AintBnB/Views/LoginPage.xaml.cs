@@ -8,7 +8,7 @@ namespace AintBnB.Views
 {
     public sealed partial class LoginPage : Page
     {
-        public AuthenticationViewModel ViewModel { get; } = new AuthenticationViewModel();
+        public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
 
         public LoginPage()
         {
@@ -18,8 +18,8 @@ namespace AintBnB.Views
         private async void Button_Click_Login(object sender, RoutedEventArgs e)
         {
             try {
-                await ViewModel.Login();
-                this.Frame.Navigate(typeof(SearchPage));
+                await AuthenticationViewModel.Login();
+                Frame.Navigate(typeof(SearchPage));
             }
             catch (Exception ex)
             {
@@ -27,7 +27,7 @@ namespace AintBnB.Views
             }
         }
 
-        private void Button_Click_CreateUser(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void Button_Click_CreateUser(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(CreateUserPage));
         }
@@ -36,14 +36,14 @@ namespace AintBnB.Views
         {
             try
             {
-                await ViewModel.IdOfLoggedInUser();
+                await AuthenticationViewModel.IsAnyoneLoggedIn();
             }
             catch (Exception)
             {
                 return;
             }
             await new MessageDialog("Already logged in").ShowAsync();
-            this.Frame.Navigate(typeof(UserInfoPage));
+            Frame.Navigate(typeof(UserInfoPage));
         }
     }
 }

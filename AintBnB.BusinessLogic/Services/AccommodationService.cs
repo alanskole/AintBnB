@@ -58,7 +58,7 @@ namespace AintBnB.BusinessLogic.Services
                 throw new ParameterException("PricePerNight", "zero");
         }
 
-        public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int daysToCreateScheduleFor)
+        public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, List<byte[]> picture, int daysToCreateScheduleFor)
         {
             try
             {
@@ -70,6 +70,8 @@ namespace AintBnB.BusinessLogic.Services
             }
 
             Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight);
+            
+            accommodation.Picture = picture;
 
             if (daysToCreateScheduleFor < 1)
                 daysToCreateScheduleFor = 1;
@@ -145,7 +147,8 @@ namespace AintBnB.BusinessLogic.Services
             {
                 throw;
             }
-            Accommodation acc = new Accommodation { Id = id, SquareMeters = accommodation.SquareMeters, AmountOfBedrooms = accommodation.AmountOfBedrooms, Description = accommodation.Description, PricePerNight = accommodation.PricePerNight };
+            List<byte[]> picture = accommodation.Picture;
+            Accommodation acc = new Accommodation { Id = id, SquareMeters = accommodation.SquareMeters, AmountOfBedrooms = accommodation.AmountOfBedrooms, Description = accommodation.Description, PricePerNight = accommodation.PricePerNight, Picture = picture };
 
             _iAccommodationRepository.Update(id, acc);
         }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System;
 using AintBnB.Services;
 using System.Text;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace AintBnB.ViewModels
 {
@@ -16,7 +17,7 @@ namespace AintBnB.ViewModels
         private string _uri;
         private string _uniquePartOfUri;
         private int _userId;
-        private Accommodation _accommodation = new Accommodation { Address = new Address()};
+        private Accommodation _accommodation = new Accommodation { Address = new Address(), Picture = new List<byte[]>()};
         private int _daysSchedule;
         private int _expandScheduleByDays;
         private string _fromDate;

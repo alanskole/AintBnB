@@ -12,21 +12,22 @@
         <Grid>
             <Grid>
                 <ComboBox 
-                    x:Name="ComboBoxBookings" 
-                    Header="Select a booking by Id"
+                    x:Name="ComboBoxBookings"
+                    x:FieldModifier="public"
+                    Header="Booking ID"
                     SelectionChanged="ComboBoxBookings_SelectionChanged" Margin="259,24,0,0"/>
                 
-                <TextBox IsReadOnly="True" Header="Id of the booker" Text="{x:Bind ViewModel.Booking.BookedBy.Id, Mode=TwoWay}" Name="bookedById" HorizontalAlignment="Left" Margin="259,84,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-                <TextBox IsReadOnly="True" Header="Username of the booker" Text="{x:Bind ViewModel.Booking.BookedBy.UserName, Mode=TwoWay}" Name="bookedByUsername" HorizontalAlignment="Left" Margin="538,84,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-                <TextBox IsReadOnly="True" Header="First name of the booker" Text="{x:Bind ViewModel.Booking.BookedBy.FirstName, Mode=TwoWay}" Name="bookedByFirstname" HorizontalAlignment="Left" Margin="259,147,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-                <TextBox IsReadOnly="True" Header="Last name of the booker" Text="{x:Bind ViewModel.Booking.BookedBy.LastName, Mode=TwoWay}" Name="bookedByLastname" HorizontalAlignment="Left" Margin="538,147,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-                <TextBox IsReadOnly="True" Header="Streetaddress" Text="{x:Bind ViewModel.Booking.Accommodation.Address.Street, Mode=TwoWay}" Name="streetOfAccommodation" HorizontalAlignment="Left" Margin="259,210,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-                <TextBox IsReadOnly="True" Header="Number of the building" Text="{x:Bind ViewModel.Booking.Accommodation.Address.Number, Mode=TwoWay}" Name="numberOfAccommodation" HorizontalAlignment="Left" Margin="538,210,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-                <TextBox IsReadOnly="True" Header="Zip" Text="{x:Bind ViewModel.Booking.Accommodation.Address.Zip, Mode=TwoWay}" Name="zipOfAccommodation" HorizontalAlignment="Left" Margin="259,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-                <TextBox IsReadOnly="True" Header="Area" Text="{x:Bind ViewModel.Booking.Accommodation.Address.Area, Mode=TwoWay}" Name="areaOfAccommodation" HorizontalAlignment="Left" Margin="538,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-                <TextBox IsReadOnly="True" Header="City" Text="{x:Bind ViewModel.Booking.Accommodation.Address.City, Mode=TwoWay}" Name="cityOfAccommodation" HorizontalAlignment="Left" Margin="259,326,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-                <TextBox IsReadOnly="True" Header="Country" Text="{x:Bind ViewModel.Booking.Accommodation.Address.Country, Mode=TwoWay}" Name="countryOfAccommodation" HorizontalAlignment="Left" Margin="538,326,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-                <TextBox IsReadOnly="True" Header="Price of the booking" Text="{x:Bind ViewModel.Booking.Price, Mode=TwoWay}" Name="priceOfBooking" HorizontalAlignment="Left" Margin="259,389,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="55" Width="211"/>
+                <TextBox IsReadOnly="True" Header="Id of the booker" Text="{x:Bind BookingViewModel.Booking.BookedBy.Id, Mode=TwoWay}" Name="bookedById" HorizontalAlignment="Left" Margin="259,84,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Username of the booker" Text="{x:Bind BookingViewModel.Booking.BookedBy.UserName, Mode=TwoWay}" Name="bookedByUsername" HorizontalAlignment="Left" Margin="538,84,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="First name of the booker" Text="{x:Bind BookingViewModel.Booking.BookedBy.FirstName, Mode=TwoWay}" Name="bookedByFirstname" HorizontalAlignment="Left" Margin="259,147,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Last name of the booker" Text="{x:Bind BookingViewModel.Booking.BookedBy.LastName, Mode=TwoWay}" Name="bookedByLastname" HorizontalAlignment="Left" Margin="538,147,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Streetaddress" Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Street, Mode=TwoWay}" Name="streetOfAccommodation" HorizontalAlignment="Left" Margin="259,210,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Number of the building" Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Number, Mode=TwoWay}" Name="numberOfAccommodation" HorizontalAlignment="Left" Margin="538,210,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Zip" Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Zip, Mode=TwoWay}" Name="zipOfAccommodation" HorizontalAlignment="Left" Margin="259,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Area" Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Area, Mode=TwoWay}" Name="areaOfAccommodation" HorizontalAlignment="Left" Margin="538,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="City" Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.City, Mode=TwoWay}" Name="cityOfAccommodation" HorizontalAlignment="Left" Margin="259,326,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Country" Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Country, Mode=TwoWay}" Name="countryOfAccommodation" HorizontalAlignment="Left" Margin="538,326,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+                <TextBox IsReadOnly="True" Header="Price of the booking" Text="{x:Bind BookingViewModel.Booking.Price, Mode=TwoWay}" Name="priceOfBooking" HorizontalAlignment="Left" Margin="259,389,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="55" Width="211"/>
                 <TextBlock Text="Dates booked:" Margin="259,458,1140,515" />
                 <ListView x:Name="listView"
                     Margin="259,500,750,0"

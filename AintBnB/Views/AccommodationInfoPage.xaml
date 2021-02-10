@@ -11,25 +11,43 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
         <Grid>
             <ComboBox 
-                    x:Name="ComboBoxAccommodations" 
-                    Header="Select a booking by Id"
-                    SelectionChanged="ComboBoxAccommodations_SelectionChanged" Margin="260,61,0,0"/>
+                x:Name="ComboBoxAccommodations"
+                x:FieldModifier="public"
+                Header="Accommodation ID"
+                SelectionChanged="ComboBoxAccommodations_SelectionChanged" Margin="260,61,0,0"/>
 
-            <TextBox IsReadOnly="True" Header="Street" Text="{x:Bind ViewModel.Accommodation.Address.Street, Mode=TwoWay}" Name="street" HorizontalAlignment="Left" Margin="259,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox IsReadOnly="True" Header="Number" Text="{x:Bind ViewModel.Accommodation.Address.Number, Mode=TwoWay}" Name="number" HorizontalAlignment="Left" Margin="538,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox IsReadOnly="True" Header="Zip" Text="{x:Bind ViewModel.Accommodation.Address.Zip, Mode=TwoWay}" Name="zip" HorizontalAlignment="Left" Margin="260,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox IsReadOnly="True" Header="Area" Text="{x:Bind ViewModel.Accommodation.Address.Area, Mode=TwoWay}" Name="area" HorizontalAlignment="Left" Margin="538,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox IsReadOnly="True" Header="City" Text="{x:Bind ViewModel.Accommodation.Address.City, Mode=TwoWay}" Name="city" HorizontalAlignment="Left" Margin="260,247,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox IsReadOnly="True" Header="Country" Text="{x:Bind ViewModel.Accommodation.Address.Country, Mode=TwoWay}" Name="country" HorizontalAlignment="Left" Margin="260,310,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Square meters" Text="{x:Bind ViewModel.Accommodation.SquareMeters, Mode=TwoWay}" Name="sqm" HorizontalAlignment="Left" Margin="538,247,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Amount of bedrooms" Text="{x:Bind ViewModel.Accommodation.AmountOfBedrooms, Mode=TwoWay}" Name="bedrooms" HorizontalAlignment="Left" Margin="259,374,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox IsReadOnly="True" Header="Kilometers from center" Text="{x:Bind ViewModel.Accommodation.KilometersFromCenter, Mode=TwoWay}" Name="kmFromCenter" HorizontalAlignment="Left" Margin="259,438,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Description" Text="{x:Bind ViewModel.Accommodation.Description, Mode=TwoWay}" Name="description" HorizontalAlignment="Left" Margin="259,513,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="296" Width="521"/>
-            <TextBox Header="Price per night" Text="{x:Bind ViewModel.Accommodation.PricePerNight, Mode=TwoWay}" Name="pricePerNight" HorizontalAlignment="Left" Margin="538,310,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Expand the schudle by days" Text="{x:Bind ViewModel.ExpandScheduleByDays, Mode=TwoWay}" Name="expand" HorizontalAlignment="Left" Margin="538,388,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="63" Width="212"/>
+            <TextBox IsReadOnly="True" Header="Street" Text="{x:Bind AccommodationViewMode.Accommodation.Address.Street, Mode=TwoWay}" Name="street" HorizontalAlignment="Left" Margin="259,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox IsReadOnly="True" Header="Number" Text="{x:Bind AccommodationViewMode.Accommodation.Address.Number, Mode=TwoWay}" Name="number" HorizontalAlignment="Left" Margin="538,121,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox IsReadOnly="True" Header="Zip" Text="{x:Bind AccommodationViewMode.Accommodation.Address.Zip, Mode=TwoWay}" Name="zip" HorizontalAlignment="Left" Margin="260,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox IsReadOnly="True" Header="Area" Text="{x:Bind AccommodationViewMode.Accommodation.Address.Area, Mode=TwoWay}" Name="area" HorizontalAlignment="Left" Margin="538,184,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox IsReadOnly="True" Header="City" Text="{x:Bind AccommodationViewMode.Accommodation.Address.City, Mode=TwoWay}" Name="city" HorizontalAlignment="Left" Margin="260,247,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox IsReadOnly="True" Header="Country" Text="{x:Bind AccommodationViewMode.Accommodation.Address.Country, Mode=TwoWay}" Name="country" HorizontalAlignment="Left" Margin="260,310,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Header="Square meters" Text="{x:Bind AccommodationViewMode.Accommodation.SquareMeters, Mode=TwoWay}" Name="sqm" HorizontalAlignment="Left" Margin="538,247,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Header="Amount of bedrooms" Text="{x:Bind AccommodationViewMode.Accommodation.AmountOfBedrooms, Mode=TwoWay}" Name="bedrooms" HorizontalAlignment="Left" Margin="259,374,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox IsReadOnly="True" Header="Kilometers from center" Text="{x:Bind AccommodationViewMode.Accommodation.KilometersFromCenter, Mode=TwoWay}" Name="kmFromCenter" HorizontalAlignment="Left" Margin="259,438,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+            <TextBox Header="Description" Text="{x:Bind AccommodationViewMode.Accommodation.Description, Mode=TwoWay}" Name="description" HorizontalAlignment="Left" Margin="259,513,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="92" Width="521"/>
+            <TextBox Header="Price per night" Text="{x:Bind AccommodationViewMode.Accommodation.PricePerNight, Mode=TwoWay}" Name="pricePerNight" HorizontalAlignment="Left" Margin="538,310,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+
+            <ListView Name="listViewPicture"
+                Margin="260,642,890,10"
+                IsItemClickEnabled="True"
+                SelectionMode="Single"
+                SelectionChanged="ListViewPicture_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Image Source="{Binding}" Height="300" Width="300" />
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+
+            <TextBox Header="Expand the schudle by days" Text="{x:Bind AccommodationViewMode.ExpandScheduleByDays, Mode=TwoWay}" Name="expand" HorizontalAlignment="Left" Margin="538,388,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="63" Width="212"/>
             <Button Click="Button_Click_Expand" Content="Expand schedule" Margin="574,478,0,0" VerticalAlignment="Top" Width="140" Height="35"/>
-            <Button Click="Button_Click_Update" Content="Update accommodation" Margin="295,833,0,0" VerticalAlignment="Top" Width="176" Height="40"/>
-            <Button Click="Button_Click_Delete" Content="Delete accommodation" Margin="574,838,0,0" VerticalAlignment="Top" Width="176" Height="35"/>
+            <Button Click="Button_Click_Upload" Content="Upload photos" Margin="604,634,0,0" VerticalAlignment="Top" Width="176" Height="40" RenderTransformOrigin="1.015,0.743"/>
+            <Button Click="Button_Click_Update" Content="Update accommodation" Margin="604,707,0,0" VerticalAlignment="Top" Width="176" Height="40" RenderTransformOrigin="1.015,0.743"/>
+            <Button Click="Button_Click_Delete" Content="Delete accommodation" Margin="604,774,0,0" VerticalAlignment="Top" Width="176" Height="35"/>
         </Grid>
     </ScrollViewer>
 </Page>

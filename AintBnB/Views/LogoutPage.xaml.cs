@@ -8,7 +8,7 @@ namespace AintBnB.Views
 {
     public sealed partial class LogoutPage : Page
     {
-        public AuthenticationViewModel ViewModel { get; } = new AuthenticationViewModel();
+        public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
 
         public LogoutPage()
         {
@@ -19,7 +19,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await ViewModel.LogoutFromApp();
+                await AuthenticationViewModel.LogoutFromApp();
                 await new MessageDialog("Logout ok!").ShowAsync();
                 Frame.Navigate(typeof(MainPage));
             }
