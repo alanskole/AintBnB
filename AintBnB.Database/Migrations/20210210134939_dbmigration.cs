@@ -2,7 +2,7 @@
 
 namespace AintBnB.Database.Migrations
 {
-    public partial class first : Migration
+    public partial class dbmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -54,7 +54,8 @@ namespace AintBnB.Database.Migrations
                     KilometersFromCenter = table.Column<double>(type: "float", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PricePerNight = table.Column<int>(type: "int", nullable: false),
-                    Schedule = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Schedule = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Picture = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {

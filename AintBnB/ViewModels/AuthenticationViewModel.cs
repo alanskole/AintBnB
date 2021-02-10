@@ -12,6 +12,8 @@ namespace AintBnB.ViewModels
     {
         private string _userName;
         private string _password;
+        private int _ownerId;
+        private int _userId;
         private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
         private string _uniquePartOfUri;
@@ -36,6 +38,24 @@ namespace AintBnB.ViewModels
             }
         }
 
+        public int OwnerId
+        {
+            get { return _ownerId; }
+            set
+            {
+                _ownerId = value;
+                NotifyPropertyChanged("OwnerId");
+            }
+        }
+        public int UserId
+        {
+            get { return _userId; }
+            set
+            {
+                _userId = value;
+                NotifyPropertyChanged("UserId");
+            }
+        }
         public AuthenticationViewModel()
         {
             _clientProvider.ControllerPartOfUri = "api/authentication/";
@@ -51,11 +71,18 @@ namespace AintBnB.ViewModels
             ResponseChecker(response);
         }
 
+
+        public async Task IsAnyoneLoggedIn()
+        {
+            _uniquePartOfUri = "anyoneloggedin";
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            ResponseChecker(response);
+        }
+        
+
         private static void ResponseChecker(HttpResponseMessage response)
         {
-            if (response.IsSuccessStatusCode)
-                return;
-            else
+            if (!response.IsSuccessStatusCode)
                 throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
 
@@ -67,7 +94,7 @@ namespace AintBnB.ViewModels
 
         public async Task<int> IdOfLoggedInUser()
         {
-            User user = new User();
+            User user;
 
             _uniquePartOfUri = "loggedin";
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
@@ -80,15 +107,27 @@ namespace AintBnB.ViewModels
             throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
 
-        public async Task IsCurrentUserAdmin()
+        public async Task<User> LoggedInUser()
         {
-            User user = new User();
+            User user;
 
+            _uniquePartOfUri = "loggedin";
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonUser = await response.Content.ReadAsStringAsync();
+                user = JsonConvert.DeserializeObject<User>(jsonUser);
+                return user;
+            }
+            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+        }
+
+        public async Task IsAdmin()
+        {
             _uniquePartOfUri = "admin";
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            if (!response.IsSuccessStatusCode)
-                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
         }
 
         public async Task LogoutFromApp()

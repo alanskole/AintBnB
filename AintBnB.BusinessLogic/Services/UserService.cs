@@ -54,6 +54,10 @@ namespace AintBnB.BusinessLogic.Services
             user.LastName = lastName.Trim();
 
             _iUserRepository.Create(user);
+
+            if (user.Id == 1)
+                user.UserType = UserTypes.Admin;
+
             return user;
         }
 
@@ -76,16 +80,6 @@ namespace AintBnB.BusinessLogic.Services
                     throw new LoginExcrption("Username already taken!");
                 }
             }
-        }
-
-        public void ValidatePassword(string password)
-        {
-            if (password.Trim().Contains(" "))
-                throw new LoginExcrption("Cannot contain space");
-            if (password.Trim().Length < 6)
-                throw new LoginExcrption("Minimum 6 characters");
-            if (password.Trim().Length > 50)
-                throw new LoginExcrption("Maximum 50 characters");
         }
 
         public User GetUser(int id)

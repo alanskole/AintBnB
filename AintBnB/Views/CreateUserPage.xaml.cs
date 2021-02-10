@@ -7,7 +7,7 @@ namespace AintBnB.Views
 {
     public sealed partial class CreateUserPage : Page
     {
-        public UserViewModel ViewModel { get; } = new UserViewModel();
+        public UserViewModel UserViewModel { get; } = new UserViewModel();
         public CreateUserPage()
         {
             this.InitializeComponent();
@@ -22,7 +22,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await ViewModel.CreateTheUser();
+                await UserViewModel.CreateTheUser();
 
                 await new MessageDialog("Created, login with the user!").ShowAsync();
 

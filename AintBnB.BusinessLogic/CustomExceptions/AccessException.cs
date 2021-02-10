@@ -14,5 +14,9 @@ namespace AintBnB.BusinessLogic.CustomExceptions
         public AccessException(int id) : base($"Administrator or user with ID {id} only!")
         {
         }
+
+        public AccessException(int idOnwer, int idUser) : base($"Administrator or user with ID {idOnwer} or {idUser} only!")
+        {
+        }
     }
 }

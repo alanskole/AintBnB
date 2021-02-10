@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AintBnB.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210204130616_first")]
-    partial class first
+    [Migration("20210210134939_dbmigration")]
+    partial class dbmigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -42,6 +42,9 @@ namespace AintBnB.Database.Migrations
 
                     b.Property<int?>("OwnerId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Picture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PricePerNight")
                         .HasColumnType("int");

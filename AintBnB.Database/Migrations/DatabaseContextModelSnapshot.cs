@@ -41,6 +41,9 @@ namespace AintBnB.Database.Migrations
                     b.Property<int?>("OwnerId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Picture")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("PricePerNight")
                         .HasColumnType("int");
 

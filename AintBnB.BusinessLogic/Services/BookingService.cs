@@ -40,10 +40,11 @@ namespace AintBnB.BusinessLogic.Services
         {
             try
             {
-                AnyoneLoggedIn();
+                CorrectUserOrOwner(_iBookingRepository.Read(id).Accommodation.Owner.Id, _iBookingRepository.Read(id).BookedBy.Id);
             }
             catch (Exception)
             {
+
                 throw;
             }
 
@@ -149,7 +150,7 @@ namespace AintBnB.BusinessLogic.Services
         {
             try
             {
-                AnyoneLoggedIn();
+                CorrectUser(booker.Id);
             }
             catch (Exception)
             {
@@ -158,9 +159,6 @@ namespace AintBnB.BusinessLogic.Services
 
             if (nights < 1)
                 throw new ParameterException("Nights", "less than one");
-
-            if (booker.Id == 0)
-                throw new IdNotFoundException("Booker");
 
             startDate = startDate.Trim();
 

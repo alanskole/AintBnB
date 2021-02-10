@@ -12,25 +12,20 @@ namespace AintBnB.ViewModels
 {
     public class UserViewModel : Observable
     {
-        private int _userId;
         private User _user = new User();
         private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
         private string _uniquePartOfUri;
         private string _passwordConfirm;
-        public int UserId
-        {
-            get { return _userId; }
-            set
-            {
-                _userId = value;
-                NotifyPropertyChanged("UserId");
-            }
-        }
 
         public User User
         {
             get { return _user; }
+            set
+            {
+                _user = value;
+                NotifyPropertyChanged("User");
+            }
         }
 
         public string PasswordConfirm
@@ -63,7 +58,7 @@ namespace AintBnB.ViewModels
 
         public async Task GetAUser()
         {
-            _uniquePartOfUri = UserId.ToString();
+            _uniquePartOfUri = User.Id.ToString();
 
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
@@ -94,7 +89,7 @@ namespace AintBnB.ViewModels
 
         public async Task DeleteAUser()
         {
-            _uniquePartOfUri = UserId.ToString();
+            _uniquePartOfUri = User.Id.ToString();
 
             HttpResponseMessage response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
             if (!response.IsSuccessStatusCode)
@@ -103,7 +98,7 @@ namespace AintBnB.ViewModels
 
         public async Task UpdateAUser()
         {
-            _uniquePartOfUri = UserId.ToString();
+            _uniquePartOfUri = User.Id.ToString();
 
             string userJson = JsonConvert.SerializeObject(User);
 
