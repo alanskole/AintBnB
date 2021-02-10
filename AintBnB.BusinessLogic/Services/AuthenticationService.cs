@@ -64,6 +64,16 @@ namespace AintBnB.BusinessLogic.Services
             return BCrypt.Net.BCrypt.Verify(password, correctHash);
         }
 
+        public static void ValidatePassword(string password)
+        {
+            if (password.Trim().Contains(" "))
+                throw new LoginExcrption("Cannot contain space");
+            if (password.Trim().Length < 6)
+                throw new LoginExcrption("Minimum 6 characters");
+            if (password.Trim().Length > 50)
+                throw new LoginExcrption("Maximum 50 characters");
+        }
+
         public static void Logout()
         {
             LoggedInAs = null;

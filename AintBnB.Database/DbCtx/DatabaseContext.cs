@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using Windows.Storage;
 
 namespace AintBnB.Database.DbCtx
 {
@@ -45,6 +46,13 @@ namespace AintBnB.Database.DbCtx
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<SortedDictionary<string, bool>>(v));
+
+            modelBuilder.Entity<Accommodation>()
+                .Property(b => b.Picture)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<StorageFile>>(v));
+
 
             modelBuilder.Entity<Accommodation>()
                 .HasOne(b => b.Owner)

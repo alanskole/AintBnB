@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using AintBnB.ViewModels;
@@ -39,11 +38,7 @@ namespace AintBnB.Views
 
         private async void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int index = listView.SelectedIndex;
-
-            List<Accommodation> availableAccs = await ViewModel.GetAllAccommodations();
-
-            Accommodation acc = availableAccs[index];
+            Accommodation acc = (Accommodation)listView.SelectedItem;
 
             var container = new StackPanel();
 

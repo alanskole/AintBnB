@@ -1,5 +1,6 @@
 ﻿using AintBnB.ViewModels;
 using System;
+using Windows.Storage.Pickers;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -59,5 +60,20 @@ namespace AintBnB.Views
             }
         }
 
+        private async void Upload_Click(object sender, RoutedEventArgs e)
+        {
+            FileOpenPicker fileOpenPicker = new FileOpenPicker();
+            fileOpenPicker.FileTypeFilter.Add(".jpg");
+            fileOpenPicker.FileTypeFilter.Add(".jppg");
+            fileOpenPicker.FileTypeFilter.Add(".png");
+
+            ViewModel.Accommodation.Picture.Add(await fileOpenPicker.PickSingleFileAsync());
+
+            if (ViewModel.Accommodation.Picture == null)
+            {
+                // The user cancelled the picking operation
+                return;
+            }
+        }
     }
 }

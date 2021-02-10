@@ -1,7 +1,6 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.ViewModels;
 using System;
-using System.Collections.Generic;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -34,11 +33,7 @@ namespace AintBnB.Views
 
         private async void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int index = listView.SelectedIndex;
-
-            List<Booking> allBookings = await ViewModel.GetAllBookings();
-
-            Booking booking = allBookings[index];
+            Booking booking = (Booking)listView.SelectedItem;
 
             var container = new StackPanel();
 

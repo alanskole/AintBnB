@@ -1,10 +1,12 @@
 ﻿using AintBnB.ViewModels;
 using System;
 using System.Collections.Generic;
+using Windows.Storage;
+using Windows.Storage.Streams;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace AintBnB.Views
 {
@@ -84,6 +86,23 @@ namespace AintBnB.Views
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
+
+            BitmapImage bitmapImage = new BitmapImage();
+            List<FileRandomAccessStream> stream = new List<FileRandomAccessStream>();
+            List<BitmapImage> bitmapImages = new List<BitmapImage>();
+            foreach (var item in ViewModel.Accommodation.Picture)
+            {
+                stream.Add((FileRandomAccessStream)await item.OpenAsync(FileAccessMode.Read));
+            }
+
+            for (int i = 0; i < stream.Count; i++)
+            {
+                bitmapImages.Add(new BitmapImage());
+                bitmapImages[i].SetSource(stream[i]);
+
+            }
+
+            listViewPicture.ItemsSource = bitmapImages;
         }
 
         private async void ComboBoxAccommodations_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -99,6 +118,26 @@ namespace AintBnB.Views
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
+        }
+
+        private async void ListViewPicture_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int index = listViewPicture.SelectedIndex;
+
+
+            BitmapImage img = (BitmapImage)listViewPicture.SelectedItem;
+
+            var contentDialog = new ContentDialog
+            {
+                FullSizeDesired = true,
+                Content = new Image()
+                {
+                    Source = img,
+                },
+                CloseButtonText = "Cancel",
+            };
+
+            ContentDialogResult result = await contentDialog.ShowAsync();
         }
     }
 }

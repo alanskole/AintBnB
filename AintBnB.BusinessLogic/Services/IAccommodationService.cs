@@ -1,12 +1,13 @@
 ﻿using AintBnB.Core.Models;
 using System.Collections.Generic;
+using Windows.Storage;
 
 namespace AintBnB.BusinessLogic.Services
 {
     public interface IAccommodationService
     {
         void ValidateAccommodation(Accommodation accommodation);
-        Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int daysToCreateScheduleFor);
+        Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, List<StorageFile> storageFiles, int daysToCreateScheduleFor);
         Accommodation GetAccommodation(int id);
         List<Accommodation> GetAllAccommodations();
         List<Accommodation> GetAllOwnedAccommodations(int userid);

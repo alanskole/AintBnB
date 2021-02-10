@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Windows.Storage;
 
 namespace AintBnB.Core.Models
 {
@@ -16,7 +17,17 @@ namespace AintBnB.Core.Models
         private string _description;
         private int _pricePerNight;
         private SortedDictionary<string, bool> _schedule;
-        
+        private List<StorageFile> _picture;
+        public List<StorageFile> Picture
+        {
+            get { return _picture; }
+            set
+            {
+                _picture = value;
+                NotifyPropertyChanged("Picture");
+            }
+        }
+
         public int Id
         {
             get { return _id; }
@@ -110,8 +121,8 @@ namespace AintBnB.Core.Models
 
         public override string ToString()
         {
-            return ($"ID: {Id}. Owner's name {Owner.FirstName} {Owner.LastName}. {Address}. Square meters {SquareMeters}. " +
-                $"Bedrooms {AmountOfBedrooms}. Kilometers from center {KilometersFromCenter} Nightly price {PricePerNight} \n{Description}");
+            return ($"Accommodation ID: {Id} \nOwner: {Owner} \nAddress: {Address} \nSquare meters: {SquareMeters} " +
+                $"\nBedrooms: {AmountOfBedrooms} \nKilometers from center: {KilometersFromCenter} \nNightly price: {PricePerNight} \nDescription: {Description}");
         }
 
         public Accommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight)
@@ -121,7 +132,7 @@ namespace AintBnB.Core.Models
             SquareMeters = squareMeters;
             AmountOfBedrooms = amountOfBedroooms;
             KilometersFromCenter = kilometersFromCenter;
-            Description = description.Trim();
+            Description = description;
             PricePerNight = pricePerNight;
         }
 

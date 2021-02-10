@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AintBnB.BusinessLogic.CustomExceptions;
+using Windows.Storage;
 
 namespace AintBnB.BusinessLogic.Services
 {
@@ -58,7 +59,7 @@ namespace AintBnB.BusinessLogic.Services
                 throw new ParameterException("PricePerNight", "zero");
         }
 
-        public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int daysToCreateScheduleFor)
+        public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, List<StorageFile> picture, int daysToCreateScheduleFor)
         {
             try
             {
@@ -70,6 +71,8 @@ namespace AintBnB.BusinessLogic.Services
             }
 
             Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight);
+            
+            accommodation.Picture = picture;
 
             if (daysToCreateScheduleFor < 1)
                 daysToCreateScheduleFor = 1;

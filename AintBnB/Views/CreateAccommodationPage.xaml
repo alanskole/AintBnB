@@ -27,10 +27,17 @@
             <TextBox Header="Square meters" Text="{x:Bind ViewModel.Accommodation.SquareMeters, Mode=TwoWay}" Name="sqm" HorizontalAlignment="Left" Margin="538,139,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
             <TextBox Header="Amount of bedrooms" Text="{x:Bind ViewModel.Accommodation.AmountOfBedrooms, Mode=TwoWay}" Name="bedrooms" HorizontalAlignment="Left" Margin="260,200,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
             <TextBox Header="Kilometers from center" Text="{x:Bind ViewModel.Accommodation.KilometersFromCenter, Mode=TwoWay}" Name="kmFromCenter" HorizontalAlignment="Left" Margin="260,263,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Description" Text="{x:Bind ViewModel.Accommodation.Description, Mode=TwoWay}" Name="description" HorizontalAlignment="Left" Margin="260,326,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="516" Width="521"/>
+            <TextBox Header="Description" AcceptsReturn="True" Text="{x:Bind ViewModel.Accommodation.Description, Mode=TwoWay}" Name="description" HorizontalAlignment="Left" Margin="260,365,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="150" Width="490"/>
             <TextBox Header="Price per night" Text="{x:Bind ViewModel.Accommodation.PricePerNight, Mode=TwoWay}" Name="pricePerNight" HorizontalAlignment="Left" Margin="538,200,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
             <TextBox Header="Days to create schedule for" Text="{x:Bind ViewModel.DaysSchedule, Mode=TwoWay}" Name="daysSchedule" HorizontalAlignment="Left" Margin="538,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <Button Click="Button_Click_Create_Accommadtion" Content="Create accommodation" Margin="399,878,0,0" VerticalAlignment="Top" Width="208" Height="44"/>
+            <Button x:Name="Upload"
+                Click="Upload_Click"
+                Content="Upload Photo"
+                Margin="261,566,0,0"
+                VerticalAlignment="Top"
+                Height="45"
+                Width="105" RenderTransformOrigin="0.565,0.596"/>
+            <Button Click="Button_Click_Create_Accommadtion" Content="Create accommodation" Margin="505,567,0,0" VerticalAlignment="Top" Width="208" Height="44"/>
         </Grid>
     </ScrollViewer>
 </Page>

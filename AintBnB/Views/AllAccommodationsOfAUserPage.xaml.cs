@@ -1,7 +1,6 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.ViewModels;
 using System;
-using System.Collections.Generic;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -35,12 +34,7 @@ namespace AintBnB.Views
 
         private async void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
-            int index = listView.SelectedIndex;
-
-            List<Accommodation> accList = await ViewModel.GetAllAccommodationsOfAUser();
-
-            Accommodation acc = accList[index];
+            Accommodation acc = (Accommodation)listView.SelectedItem;
 
             var container = new StackPanel();
 
@@ -69,6 +63,7 @@ namespace AintBnB.Views
                 Text = acc.Description,
                 Header = "Description",
                 AcceptsReturn = true,
+                TextWrapping = TextWrapping.Wrap,
                 Margin = new Thickness(0, 15, 0, 0)
             };
 
