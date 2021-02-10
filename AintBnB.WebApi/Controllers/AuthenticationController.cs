@@ -8,6 +8,21 @@ namespace AintBnB.WebApi.Controllers
     public class AuthenticationController : ControllerBase
     {
         [HttpGet]
+        [Route("api/[controller]/anyoneloggedin")]
+        public IActionResult IsAnyoneLoggedIn()
+        {
+            try
+            {
+                AnyoneLoggedIn();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }                
+        }
+
+        [HttpGet]
         [Route("api/[controller]/loggedin")]
         public IActionResult GetLoggedInUser()
         {

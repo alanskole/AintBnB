@@ -44,6 +44,7 @@ namespace AintBnB.BusinessLogic.Repository
             acc.AmountOfBedrooms = accommodation.AmountOfBedrooms;
             acc.Description = accommodation.Description;
             acc.PricePerNight = accommodation.PricePerNight;
+            acc.Picture = accommodation.Picture;
             _databaseContext.SaveChanges();
         }
     }

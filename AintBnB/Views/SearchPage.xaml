@@ -22,16 +22,32 @@
 
             <CalendarDatePicker DateChanged="MyDatePicker_DateChanged" Header="From date" x:Name="MyDatePicker" Width="250" Margin="308,41,0,0" VerticalAlignment="Top"/>
 
-            <TextBox Header="Nights" Text="{x:Bind ViewModel.Nights, Mode=TwoWay}" Name="nights" HorizontalAlignment="Left" Margin="601,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+            <TextBox Header="Nights" Text="{x:Bind AccommodationViewModel.Nights, Mode=TwoWay}" Name="nights" HorizontalAlignment="Left" Margin="601,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
 
-            <Button Click="Button_Click_Search" Content="Search" Margin="751,64,0,0" VerticalAlignment="Top"/>
+            <Button Click="Button_Click_Search" Content="Search" Margin="692,65,0,0" VerticalAlignment="Top" Height="31"/>
 
 
             <ListView x:Name="listView"
-             Margin="55,129,52,83"
-             IsItemClickEnabled="True"
-             SelectionMode="Single"
-             SelectionChanged="listView_SelectionChanged"/>
+                Margin="55,129,52,83"
+                IsItemClickEnabled="True"
+                SelectionMode="Single"
+                SelectionChanged="listView_SelectionChanged">
+                <!--<ListView x:Name="listViewPicture"
+                    IsItemClickEnabled="True"
+                    SelectionMode="Single"
+                    SelectionChanged="ListViewPicture_SelectionChanged" Height="315" RenderTransformOrigin="0.5,0.5" Width="383">
+                    <ListView.RenderTransform>
+                        <CompositeTransform ScaleX="-1" ScaleY="-1"/>
+                    </ListView.RenderTransform>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Image Source="{Binding}" Height="300" Width="300" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>-->
+            </ListView>
 
         </Grid>
     </ScrollViewer>

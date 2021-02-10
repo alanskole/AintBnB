@@ -8,7 +8,7 @@ namespace AintBnB.Views
 {
     public sealed partial class PasswordChangePage : Page
     {
-        public PasswordChangerViewModel ViewModel { get; } = new PasswordChangerViewModel();
+        public PasswordChangerViewModel PasswordChangerViewModel { get; } = new PasswordChangerViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
 
 
@@ -21,7 +21,7 @@ namespace AintBnB.Views
         {
             try
             {
-                ViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+                PasswordChangerViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
             }
             catch (Exception ex)
             {
@@ -33,9 +33,9 @@ namespace AintBnB.Views
         {
             try
             {
-                await ViewModel.ChangePassword();
+                await PasswordChangerViewModel.ChangePassword();
                 await new MessageDialog("Password changed!").ShowAsync();
-                this.Frame.Navigate(typeof(UserInfoPage));
+                Frame.Navigate(typeof(UserInfoPage));
             }
             catch (Exception ex)
             {

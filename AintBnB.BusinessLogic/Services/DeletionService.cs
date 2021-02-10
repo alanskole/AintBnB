@@ -163,17 +163,15 @@ namespace AintBnB.BusinessLogic.Services
             if (booking == null)
                 throw new IdNotFoundException("Booking", id);
 
-            if (booking.Accommodation.Owner.Id != LoggedInAs.Id)
+            try
             {
-                try
-                {
-                    CorrectUser(booking.BookedBy.Id);
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                CorrectUserOrOwner(booking.Accommodation.Owner.Id, booking.BookedBy.Id);
             }
+            catch (Exception)
+            {
+                throw;
+            }
+
             try
             {
                 CancelationDeadlineCheck(id);

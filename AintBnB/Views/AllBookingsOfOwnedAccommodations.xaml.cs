@@ -1,7 +1,6 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.ViewModels;
 using System;
-using System.Collections.Generic;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -10,8 +9,9 @@ namespace AintBnB.Views
 {
     public sealed partial class AllBookingsOfOwnedAccommodations : Page
     {
-        public BookingViewModel ViewModel { get; } = new BookingViewModel();
+        public BookingViewModel BookingViewModel { get; } = new BookingViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
+        private bool _skipSelectionChanged;
 
         public AllBookingsOfOwnedAccommodations()
         {
@@ -22,9 +22,9 @@ namespace AintBnB.Views
         {
             try
             {
-                ViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+                BookingViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
 
-                listView.ItemsSource = await ViewModel.GetAllBookingsOfOwnedAccommodations();
+                listView.ItemsSource = await BookingViewModel.GetAllBookingsOfOwnedAccommodations();
             }
             catch (Exception ex)
             {
@@ -34,11 +34,16 @@ namespace AintBnB.Views
 
         private async void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            int index = listView.SelectedIndex;
+            if (_skipSelectionChanged)
+            {
+                _skipSelectionChanged = false;
 
-            List<Booking> allBookings = await ViewModel.GetAllBookings();
+                return;
+            }
 
-            Booking booking = allBookings[index];
+            Booking booking = (Booking)listView.SelectedItem;
+
+            BookingViewModel.Booking.Id = booking.Id;
 
             var container = new StackPanel();
 
@@ -51,25 +56,32 @@ namespace AintBnB.Views
             };
 
             ContentDialogResult result = await contentDialog.ShowAsync();
+
+            _skipSelectionChanged = true;
+            listView.SelectedItem = null;
+
             if (result == ContentDialogResult.Primary)
             {
-                var dialog = new MessageDialog("This will delete the booking! Are you sure?");
+                var dialog = new MessageDialog("This will delete the booking of your accommodation! Are you sure?");
                 dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
                 dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
                 var res = await dialog.ShowAsync();
 
-                try
+                if ((int)res.Id == 0)
                 {
-                    if ((int)res.Id == 0)
+                    try
                     {
-                        ViewModel.Booking.Id = booking.Id;
-                        await ViewModel.DeleteABooking();
-                        await new MessageDialog("Deletion successful!").ShowAsync();
+                        await BookingViewModel.DeleteABooking();
+
+                        await new MessageDialog("Booking deleted!").ShowAsync();
+
+                        Frame.Navigate(typeof(AllBookingsOfOwnedAccommodations));
                     }
-                }
-                catch (Exception ex)
-                {
-                    await new MessageDialog(ex.Message).ShowAsync();
+                    catch (Exception ex)
+                    {
+                        await new MessageDialog(ex.Message).ShowAsync();
+                    }
+
                 }
             }
         }

@@ -1,5 +1,6 @@
 ﻿using AintBnB.ViewModels;
 using System;
+using System.Collections.Generic;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -8,9 +9,8 @@ namespace AintBnB.Views
 {
     public sealed partial class UserInfoPage : Page
     {
-        public UserViewModel ViewModel { get; } = new UserViewModel();
+        public UserViewModel UserViewModel { get; } = new UserViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
-
         public UserInfoPage()
         {
             this.InitializeComponent();
@@ -18,15 +18,38 @@ namespace AintBnB.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            int userid = 0;
+
             try
             {
-                ViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+                userid = await AuthenticationViewModel.IdOfLoggedInUser();
 
-                await ViewModel.GetAUser();
             }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message).ShowAsync();
+            }
+
+            try
+            {
+                await AuthenticationViewModel.IsAdmin();
+
+                List<int> ids = new List<int>();
+
+                foreach (var user in await UserViewModel.GetAllUsers())
+                    ids.Add(user.Id);
+
+                ComboBoxUsers.ItemsSource = ids;
+            }
+            catch (Exception)
+            {
+                ComboBoxUsers.Visibility = Visibility.Collapsed;
+
+                UserViewModel.User.Id = userid;
+
+                await UserViewModel.GetAUser();
+
+                userIdTextBox.Visibility = Visibility.Visible;
             }
 
         }
@@ -35,7 +58,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await ViewModel.UpdateAUser();
+                await UserViewModel.UpdateAUser();
                 await new MessageDialog("Update ok!").ShowAsync();
             }
             catch (Exception ex)
@@ -57,10 +80,24 @@ namespace AintBnB.Views
             var res = await dialog.ShowAsync();
 
             if ((int)res.Id == 0)
-            { 
-                await ViewModel.DeleteAUser();
+            {
+                await UserViewModel.DeleteAUser();
                 await AuthenticationViewModel.LogoutFromApp();
                 Frame.Navigate(typeof(MainPage));
+            }
+        }
+
+        private async void ComboBoxUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                UserViewModel.User.Id = int.Parse(ComboBoxUsers.SelectedValue.ToString());
+
+                await UserViewModel.GetAUser();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
             }
         }
     }
