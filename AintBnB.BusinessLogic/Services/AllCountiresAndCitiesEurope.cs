@@ -119,6 +119,20 @@ namespace AintBnB.BusinessLogic.Services
             if (AreThereCountriesAndCitiesInDatabaseTable())
                 return;
 
+
+            con.Open();
+
+
+            using (SqlCommand cmd = new SqlCommand("CREATE TABLE[dbo].[City] (" +
+            "[CountryId] INT NOT NULL," +
+            "[Country]   NVARCHAR (MAX) NOT NULL," +
+            "[Cities]    NVARCHAR(MAX) NOT NULL," +
+            "CONSTRAINT[PK_City] PRIMARY KEY CLUSTERED([CountryId] ASC));", con))
+            {
+                cmd.ExecuteNonQuery();
+                cmd.Dispose();
+            }
+
             DataTable dt = new DataTable("City");
             Dictionary<string, List<string>> europe = new Dictionary<string, List<string>>();
 
@@ -66611,6 +66625,8 @@ namespace AintBnB.BusinessLogic.Services
                 bulk.DestinationTableName = "City";
                 bulk.WriteToServer(dt);
             }
+
+            con.Close();
         }
     }
 }
