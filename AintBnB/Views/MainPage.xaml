@@ -7,10 +7,22 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-        <Grid>
-            <Button Click="Button_Click_CreateUser" Content="Create A New User" Margin="280,166,0,0" VerticalAlignment="Top" Height="35" Width="142"/>
-            <Button Click="Button_Click_Login" Content="Login" Margin="479,166,0,0" VerticalAlignment="Top" Height="35" Width="142"/>
-        </Grid>
-    </ScrollViewer>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Button
+            Grid.Column="0"
+            VerticalAlignment="Top"
+            Click="Button_Click_CreateUser"
+            Content="Create A New User" Margin="459,329,0,0"/>
+
+        <Button
+            Grid.Column="1"
+            VerticalAlignment="Top"
+            Click="Button_Click_Login"
+            Content="Login" Margin="98,329,0,0"/>
+    </Grid>
 </Page>

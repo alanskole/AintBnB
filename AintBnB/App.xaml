@@ -6,12 +6,51 @@
 
     <Application.Resources>
         <ResourceDictionary>
+            <Style TargetType="TextBox">
+                <Setter Property="Margin" Value="0,10,0,10" />
+                <Setter Property="MinWidth" Value="130"/>
+                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+            <Style TargetType="PasswordBox">
+                <Setter Property="Margin" Value="0,10,0,10" />
+                <Setter Property="MinWidth" Value="130"/>
+                <Setter Property="Height" Value="Auto"/>
+            </Style>
+            <Style TargetType="TextBlock">
+                <Setter Property="Margin" Value="0,10,0,10"/>
+                <Setter Property="Padding" Value="0,10,0,10"/>
+                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="TextWrapping" Value="Wrap"/>
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="Margin" Value="0,10,0,10" />
+                <Setter Property="MinWidth" Value="130"/>
+                <Setter Property="Height" Value="Auto"/>
+            </Style>
+            <Style TargetType="ComboBox">
+                <Setter Property="Margin" Value="0,10,0,10" />
+                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="Height" Value="Auto"/>
+            </Style>
+            <Style TargetType="ListView">
+                <Setter Property="Margin" Value="0,10,0,10" />
+                <Setter Property="Width" Value="Auto"/>
+                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            </Style>
+            <Style TargetType="ListViewItem">
+                <Setter Property="BorderThickness" Value="10"/>
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="Padding" Value="0,10,0,10"/>
+            </Style>
             <ResourceDictionary.MergedDictionaries>
                 <XamlControlsResources  xmlns="using:Microsoft.UI.Xaml.Controls" />
                 <ResourceDictionary Source="/Styles/_Colors.xaml" />
                 <ResourceDictionary Source="/Styles/_FontSizes.xaml" />
                 <ResourceDictionary Source="/Styles/_Thickness.xaml" />
-
                 <ResourceDictionary Source="/Styles/TextBlock.xaml" />
                 <ResourceDictionary Source="/Styles/Page.xaml"/>
             </ResourceDictionary.MergedDictionaries>

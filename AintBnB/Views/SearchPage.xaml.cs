@@ -4,6 +4,9 @@ using Windows.UI.Xaml.Controls;
 using AintBnB.ViewModels;
 using AintBnB.Core.Models;
 using Windows.UI.Popups;
+using Windows.UI.Xaml.Media.Imaging;
+using System.Collections.Generic;
+using static AintBnB.CommonMethods.CommonViewMethods;
 
 namespace AintBnB.Views
 {
@@ -56,15 +59,13 @@ namespace AintBnB.Views
 
             Accommodation acc = (Accommodation)listView.SelectedItem;
 
-            var container = new StackPanel();
+            List<BitmapImage> bmimg = new List<BitmapImage>();
 
-            var contentDialog = new ContentDialog
-            {
-                Title = "Book Accommodation",
-                Content = container,
-                PrimaryButtonText = "Book",
-                CloseButtonText = "Cancel",
-            };
+            await ConvertBytesToBitmapImageList(acc.Picture, bmimg);
+
+            listViewPicture.ItemsSource = bmimg;
+
+            contentDialog.Visibility = Visibility.Visible;
 
             ContentDialogResult result = await contentDialog.ShowAsync();
 

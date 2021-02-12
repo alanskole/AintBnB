@@ -8,15 +8,81 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-        <Grid>
-            <Button Click="Button_Click_Login" Content="Login" Margin="295,120,0,0" VerticalAlignment="Top" Height="35" Width="142"/>
-            <TextBox Header="Username" Text="{x:Bind UserViewModel.User.UserName, Mode=TwoWay}" Name="userName" HorizontalAlignment="Left" Margin="260,181,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <PasswordBox Header="Password"  Password="{x:Bind UserViewModel.User.Password, Mode=TwoWay}" Name="password" HorizontalAlignment="Left" Margin="260,244,0,0" VerticalAlignment="Top" Height="58" Width="212"/>
-            <PasswordBox Header="Confirm password"  Password="{x:Bind UserViewModel.PasswordConfirm, Mode=TwoWay}" x:Name="passwordConfirm" HorizontalAlignment="Left" Margin="260,307,0,0" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Firstname" Text="{x:Bind UserViewModel.User.FirstName, Mode=TwoWay}" Name="firstName" HorizontalAlignment="Left" Margin="260,370,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Lastname" Text="{x:Bind UserViewModel.User.LastName, Mode=TwoWay}" Name="lastName" HorizontalAlignment="Left" Margin="260,433,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <Button Click="Button_Click_CreateUser" Content="Create User" Margin="313,523,0,0" VerticalAlignment="Top" Width="106" RenderTransformOrigin="0.467,-0.113"/>
-        </Grid>
-    </ScrollViewer>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        
+        <Button
+            Grid.Row="0"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Click="Button_Click_Login"
+            Content="Login"/>
+        
+        <TextBox
+            Grid.Row="1"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Username"
+            Text="{x:Bind UserViewModel.User.UserName, Mode=TwoWay}"
+            Name="userName"/>
+        
+        <PasswordBox
+            Grid.Row="2"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Password"
+            Password="{x:Bind UserViewModel.User.Password, Mode=TwoWay}"
+            Name="password"/>
+        
+        <PasswordBox
+            Grid.Row="3"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Confirm password"
+            Password="{x:Bind UserViewModel.PasswordConfirm, Mode=TwoWay}"
+            x:Name="passwordConfirm"/>
+        
+        <TextBox
+            Grid.Row="4"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Firstname"
+            Text="{x:Bind UserViewModel.User.FirstName, Mode=TwoWay}"
+            Name="firstName"/>
+
+        <TextBox
+            Grid.Row="5"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Lastname"
+            Text="{x:Bind UserViewModel.User.LastName, Mode=TwoWay}"
+            Name="lastName"/>
+
+        <Button
+            Grid.Row="6"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Click="Button_Click_CreateUser"
+            Content="Create User"/>
+    </Grid>
 </Page>

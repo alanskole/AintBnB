@@ -17,7 +17,7 @@ namespace AintBnB.ViewModels
         private string _uri;
         private string _uniquePartOfUri;
         private int _userId;
-        private Accommodation _accommodation = new Accommodation { Address = new Address(), Picture = new List<byte[]>()};
+        private Accommodation _accommodation = new Accommodation { Address = new Address(), Picture = new List<byte[]>() };
         private int _daysSchedule;
         private int _expandScheduleByDays;
         private string _fromDate;
@@ -45,7 +45,7 @@ namespace AintBnB.ViewModels
 
         public int DaysSchedule
         {
-            get {return _daysSchedule; }
+            get { return _daysSchedule; }
             set
             {
                 _daysSchedule = value;
@@ -83,6 +83,8 @@ namespace AintBnB.ViewModels
             }
         }
 
+        public List<byte[]> Picture { get; set; } = new List<byte[]>();
+   
         public AccommodationViewModel()
         {
             _clientProvider.ControllerPartOfUri = "api/accommodation/";

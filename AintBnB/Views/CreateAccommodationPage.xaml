@@ -8,36 +8,148 @@
     mc:Ignorable="d" Loaded="Page_Loaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-        <Grid>
-            <TextBox Header="Street" Text="{x:Bind AccommodationViewModel.Accommodation.Address.Street, Mode=TwoWay}" Name="street" HorizontalAlignment="Left" Margin="260,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Number" Text="{x:Bind AccommodationViewModel.Accommodation.Address.Number, Mode=TwoWay}" Name="number" HorizontalAlignment="Left" Margin="538,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Zip" Text="{x:Bind AccommodationViewModel.Accommodation.Address.Zip, Mode=TwoWay}" Name="zip" HorizontalAlignment="Left" Margin="260,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Area" Text="{x:Bind AccommodationViewModel.Accommodation.Address.Area, Mode=TwoWay}" Name="area" HorizontalAlignment="Left" Margin="538,74,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="1*"></ColumnDefinition>
+            <ColumnDefinition Width="0.5*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
 
-            <ComboBox 
+        <TextBox
+            Grid.Row="0"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Street"
+            Text="{x:Bind AccommodationViewModel.Accommodation.Address.Street, Mode=TwoWay}"
+            Name="street"/>
+        
+        <TextBox
+            Grid.Row="0"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Number"
+            Text="{x:Bind AccommodationViewModel.Accommodation.Address.Number, Mode=TwoWay}"
+            Name="number"/>
+        
+        <TextBox
+            Grid.Row="1"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Zip"
+            Text="{x:Bind AccommodationViewModel.Accommodation.Address.Zip, Mode=TwoWay}"
+            Name="zip" />
+        
+        <TextBox
+            Grid.Row="1"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Area"
+            Text="{x:Bind AccommodationViewModel.Accommodation.Address.Area, Mode=TwoWay}"
+            Name="area"/>
+
+        <ComboBox
+            Grid.Row="2"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
             x:Name="ComboBoxCountries" 
             Header="Select a country"
-            SelectionChanged="ComboBoxCountries_SelectionChanged" Margin="260,137,0,0"/>
+            SelectionChanged="ComboBoxCountries_SelectionChanged"/>
 
-            <ComboBox 
+        <ComboBox
+            Grid.Row="2"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
             x:Name="ComboBoxCities" 
             Header="Select a city"
-            SelectionChanged="ComboBoxCities_SelectionChanged" Margin="399,142,0,0"/>
-            <TextBox Header="Square meters" Text="{x:Bind AccommodationViewModel.Accommodation.SquareMeters, Mode=TwoWay}" Name="sqm" HorizontalAlignment="Left" Margin="538,139,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Amount of bedrooms" Text="{x:Bind AccommodationViewModel.Accommodation.AmountOfBedrooms, Mode=TwoWay}" Name="bedrooms" HorizontalAlignment="Left" Margin="260,200,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Kilometers from center" Text="{x:Bind AccommodationViewModel.Accommodation.KilometersFromCenter, Mode=TwoWay}" Name="kmFromCenter" HorizontalAlignment="Left" Margin="260,263,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Description" AcceptsReturn="True" Text="{x:Bind AccommodationViewModel.Accommodation.Description, Mode=TwoWay}" Name="description" HorizontalAlignment="Left" Margin="260,365,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="150" Width="490"/>
-            <TextBox Header="Price per night" Text="{x:Bind AccommodationViewModel.Accommodation.PricePerNight, Mode=TwoWay}" Name="pricePerNight" HorizontalAlignment="Left" Margin="538,200,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Days to create schedule for" Text="{x:Bind AccommodationViewModel.DaysSchedule, Mode=TwoWay}" Name="daysSchedule" HorizontalAlignment="Left" Margin="538,268,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <Button x:Name="Upload"
-                Click="Upload_Click"
-                Content="Upload Photo"
-                Margin="261,566,0,0"
-                VerticalAlignment="Top"
-                Height="45"
-                Width="105" RenderTransformOrigin="0.565,0.596"/>
-            <Button Click="Button_Click_Create_Accommadtion" Content="Create accommodation" Margin="505,567,0,0" VerticalAlignment="Top" Width="208" Height="44"/>
-        </Grid>
-    </ScrollViewer>
+            SelectionChanged="ComboBoxCities_SelectionChanged"/>
+        
+        <TextBox
+            Grid.Row="3"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Square meters"
+            Text="{x:Bind AccommodationViewModel.Accommodation.SquareMeters, Mode=TwoWay}"
+            Name="sqm"/>
+        
+        <TextBox
+            Grid.Row="3"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Amount of bedrooms"
+            Text="{x:Bind AccommodationViewModel.Accommodation.AmountOfBedrooms, Mode=TwoWay}"
+            Name="bedrooms"/>
+        
+        <TextBox
+            Grid.Row="4"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Kilometers from center"
+            Text="{x:Bind AccommodationViewModel.Accommodation.KilometersFromCenter, Mode=TwoWay}"
+            Name="kmFromCenter"/>
+        
+        <TextBox
+            Grid.Row="4"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Description"
+            AcceptsReturn="True"
+            Text="{x:Bind AccommodationViewModel.Accommodation.Description, Mode=TwoWay}"
+            Name="description"/>
+        
+        <TextBox
+            Grid.Row="5"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Price per night"
+            Text="{x:Bind AccommodationViewModel.Accommodation.PricePerNight, Mode=TwoWay}"
+            Name="pricePerNight"/>
+        
+        <TextBox
+            Grid.Row="5"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Days to create schedule for"
+            Text="{x:Bind AccommodationViewModel.DaysSchedule, Mode=TwoWay}"
+            Name="daysSchedule"/>
+
+        <Button
+            Grid.Row="6"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            x:Name="Upload"
+            Click="Upload_Click"
+            Content="Upload Photo"/>
+        
+        <Button
+            Grid.Row="6"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Click="Button_Click_Create_Accommadtion"
+            Content="Create accommodation"/>
+        
+    </Grid>
 </Page>
