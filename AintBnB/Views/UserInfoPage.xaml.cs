@@ -81,9 +81,19 @@ namespace AintBnB.Views
 
             if ((int)res.Id == 0)
             {
-                await UserViewModel.DeleteAUser();
-                await AuthenticationViewModel.LogoutFromApp();
-                Frame.Navigate(typeof(MainPage));
+                try
+                {
+                    await UserViewModel.DeleteAUser();
+
+                    await new MessageDialog("Deletion ok!").ShowAsync();
+
+                    await AuthenticationViewModel.IsAdmin();
+                }
+                catch (Exception)
+                {
+                    await AuthenticationViewModel.LogoutFromApp();
+                    Frame.Navigate(typeof(MainPage));
+                }
             }
         }
 

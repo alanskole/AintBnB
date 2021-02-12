@@ -6,6 +6,10 @@
 
     <Application.Resources>
         <ResourceDictionary>
+            <SolidColorBrush x:Key="NavigationViewItemBackgroundSelected" Color="Transparent"/>
+            <Style x:Key="TitleTextBlockStyle" TargetType="TextBlock">
+                <Setter Property="Visibility" Value="Collapsed"/>
+            </Style>
             <Style TargetType="TextBox">
                 <Setter Property="Margin" Value="0,10,0,10" />
                 <Setter Property="MinWidth" Value="130"/>
