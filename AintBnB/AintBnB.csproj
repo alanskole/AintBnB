@@ -156,9 +156,6 @@
     <Compile Include="Views\AllAccommodationsPage.xaml.cs">
       <DependentUpon>AllAccommodationsPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\AllAccommodationsOfAUserPage.xaml.cs">
-      <DependentUpon>AllAccommodationsOfAUserPage.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\AllBookingsOfOwnedAccommodations.xaml.cs">
       <DependentUpon>AllBookingsOfOwnedAccommodations.xaml</DependentUpon>
     </Compile>
@@ -232,10 +229,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\AllAccommodationsPage.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\AllAccommodationsOfAUserPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

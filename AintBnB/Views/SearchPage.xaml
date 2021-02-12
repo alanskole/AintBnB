@@ -8,47 +8,103 @@
     mc:Ignorable="d" Loaded="Page_Loaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
-        <Grid>
-            <ComboBox 
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="3*"></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <ComboBox
+            Grid.Row="0"
+            Grid.Column="0"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
             x:Name="ComboBoxCountries" 
             Header="Select a country"
-            SelectionChanged="ComboBoxCountries_SelectionChanged" Margin="55,41,0,0"/>
+            SelectionChanged="ComboBoxCountries_SelectionChanged"/>
 
-            <ComboBox 
+        <ComboBox
+            Grid.Row="0"
+            Grid.Column="1"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
             x:Name="ComboBoxCities" 
             Header="Select a city"
-            SelectionChanged="ComboBoxCities_SelectionChanged" Margin="193,41,0,0"/>
+            SelectionChanged="ComboBoxCities_SelectionChanged"/>
 
-            <CalendarDatePicker DateChanged="MyDatePicker_DateChanged" Header="From date" x:Name="MyDatePicker" Width="250" Margin="308,41,0,0" VerticalAlignment="Top"/>
+        <CalendarDatePicker
+            Grid.Row="0"
+            Grid.Column="2"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            DateChanged="MyDatePicker_DateChanged"
+            Header="From date"
+            x:Name="MyDatePicker"
+            FirstDayOfWeek="Monday"/>
 
-            <TextBox Header="Nights" Text="{x:Bind AccommodationViewModel.Nights, Mode=TwoWay}" Name="nights" HorizontalAlignment="Left" Margin="601,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top"/>
+        <TextBox
+            Grid.Row="0"
+            Grid.Column="3"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Header="Nights"
+            Text="{x:Bind AccommodationViewModel.Nights, Mode=TwoWay}"
+            Name="nights"/>
 
-            <Button Click="Button_Click_Search" Content="Search" Margin="692,65,0,0" VerticalAlignment="Top" Height="31"/>
+        <Button
+            Grid.Row="0"
+            Grid.Column="4"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Click="Button_Click_Search"
+            Content="Search"/>
 
 
-            <ListView x:Name="listView"
-                Margin="55,129,52,83"
-                IsItemClickEnabled="True"
-                SelectionMode="Single"
-                SelectionChanged="listView_SelectionChanged">
-                <!--<ListView x:Name="listViewPicture"
-                    IsItemClickEnabled="True"
-                    SelectionMode="Single"
-                    SelectionChanged="ListViewPicture_SelectionChanged" Height="315" RenderTransformOrigin="0.5,0.5" Width="383">
-                    <ListView.RenderTransform>
-                        <CompositeTransform ScaleX="-1" ScaleY="-1"/>
-                    </ListView.RenderTransform>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Image Source="{Binding}" Height="300" Width="300" />
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>-->
+        <ListView
+            Grid.Row="1"
+            Grid.Column="0"
+            Grid.ColumnSpan="5"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Stretch"
+            x:Name="listView"
+            IsItemClickEnabled="True"
+            SelectionMode="Single"
+            SelectionChanged="listView_SelectionChanged">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <ContentDialog
+            Grid.ColumnSpan="5"
+            Grid.RowSpan="2"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Visibility="Collapsed"
+            x:Name="contentDialog"
+            Title="Book Accommodation"
+            PrimaryButtonText="Book"
+            CloseButtonText="Cancel"
+            FullSizeDesired="True">
+            <ListView Name="listViewPicture">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Image Source="{Binding}"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
             </ListView>
-
-        </Grid>
-    </ScrollViewer>
+        </ContentDialog>
+    </Grid>
 </Page>

@@ -43,7 +43,7 @@ namespace AintBnB.Views
                 return;
             }
             await new MessageDialog("Already logged in").ShowAsync();
-            Frame.Navigate(typeof(UserInfoPage));
+            Frame.Navigate(typeof(SearchPage));
         }
     }
 }
