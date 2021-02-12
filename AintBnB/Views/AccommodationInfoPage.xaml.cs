@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Windows.Storage.Streams;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -13,7 +12,7 @@ namespace AintBnB.Views
 {
     public sealed partial class AccommodationInfoPage : Page
     {
-        public AccommodationViewModel AccommodationViewMode { get; } = new AccommodationViewModel();
+        public AccommodationViewModel AccommodationViewModel { get; } = new AccommodationViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
         private bool _skipSelectionChanged;
 
@@ -41,7 +40,7 @@ namespace AintBnB.Views
             {
                 await AuthenticationViewModel.IsAdmin();
 
-                foreach (var acc in await AccommodationViewMode.GetAllAccommodations())
+                foreach (var acc in await AccommodationViewModel.GetAllAccommodations())
                     ids.Add(acc.Id);
             }
             catch (Exception)
@@ -52,11 +51,11 @@ namespace AintBnB.Views
             {
                 if (normalUserLoggedIn)
                 {
-                    AccommodationViewMode.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+                    AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
 
                     try
                     {
-                        foreach (var acc in await AccommodationViewMode.GetAllAccommodationsOfAUser())
+                        foreach (var acc in await AccommodationViewModel.GetAllAccommodationsOfAUser())
                             ids.Add(acc.Id);
                     }
                     catch (Exception ex)
@@ -73,16 +72,16 @@ namespace AintBnB.Views
         {
             try
             {
-                AccommodationViewMode.Accommodation.Id = int.Parse(ComboBoxAccommodations.SelectedValue.ToString());
+                AccommodationViewModel.Accommodation.Id = int.Parse(ComboBoxAccommodations.SelectedValue.ToString());
 
-                await AccommodationViewMode.GetAccommodation();
+                await AccommodationViewModel.GetAccommodation();
             }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
 
-            await GetPhotos();
+            GetPhotos();
         }
 
 
@@ -90,7 +89,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AccommodationViewMode.UpdateAccommodation();
+                await AccommodationViewModel.UpdateAccommodation();
                 await new MessageDialog("Update ok").ShowAsync();
             }
             catch (Exception ex)
@@ -103,7 +102,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AccommodationViewMode.ExpandScheduleOfAccommodation();
+                await AccommodationViewModel.ExpandScheduleOfAccommodation();
                 await new MessageDialog("Expansion of schedule ok").ShowAsync();
             }
             catch (Exception ex)
@@ -123,7 +122,7 @@ namespace AintBnB.Views
             {
                 if ((int)res.Id == 0)
                 {
-                    await AccommodationViewMode.DeleteAccommodation();
+                    await AccommodationViewModel.DeleteAccommodation();
                     await new MessageDialog("Deletion ok!").ShowAsync();
                     Frame.Navigate(typeof(AccommodationInfoPage));
                 }
@@ -135,25 +134,11 @@ namespace AintBnB.Views
         }
 
 
-        private async Task GetPhotos()
+        private async void GetPhotos()
         {
             List<BitmapImage> bmimg = new List<BitmapImage>();
 
-            using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
-            {
-                using (DataWriter writer = new DataWriter(stream.GetOutputStreamAt(0)))
-                {
-                    foreach (var item in AccommodationViewMode.Accommodation.Picture)
-                    {
-                        writer.WriteBytes(item);
-                        await writer.StoreAsync();
-
-                        BitmapImage image = new BitmapImage();
-                        await image.SetSourceAsync(stream);
-                        bmimg.Add(image);
-                    }
-                }
-            }
+            await ConvertBytesToBitmapImageList(AccommodationViewModel.Accommodation.Picture, bmimg);
 
             listViewPicture.ItemsSource = bmimg;
         }
@@ -174,6 +159,7 @@ namespace AintBnB.Views
                 FullSizeDesired = true,
                 Content = new Image()
                 {
+                    Width = 480,
                     Source = img,
                 },
                 PrimaryButtonText = "Delete",
@@ -202,9 +188,9 @@ namespace AintBnB.Views
             {
                 int index = listViewPicture.SelectedIndex;
 
-                AccommodationViewMode.Accommodation.Picture.Remove(AccommodationViewMode.Accommodation.Picture[index]);
+                AccommodationViewModel.Accommodation.Picture.Remove(AccommodationViewModel.Accommodation.Picture[index]);
 
-                await AccommodationViewMode.UpdateAccommodation();
+                await AccommodationViewModel.UpdateAccommodation();
 
                 Refresh();
             }
@@ -212,13 +198,13 @@ namespace AintBnB.Views
 
         private async void Button_Click_Upload(object sender, RoutedEventArgs e)
         {
-            int sizeBeforeUploading = AccommodationViewMode.Accommodation.Picture.Count;
+            int sizeBeforeUploading = AccommodationViewModel.Accommodation.Picture.Count;
 
-            await PhotoUpload(AccommodationViewMode.Accommodation.Picture);
+            await PhotoUpload(AccommodationViewModel.Accommodation.Picture);
 
-            if (sizeBeforeUploading != AccommodationViewMode.Accommodation.Picture.Count)
+            if (sizeBeforeUploading != AccommodationViewModel.Accommodation.Picture.Count)
             {
-                await AccommodationViewMode.UpdateAccommodation();
+                await AccommodationViewModel.UpdateAccommodation();
                 Refresh();
             }
         }
@@ -227,7 +213,7 @@ namespace AintBnB.Views
         {
             AccommodationInfoPage infoPage = new AccommodationInfoPage();
             Content = infoPage;
-            infoPage.ComboBoxAccommodations.SelectedIndex = ComboBoxAccommodations.Items.IndexOf(AccommodationViewMode.Accommodation.Id);
+            infoPage.ComboBoxAccommodations.SelectedIndex = ComboBoxAccommodations.Items.IndexOf(AccommodationViewModel.Accommodation.Id);
         }
     }
 }

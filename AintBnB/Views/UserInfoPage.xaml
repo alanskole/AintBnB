@@ -9,19 +9,95 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
         <Grid>
-            <ComboBox 
-                    x:Name="ComboBoxUsers"
-                    x:FieldModifier="public"
-                    Header="User ID"
-                    SelectionChanged="ComboBoxUsers_SelectionChanged" Margin="259,29,0,0" Width="107"/>
+            
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                <ColumnDefinition Width="1*"></ColumnDefinition>
+                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            
+            <ComboBox
+                Grid.Row="0"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                x:Name="ComboBoxUsers"
+                x:FieldModifier="public"
+                Header="User ID"
+                SelectionChanged="ComboBoxUsers_SelectionChanged"/>
 
-            <TextBox Visibility="Collapsed" IsReadOnly="True" Header="User ID"  Text="{x:Bind UserViewModel.User.Id, Mode=TwoWay}" Name="userIdTextBox" HorizontalAlignment="Left" Margin="259,57,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="62" Width="127"/>
-            <TextBox IsReadOnly="True" Header="Username" Text="{x:Bind UserViewModel.User.UserName, Mode=TwoWay}" Name="userName" HorizontalAlignment="Left" Margin="260,137,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Firstname" Text="{x:Bind UserViewModel.User.FirstName, Mode=TwoWay}" Name="firstName" HorizontalAlignment="Left" Margin="260,237,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <TextBox Header="Lastname" Text="{x:Bind UserViewModel.User.LastName, Mode=TwoWay}" Name="lastName" HorizontalAlignment="Left" Margin="260,337,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="58" Width="212"/>
-            <Button Content="Update User" Margin="301,425,0,0" VerticalAlignment="Top" Click="Button_Click_UpdateUser"  Width="130"/>
-            <Button Content="Change Password" Margin="301,480,0,0" VerticalAlignment="Top" Click="Button_Click_ChangePass" Width="130"/>
-            <Button Content="Delete User" Margin="301,536,0,0" VerticalAlignment="Top" Click="Button_Click_DeleteUser" Width="130"/>
+            <TextBox
+                Grid.Row="0"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Visibility="Collapsed"
+                IsReadOnly="True"
+                Header="User ID"
+                Text="{x:Bind UserViewModel.User.Id, Mode=TwoWay}"
+                Name="userIdTextBox"/>
+            
+            <TextBox
+                Grid.Row="1"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                IsReadOnly="True"
+                Header="Username"
+                Text="{x:Bind UserViewModel.User.UserName, Mode=TwoWay}"
+                Name="userName"/>
+            
+            <TextBox
+                Grid.Row="2"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Header="Firstname"
+                Text="{x:Bind UserViewModel.User.FirstName, Mode=TwoWay}"
+                Name="firstName"/>
+
+            <TextBox
+                Grid.Row="3"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Header="Lastname"
+                Text="{x:Bind UserViewModel.User.LastName, Mode=TwoWay}"
+                Name="lastName"/>
+
+            <Button
+                Grid.Row="4"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Content="Update User"
+                Click="Button_Click_UpdateUser"/>
+            
+            <Button
+                Grid.Row="5"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Content="Change Password"
+                Click="Button_Click_ChangePass"/>
+            
+            <Button
+                Grid.Row="6"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Content="Delete User"
+                Click="Button_Click_DeleteUser"/>
+            
         </Grid>
     </ScrollViewer>
 </Page>
