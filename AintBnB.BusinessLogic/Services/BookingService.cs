@@ -150,7 +150,7 @@ namespace AintBnB.BusinessLogic.Services
                 else
                     throw new DateException("Dates aren't available");
             }
-            throw new AccessException($"Must be performed by the customer with ID {booker.Id}, or by admin or an employee on behalf of customer with ID {booker.Id}!");
+            throw new AccessException($"Must be performed by a customer with ID {booker.Id}, or by admin or an employee on behalf of a customer with ID {booker.Id}!");
         }
 
         private void AddDatesToList(List<string> datesBooked, string startDate, int nights)
