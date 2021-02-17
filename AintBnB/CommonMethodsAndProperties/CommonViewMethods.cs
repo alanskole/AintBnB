@@ -5,9 +5,11 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
+using Windows.UI.Xaml.Navigation;
 
-namespace AintBnB.CommonMethods
+namespace AintBnB.CommonMethodsAndProperties
 {
     static public class CommonViewMethods
     {
@@ -48,6 +50,16 @@ namespace AintBnB.CommonMethods
                         convertedToBitmapImage.Add(image);
                     }
                 }
+            }
+        }
+
+        public static void WhenNavigatedToView(NavigationEventArgs e, ComboBox comboBox)
+        {
+            if (e.Parameter != null)
+            {
+                var parameter = int.Parse(e.Parameter.ToString());
+
+                comboBox.SelectedIndex = parameter;
             }
         }
     }

@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
-using AintBnB.Services;
+using AintBnB.CommonMethodsAndProperties;
 using System.Text;
 
 namespace AintBnB.ViewModels
@@ -44,6 +44,12 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
+        public async Task MakeEmployee()
+        {
+            User.UserType = UserTypes.Employee;
+            await UpdateAUser();
+        }
+
         public async Task CreateTheUser()
         {
             if (User.Password != PasswordConfirm)
@@ -78,6 +84,22 @@ namespace AintBnB.ViewModels
 
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri));
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonUsers = await response.Content.ReadAsStringAsync();
+                _all = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
+                return _all;
+            }
+            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+        }
+
+        public async Task<List<User>> GetAllCustomers()
+        {
+            List<User> _all = new List<User>();
+
+            _uniquePartOfUri = "allcustomers";
+
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             if (response.IsSuccessStatusCode)
             {
                 string jsonUsers = await response.Content.ReadAsStringAsync();

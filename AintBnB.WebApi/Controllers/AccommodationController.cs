@@ -4,6 +4,8 @@ using AintBnB.BusinessLogic.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace AintBnB.WebApi.Controllers
 {
@@ -11,11 +13,13 @@ namespace AintBnB.WebApi.Controllers
     public class AccommodationController : ControllerBase
     {
         private IAccommodationService _accommodationService;
+        private IUserService _userService;
         private IDeletionService _deletionService;
 
         public AccommodationController()
         {
             _accommodationService = ProvideDependencyFactory.accommodationService;
+            _userService = ProvideDependencyFactory.userService;
             _deletionService = ProvideDependencyFactory.deletionService;
         }
 
@@ -25,7 +29,7 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                User owner = ProvideDependencyFactory.userService.GetUser(userId);
+                User owner = _userService.GetUser(userId);
                 Accommodation newAccommodation = _accommodationService.CreateAccommodation(owner, accommodation.Address, accommodation.SquareMeters, accommodation.AmountOfBedrooms, accommodation.KilometersFromCenter, accommodation.Description, accommodation.PricePerNight, accommodation.Picture, days);
                 return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + accommodation.Id, accommodation);
             }
@@ -42,6 +46,20 @@ namespace AintBnB.WebApi.Controllers
             try
             {
                 return Ok(_accommodationService.FindAvailable(country, city, startdate, nights));
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/sort/{sortBy}/{ascOrDesc}")]
+        public IActionResult SortAvailableList([FromRoute] string sortBy, [FromRoute] string ascOrDesc)
+        {
+            try
+            {
+                return Ok(_accommodationService.SortListOfAccommodations(sortBy, ascOrDesc));
             }
             catch (Exception ex)
             {

@@ -8,102 +8,179 @@
     mc:Ignorable="d" Loaded="Page_Loaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition></RowDefinition>
-            <RowDefinition Height="3*"></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
-        </Grid.ColumnDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="3*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1.5*"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                <ColumnDefinition Width="1.5*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
 
-        <ComboBox
-            Grid.Row="0"
-            Grid.Column="0"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            x:Name="ComboBoxCountries" 
-            Header="Select a country"
-            SelectionChanged="ComboBoxCountries_SelectionChanged"/>
+            <ComboBox
+                Grid.Row="0"
+                Grid.Column="0"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Visibility="Collapsed"
+                x:Name="ComboBoxUsers"
+                x:FieldModifier="public"
+                Header="User ID"
+                SelectionChanged="ComboBoxUsers_SelectionChanged"/>
 
-        <ComboBox
-            Grid.Row="0"
-            Grid.Column="1"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            x:Name="ComboBoxCities" 
-            Header="Select a city"
-            SelectionChanged="ComboBoxCities_SelectionChanged"/>
+            <ComboBox
+                Grid.Row="0"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                x:Name="ComboBoxCountries" 
+                Header="Select a country"
+                SelectionChanged="ComboBoxCountries_SelectionChanged"/>
 
-        <CalendarDatePicker
-            Grid.Row="0"
-            Grid.Column="2"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            DateChanged="MyDatePicker_DateChanged"
-            Header="From date"
-            x:Name="MyDatePicker"
-            FirstDayOfWeek="Monday"/>
+            <ComboBox
+                Grid.Row="0"
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                x:Name="ComboBoxCities" 
+                Header="Select a city"
+                SelectionChanged="ComboBoxCities_SelectionChanged"/>
 
-        <TextBox
-            Grid.Row="0"
-            Grid.Column="3"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            Header="Nights"
-            Text="{x:Bind AccommodationViewModel.Nights, Mode=TwoWay}"
-            Name="nights"/>
+            <CalendarDatePicker
+                Grid.Row="0"
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                DateChanged="MyDatePicker_DateChanged"
+                Header="From date"
+                x:Name="MyDatePicker"
+                FirstDayOfWeek="Monday"/>
 
-        <Button
-            Grid.Row="0"
-            Grid.Column="4"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            Click="Button_Click_Search"
-            Content="Search"/>
+            <TextBox
+                Grid.Row="0"
+                Grid.Column="4"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Header="Nights"
+                Text="{x:Bind AccommodationViewModel.Nights, Mode=TwoWay}"
+                Name="nights"/>
+
+            <Button
+                Grid.Row="0"
+                Grid.Column="5"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_Search"
+                Content="Search"/>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_SortByPriceAsc"
+                Content="Price Ascending"
+                Name="PriceAsc"
+                Visibility="Collapsed"/>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_SortByPriceDesc"
+                Content="Price Descending"
+                Name="PriceDesc"
+                Visibility="Collapsed"/>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_SortBySizeAsc"
+                Content="Size Ascending"
+                Name="SizeAsc"
+                Visibility="Collapsed"/>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="3"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_SortBySizeDesc"
+                Content="Size Descending"
+                Name="SizeDesc"
+                Visibility="Collapsed"/>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="4"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_SortByDistanceAsc"
+                Content="Distance Ascending"
+                Name="DistanceAsc"
+                Visibility="Collapsed"/>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="4"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_SortByDistanceDesc"
+                Content="Distance Descending"
+                Name="DistanceDesc"
+                Visibility="Collapsed"/>
 
 
-        <ListView
-            Grid.Row="1"
-            Grid.Column="0"
-            Grid.ColumnSpan="5"
-            VerticalAlignment="Top"
-            HorizontalAlignment="Stretch"
-            x:Name="listView"
-            IsItemClickEnabled="True"
-            SelectionMode="Single"
-            SelectionChanged="listView_SelectionChanged">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+            <ListView
+                Grid.Row="2"
+                Grid.Column="1"
+                Grid.ColumnSpan="5"
+                MaxWidth="800"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Stretch"
+                x:Name="listView"
+                IsItemClickEnabled="True"
+                SelectionMode="Single"
+                SelectionChanged="listView_SelectionChanged">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
 
-        <ContentDialog
-            Grid.ColumnSpan="5"
-            Grid.RowSpan="2"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            Visibility="Collapsed"
-            x:Name="contentDialog"
-            Title="Book Accommodation"
-            PrimaryButtonText="Book"
-            CloseButtonText="Cancel"
-            FullSizeDesired="True">
-            <ListView Name="listViewPicture">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Image Source="{Binding}"/>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
-        </ContentDialog>
-    </Grid>
+            <ContentDialog
+                Grid.ColumnSpan="7"
+                Grid.RowSpan="3"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Visibility="Collapsed"
+                x:Name="contentDialog"
+                Title="Book Accommodation"
+                PrimaryButtonText="Book"
+                CloseButtonText="Cancel"
+                FullSizeDesired="True">
+                    <ListView Name="listViewPicture">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Image Source="{Binding}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+            </ContentDialog>
+        </Grid>
+    </ScrollViewer>
 </Page>

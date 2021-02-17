@@ -5,9 +5,8 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
-using AintBnB.Services;
+using AintBnB.CommonMethodsAndProperties;
 using System.Text;
-using Windows.UI.Xaml.Media.Imaging;
 
 namespace AintBnB.ViewModels
 {
@@ -22,6 +21,9 @@ namespace AintBnB.ViewModels
         private int _expandScheduleByDays;
         private string _fromDate;
         private int _nights;
+        private List<Accommodation> _availableAccommodations;
+        private string _sortBy = "";
+        private string _ascOrDesc = "";
 
         public int UserId
         {
@@ -83,8 +85,36 @@ namespace AintBnB.ViewModels
             }
         }
 
-        public List<byte[]> Picture { get; set; } = new List<byte[]>();
-   
+        public List<Accommodation> AvailableAccommodations
+        {
+            get { return _availableAccommodations; }
+            set
+            {
+                _availableAccommodations = value;
+                NotifyPropertyChanged("AvailableAccommodations");
+            }
+        }
+
+        public string SortBy
+        {
+            get { return _sortBy; }
+            set
+            {
+                _sortBy = value;
+                NotifyPropertyChanged("SortBy");
+            }
+        }
+
+        public string AscOrDesc
+        {
+            get { return _ascOrDesc; }
+            set
+            {
+                _ascOrDesc = value;
+                NotifyPropertyChanged("AscOrDesc");
+            }
+        }
+
         public AccommodationViewModel()
         {
             _clientProvider.ControllerPartOfUri = "api/accommodation/";
@@ -120,7 +150,7 @@ namespace AintBnB.ViewModels
         public async Task<List<Accommodation>> GetAllAccommodations()
         {
             List<Accommodation> all = new List<Accommodation>();
-    
+
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri));
             if (response.IsSuccessStatusCode)
             {
@@ -134,9 +164,9 @@ namespace AintBnB.ViewModels
 
         public async Task<List<Accommodation>> GetAllAccommodationsOfAUser()
         {
-            List<Accommodation> all = new List<Accommodation>();
-
             _uniquePartOfUri = UserId.ToString() + "/allaccommodations";
+
+            List<Accommodation> all = new List<Accommodation>();
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             if (response.IsSuccessStatusCode)
@@ -151,16 +181,29 @@ namespace AintBnB.ViewModels
 
         public async Task<List<Accommodation>> GetAvailable()
         {
-            List<Accommodation> _all = new List<Accommodation>();
-
             _uniquePartOfUri = _accommodation.Address.Country + "/" + _accommodation.Address.City + "/" + FromDate + "/" + Nights.ToString();
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             if (response.IsSuccessStatusCode)
             {
                 string jsonAcc = await response.Content.ReadAsStringAsync();
-                _all = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAcc);
-                return _all;
+                AvailableAccommodations = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAcc);
+                return AvailableAccommodations;
+            }
+            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+        }
+
+        public async Task<List<Accommodation>> SortAvailableList()
+        {
+            _uniquePartOfUri = "sort/" + SortBy + "/" + AscOrDesc;
+
+
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonAcc = await response.Content.ReadAsStringAsync();
+                AvailableAccommodations = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAcc);
+                return AvailableAccommodations;
             }
             throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }

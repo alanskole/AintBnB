@@ -50,7 +50,7 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/change/{elements}")]
-        public IActionResult GetUser([FromRoute] string elements)
+        public IActionResult ChangePassword([FromRoute] string elements)
         {
             try
             {
@@ -73,6 +73,20 @@ namespace AintBnB.WebApi.Controllers
             try
             {
                 return Ok(_userService.GetAllUsers());
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/allcustomers")]
+        public IActionResult GetAllCustomers()
+        {
+            try
+            {
+                return Ok(_userService.GetAllUsersWithTypeCustomer());
             }
             catch (Exception ex)
             {

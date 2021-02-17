@@ -1,6 +1,7 @@
 ﻿using static AintBnB.BusinessLogic.Services.AuthenticationService;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using AintBnB.BusinessLogic.CustomExceptions;
 
 namespace AintBnB.WebApi.Controllers
 {
@@ -36,30 +37,40 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]/{id}")]
         public IActionResult DoesUserHaveCorrectRights([FromRoute] int id)
         {
-            try
-            {
-                CorrectUser(id);
+            if (CorrectUserOrAdminOrEmployee(id))
                 return Ok("User can access");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            else
+                return BadRequest(new AccessException());
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/elevatedrights")]
+        public IActionResult IsUserAdminOrEmployee([FromRoute] int id)
+        {
+            if (HasElevatedRights())
+                return Ok("User can access");
+            else
+                return BadRequest("User is neither admin or employee!");
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/employee")]
+        public IActionResult IsEmployee()
+        {
+            if (EmployeeChecker())
+                return Ok("User is employee");
+            else
+                return BadRequest("User is not employee!");
         }
 
         [HttpGet]
         [Route("api/[controller]/admin")]
         public IActionResult IsUserAdmin()
         {
-            try
-            {
-                AdminChecker();
+            if (AdminChecker())
                 return Ok("User is admin");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            else
+                return BadRequest("User is not admin!");
         }
 
         [HttpGet]

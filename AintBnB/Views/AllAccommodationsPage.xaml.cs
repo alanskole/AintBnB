@@ -32,7 +32,7 @@ namespace AintBnB.Views
 
             try
             {
-                await AuthenticationViewModel.IsAdmin();
+                await AuthenticationViewModel.IsEmployeeOrAdmin();
 
                 listView.ItemsSource = await AccommodationViewMode.GetAllAccommodations();
             }
@@ -59,9 +59,7 @@ namespace AintBnB.Views
 
         private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            AccommodationInfoPage infoPage = new AccommodationInfoPage();
-            Content = infoPage;
-            infoPage.ComboBoxAccommodations.SelectedIndex = listView.SelectedIndex;
+            Frame.Navigate(typeof(AccommodationInfoPage), listView.SelectedIndex);
         }
     }
 }

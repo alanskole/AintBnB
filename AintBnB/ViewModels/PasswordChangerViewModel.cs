@@ -1,5 +1,5 @@
 ﻿using AintBnB.Helpers;
-using AintBnB.Services;
+using AintBnB.CommonMethodsAndProperties;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
