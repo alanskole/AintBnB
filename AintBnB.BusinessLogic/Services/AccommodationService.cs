@@ -55,7 +55,7 @@ namespace AintBnB.BusinessLogic.Services
                 _iAccommodationRepository.Create(accommodation);
                 return accommodation;
             }
-            throw new AccessException($"Must be performed by the customer with ID {owner.Id}, or by admin or an employee on behalf of customer with ID {owner.Id}!");
+            throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
         }
 
         public void ValidateAccommodation(Accommodation accommodation)
@@ -135,7 +135,7 @@ namespace AintBnB.BusinessLogic.Services
                 _iAccommodationRepository.Update(id, acc);
             }
             else
-                throw new AccessException($"Must be performed by the customer with ID {accommodation.Owner.Id}, or by admin or an employee on behalf of customer with ID {accommodation.Owner.Id}!");
+                throw new AccessException($"Must be performed by a customer with ID {accommodation.Owner.Id}, or by admin or an employee on behalf of a customer with ID {accommodation.Owner.Id}!");
         }
 
         private static void ValidateUpdatedFields(int squareMeters, string description, int pricePerNight)
@@ -166,7 +166,7 @@ namespace AintBnB.BusinessLogic.Services
                 UpdateScheduleInDb(id, dateAndStatusOriginal);
             }
             else
-                throw new AccessException($"Must be performed by the customer with ID {ownerId}, or by admin or an employee on behalf of customer with ID {ownerId}!");
+                throw new AccessException($"Must be performed by a customer with ID {ownerId}, or by admin or an employee on behalf of a customer with ID {ownerId}!");
         }
 
         private static void MergeTwoSortedDictionaries(SortedDictionary<string, bool> dateAndStatusOriginal, SortedDictionary<string, bool> dateAndStatus)
