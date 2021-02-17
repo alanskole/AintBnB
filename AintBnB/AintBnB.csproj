@@ -141,7 +141,7 @@
     <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="Services\ActivationService.cs" />
     <Compile Include="Activation\DefaultActivationHandler.cs" />
-    <Compile Include="Services\HttpClientProvider.cs" />
+    <Compile Include="CommonMethodsAndProperties\HttpClientProvider.cs" />
     <Compile Include="Services\NavigationService.cs" />
     <Compile Include="ViewModels\AccommodationViewModel.cs" />
     <Compile Include="ViewModels\AuthenticationViewModel.cs" />
@@ -168,7 +168,7 @@
     <Compile Include="Views\BookingInfoPage.xaml.cs">
       <DependentUpon>BookingInfoPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="CommonMethods\CommonViewMethods.cs" />
+    <Compile Include="CommonMethodsAndProperties\CommonViewMethods.cs" />
     <Compile Include="Views\CreateAccommodationPage.xaml.cs">
       <DependentUpon>CreateAccommodationPage.xaml</DependentUpon>
     </Compile>

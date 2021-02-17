@@ -1,6 +1,6 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.Helpers;
-using AintBnB.Services;
+using AintBnB.CommonMethodsAndProperties;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
@@ -127,6 +127,22 @@ namespace AintBnB.ViewModels
             _uniquePartOfUri = "admin";
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            ResponseChecker(response);
+        }
+
+        public async Task IsEmployee()
+        {
+            _uniquePartOfUri = "employee";
+
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            ResponseChecker(response);
+        }
+
+        public async Task IsEmployeeOrAdmin()
+        {
+            _uniquePartOfUri = "elevatedrights";
+
+             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 

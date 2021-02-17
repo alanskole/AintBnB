@@ -8,28 +8,30 @@
     mc:Ignorable="d" Loaded="Page_Loaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <ScrollViewer>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="2*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.5*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                <ColumnDefinition Width="1.5*"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="1.5*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <ComboBox
-                Grid.Row="0"
+                Grid.Row="1"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -39,116 +41,117 @@
                 SelectionChanged="ComboBoxBookings_SelectionChanged"/>
 
             <TextBox
-                Grid.Row="1"
+                Grid.Row="2"
                 Grid.Column="1"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
                 IsReadOnly="True"
                 Header="Id of the booker"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
                 Text="{x:Bind BookingViewModel.Booking.BookedBy.Id, Mode=TwoWay}"
                 Name="bookedById"/>
-            
+
             <TextBox
-                IsReadOnly="True"
-                Grid.Row="1"
+                Grid.Row="2"
                 Grid.Column="2"
+                IsReadOnly="True"
+                Header="Username of the booker"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Header="Username of the booker"
                 Text="{x:Bind BookingViewModel.Booking.BookedBy.UserName, Mode=TwoWay}"
                 Name="bookedByUsername"/>
-            
-            <TextBox
-                Grid.Row="2"
-                Grid.Column="1"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                IsReadOnly="True"
-                Header="First name of the booker"
-                Text="{x:Bind BookingViewModel.Booking.BookedBy.FirstName, Mode=TwoWay}"
-                Name="bookedByFirstname"/>
-            
-            <TextBox
-                Grid.Row="2"
-                Grid.Column="2"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                IsReadOnly="True"
-                Header="Last name of the booker"
-                Text="{x:Bind BookingViewModel.Booking.BookedBy.LastName, Mode=TwoWay}"
-                Name="bookedByLastname"/>
-            
+
             <TextBox
                 Grid.Row="3"
                 Grid.Column="1"
+                IsReadOnly="True"
+                Header="First name of the booker"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
+                Text="{x:Bind BookingViewModel.Booking.BookedBy.FirstName, Mode=TwoWay}"
+                Name="bookedByFirstname"/>
+
+            <TextBox
+                Grid.Row="3"
+                Grid.Column="2"
+                IsReadOnly="True"
+                Header="Last name of the booker"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Text="{x:Bind BookingViewModel.Booking.BookedBy.LastName, Mode=TwoWay}"
+                Name="bookedByLastname"/>
+
+            <TextBox
+                Grid.Row="4"
+                Grid.Column="1"
                 IsReadOnly="True"
                 Header="Streetaddress"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
                 Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Street, Mode=TwoWay}"
                 Name="streetOfAccommodation"/>
             
             <TextBox
-                Grid.Row="3"
+                Grid.Row="4"
                 Grid.Column="2"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
                 IsReadOnly="True"
                 Header="Number of the building"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
                 Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Number, Mode=TwoWay}"
                 Name="numberOfAccommodation"/>
-            
+
             <TextBox
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="1"
+                IsReadOnly="True"
+                Header="Zip"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                IsReadOnly="True" Header="Zip"
                 Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Zip, Mode=TwoWay}"
                 Name="zipOfAccommodation"/>
-            
+
             <TextBox
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="2"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
                 IsReadOnly="True"
                 Header="Area"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
                 Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Area, Mode=TwoWay}"
                 Name="areaOfAccommodation"/>
-            
-            <TextBox
-                Grid.Row="5"
-                Grid.Column="1"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                IsReadOnly="True"
-                Header="City"
-                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.City, Mode=TwoWay}"
-                Name="cityOfAccommodation"/>
-            
-            <TextBox
-                Grid.Row="5"
-                Grid.Column="2"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                IsReadOnly="True"
-                Header="Country"
-                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Country, Mode=TwoWay}"
-                Name="countryOfAccommodation"/>
-            
+
             <TextBox
                 Grid.Row="6"
                 Grid.Column="1"
+                IsReadOnly="True"
+                Header="City"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
+                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.City, Mode=TwoWay}"
+                Name="cityOfAccommodation"/>
+
+            <TextBox
+                Grid.Row="6"
+                Grid.Column="2"
+                IsReadOnly="True"
+                Header="Country"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Country, Mode=TwoWay}"
+                Name="countryOfAccommodation"/>
+
+            <TextBox
+                Grid.Row="7"
+                Grid.Column="1"
                 IsReadOnly="True"
                 Header="Price of the booking"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
                 Text="{x:Bind BookingViewModel.Booking.Price, Mode=TwoWay}"
                 Name="priceOfBooking"/>
 
             <Button
-                Grid.Row="6"
+                Grid.Row="7"
                 Grid.Column="2"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -156,14 +159,14 @@
                 Content="Delete booking"/>
             
             <TextBlock
-                Grid.Row="7"
+                Grid.Row="8"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Text="Dates booked:"/>
 
             <ListView
-                Grid.Row="8"
+                Grid.Row="9"
                 Grid.ColumnSpan="2"
                 Grid.Column="1"
                 VerticalAlignment="Center"

@@ -13,9 +13,9 @@ namespace AintBnB.BusinessLogic.Repository
     {
         public readonly DatabaseContext _databaseContext = ProvideDependencyFactory.databaseContext;
 
-        public void Create(User humanoid)
+        public void Create(User user)
         {
-            _databaseContext.User.Add(humanoid);
+            _databaseContext.User.Add(user);
             _databaseContext.SaveChanges();
         }
 
@@ -35,14 +35,14 @@ namespace AintBnB.BusinessLogic.Repository
             return _databaseContext.User.Find(id);
         }
 
-        public void Update(int id, User humanoid)
+        public void Update(int id, User updatedUser)
         {
             var user = _databaseContext.User.Find(id);
-            user.UserName = humanoid.UserName;
-            user.Password = humanoid.Password;
-            user.FirstName = humanoid.FirstName;
-            user.LastName = humanoid.LastName;
-            user.UserType = humanoid.UserType;
+            user.UserName = updatedUser.UserName;
+            user.Password = updatedUser.Password;
+            user.FirstName = updatedUser.FirstName;
+            user.LastName = updatedUser.LastName;
+            user.UserType = updatedUser.UserType;
             _databaseContext.SaveChanges();
         }
     }

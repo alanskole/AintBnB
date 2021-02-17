@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
+using static AintBnB.CommonMethodsAndProperties.CommonViewMethods;
 
 namespace AintBnB.Views
 {
@@ -35,16 +37,32 @@ namespace AintBnB.Views
             }
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            WhenNavigatedToView(e, ComboBoxBookings);
+        }
+
         private async void Button_Click_Delete(object sender, RoutedEventArgs e)
         {
-            try
+            var dialog = new MessageDialog("This will delete the booking! Are you sure?");
+            dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
+            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
+            var res = await dialog.ShowAsync();
+
+            if ((int)res.Id == 0)
             {
-                await BookingViewModel.DeleteABooking();
-                await new MessageDialog("Deletion ok!").ShowAsync();
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.Message).ShowAsync();
+                try
+                {
+                    await BookingViewModel.DeleteABooking();
+                    await new MessageDialog("Deletion ok!").ShowAsync();
+                    Frame.Navigate(typeof(BookingInfoPage));
+                }
+                catch (Exception ex)
+                {
+                    await new MessageDialog(ex.Message).ShowAsync();
+                }
             }
         }
 

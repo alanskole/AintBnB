@@ -1,5 +1,4 @@
-﻿using AintBnB.Core.Models;
-using AintBnB.ViewModels;
+﻿using AintBnB.ViewModels;
 using System;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -41,9 +40,7 @@ namespace AintBnB.Views
                 return;
             }
 
-            Booking booking = (Booking)listView.SelectedItem;
-
-            BookingViewModel.Booking.Id = booking.Id;
+            BookingViewModel.Booking.Id = BookingViewModel.AllBookingsOfOwnedAccommodations[listView.SelectedIndex].Id;
 
             var container = new StackPanel();
 
@@ -81,7 +78,6 @@ namespace AintBnB.Views
                     {
                         await new MessageDialog(ex.Message).ShowAsync();
                     }
-
                 }
             }
         }

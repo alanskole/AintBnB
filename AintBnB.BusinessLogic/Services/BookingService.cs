@@ -38,42 +38,25 @@ namespace AintBnB.BusinessLogic.Services
 
         public Booking GetBooking(int id)
         {
-            try
+            if (CorrectUserOrOwnerOrAdminOrEmployee(_iBookingRepository.Read(id).Accommodation.Owner.Id, _iBookingRepository.Read(id).BookedBy.Id))
             {
-                CorrectUserOrOwner(_iBookingRepository.Read(id).Accommodation.Owner.Id, _iBookingRepository.Read(id).BookedBy.Id);
+                Booking booking = _iBookingRepository.Read(id);
+
+                if (booking == null)
+                    throw new IdNotFoundException("Booking", id);
+
+                return booking;
             }
-            catch (Exception)
-            {
-
-                throw;
-            }
-
-            Booking booking = _iBookingRepository.Read(id);
-
-            if (booking == null)
-                throw new IdNotFoundException("Booking", id);
-
-            return booking;
+            throw new AccessException();
         }
 
-        public List<Booking> GetBookingsOnOwnedAccommodation(int userid)
+        public List<Booking> GetBookingsOfOwnedAccommodation(int userid)
         {
-            try
-            {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            AnyoneLoggedIn();
 
             List<Booking> bookingsOfOwnedAccommodation = new List<Booking>();
 
-            foreach (var booking in _iBookingRepository.GetAll())
-            {
-                if (booking.Accommodation.Owner.Id == userid)
-                    bookingsOfOwnedAccommodation.Add(booking);
-            }
+            FindAllBookingsOfOwnedAccommodation(userid, bookingsOfOwnedAccommodation);
 
             if (bookingsOfOwnedAccommodation.Count == 0)
                 throw new NoneFoundInDatabaseTableException(userid, "bookings of owned accommodations");
@@ -81,59 +64,25 @@ namespace AintBnB.BusinessLogic.Services
             return bookingsOfOwnedAccommodation;
         }
 
+        private void FindAllBookingsOfOwnedAccommodation(int userid, List<Booking> bookingsOfOwnedAccommodation)
+        {
+            foreach (var booking in _iBookingRepository.GetAll())
+            {
+                if (booking.Accommodation.Owner.Id == userid)
+                    bookingsOfOwnedAccommodation.Add(booking);
+            }
+        }
+
         public List<Booking> GetAllBookings()
         {
-            try
+            if (HasElevatedRights())
             {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            if (LoggedInAs.UserType == UserTypes.Admin)
-            {
-                try
-                {
-                    return GetAllInSystem();
-
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                return GetAllInSystem();
             }
             else
             {
-                try
-                {
-                    return GetOnlyOnesOwnedByUser();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                return GetOnlyOnesOwnedByUser();
             }
-            
-        }
-
-        private List<Booking> GetOnlyOnesOwnedByUser()
-        {
-            List<Booking> bookingsOfLoggedInUser = new List<Booking>();
-
-            foreach (var booking in _iBookingRepository.GetAll())
-            {
-                if (booking.BookedBy.Id == LoggedInAs.Id)
-                {
-                    bookingsOfLoggedInUser.Add(booking);
-                }
-            }
-
-            if (bookingsOfLoggedInUser.Count == 0)
-                throw new NoneFoundInDatabaseTableException(LoggedInAs.Id, "bookings");
-
-            return bookingsOfLoggedInUser;
         }
 
         private List<Booking> GetAllInSystem()
@@ -146,44 +95,62 @@ namespace AintBnB.BusinessLogic.Services
             return all;
         }
 
+        private List<Booking> GetOnlyOnesOwnedByUser()
+        {
+            List<Booking> bookingsOfLoggedInUser = new List<Booking>();
+
+            FindAllBookingsOfLoggedInUser(bookingsOfLoggedInUser);
+
+            if (bookingsOfLoggedInUser.Count == 0)
+                throw new NoneFoundInDatabaseTableException(LoggedInAs.Id, "bookings");
+
+            return bookingsOfLoggedInUser;
+        }
+
+        private void FindAllBookingsOfLoggedInUser(List<Booking> bookingsOfLoggedInUser)
+        {
+            foreach (var booking in _iBookingRepository.GetAll())
+            {
+                if (booking.BookedBy.Id == LoggedInAs.Id)
+                {
+                    bookingsOfLoggedInUser.Add(booking);
+                }
+            }
+        }
+
         public Booking Book(string startDate, User booker, int nights, Accommodation accommodation)
         {
-            try
+            if (CheckIfUserIsAllowedToPerformAction(booker.Id))
             {
-                CorrectUser(booker.Id);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                if (nights < 1)
+                    throw new ParameterException("Nights", "less than one");
 
-            if (nights < 1)
-                throw new ParameterException("Nights", "less than one");
+                startDate = startDate.Trim();
 
-            startDate = startDate.Trim();
-
-            if (AreAllDatesAvailable(accommodation.Schedule, startDate, nights))
-            {
-                List<string> datesBooked = new List<string>();
-                AddDatesToList(datesBooked, startDate, nights);
-                
-                try
+                if (AreAllDatesAvailable(accommodation.Schedule, startDate, nights))
                 {
-                    SetStatusToUnavailable(accommodation, datesBooked);
-                }
-                catch (Exception)
-                {
+                    List<string> datesBooked = new List<string>();
+                    AddDatesToList(datesBooked, startDate, nights);
 
-                    throw;
-                }
+                    try
+                    {
+                        SetStatusToUnavailable(accommodation, datesBooked);
+                    }
+                    catch (Exception)
+                    {
 
-                int totalPrice = nights * accommodation.PricePerNight;
-                Booking booking = new Booking(booker, accommodation, datesBooked, totalPrice);
-                _iBookingRepository.Create(booking);
-                return booking;
+                        throw;
+                    }
+
+                    int totalPrice = nights * accommodation.PricePerNight;
+                    Booking booking = new Booking(booker, accommodation, datesBooked, totalPrice);
+                    _iBookingRepository.Create(booking);
+                    return booking;
+                }
+                else
+                    throw new DateException("Dates aren't available");
             }
-            else
-                throw new DateException("Dates aren't available");
+            throw new AccessException($"Must be performed by the customer with ID {booker.Id}, or by admin or an employee on behalf of customer with ID {booker.Id}!");
         }
 
         private void AddDatesToList(List<string> datesBooked, string startDate, int nights)
@@ -200,15 +167,7 @@ namespace AintBnB.BusinessLogic.Services
             for (int i = 0; i < datesBooked.Count; i++)
                 accommodation.Schedule[datesBooked[i]] = false;
 
-            try
-            {
-                UpdateScheduleInDb(accommodation.Id, accommodation.Schedule);
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
+            UpdateScheduleInDb(accommodation.Id, accommodation.Schedule);
         }
     }
 }

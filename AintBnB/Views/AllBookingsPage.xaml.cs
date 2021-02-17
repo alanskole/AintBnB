@@ -30,9 +30,7 @@ namespace AintBnB.Views
 
         private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            BookingInfoPage infoPage = new BookingInfoPage();
-            Content = infoPage;
-            infoPage.ComboBoxBookings.SelectedIndex = listView.SelectedIndex;
+            Frame.Navigate(typeof(BookingInfoPage), listView.SelectedIndex);
         }
     }
 }

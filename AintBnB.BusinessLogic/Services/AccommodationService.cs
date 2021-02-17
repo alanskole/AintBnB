@@ -15,6 +15,7 @@ namespace AintBnB.BusinessLogic.Services
     public class AccommodationService : IAccommodationService
     {
         private IRepository<Accommodation> _iAccommodationRepository;
+        private List<Accommodation> _available;
 
         public IRepository<Accommodation> IAccommodationRepository
         {
@@ -37,11 +38,31 @@ namespace AintBnB.BusinessLogic.Services
             _iAccommodationRepository = accommodationRepo;
         }
 
+        public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, List<byte[]> picture, int daysToCreateScheduleFor)
+        {
+            if (CheckIfUserIsAllowedToPerformAction(owner.Id))
+            {
+                Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight);
+
+                accommodation.Picture = picture;
+
+                if (daysToCreateScheduleFor < 1)
+                    daysToCreateScheduleFor = 1;
+
+                ValidateAccommodation(accommodation);
+
+                CreateScheduleForXAmountOfDays(accommodation, daysToCreateScheduleFor);
+                _iAccommodationRepository.Create(accommodation);
+                return accommodation;
+            }
+            throw new AccessException($"Must be performed by the customer with ID {owner.Id}, or by admin or an employee on behalf of customer with ID {owner.Id}!");
+        }
+
         public void ValidateAccommodation(Accommodation accommodation)
         {
             if (accommodation.Owner.Id == 0)
                 throw new IdNotFoundException("User");
-            if(accommodation.Address.Street == null || accommodation.Address.Street.Trim().Length == 0)
+            if (accommodation.Address.Street == null || accommodation.Address.Street.Trim().Length == 0)
                 throw new ParameterException("Street", "empty");
             if (accommodation.Address.Number == 0)
                 throw new ParameterException("Number", "zero");
@@ -58,48 +79,9 @@ namespace AintBnB.BusinessLogic.Services
                 throw new ParameterException("PricePerNight", "zero");
         }
 
-        public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, List<byte[]> picture, int daysToCreateScheduleFor)
-        {
-            try
-            {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight);
-            
-            accommodation.Picture = picture;
-
-            if (daysToCreateScheduleFor < 1)
-                daysToCreateScheduleFor = 1;
-            
-            try
-            {
-                ValidateAccommodation(accommodation);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            CreateScheduleForXAmountOfDays(accommodation, daysToCreateScheduleFor);
-            _iAccommodationRepository.Create(accommodation);
-            return accommodation;
-        }
-
         public Accommodation GetAccommodation(int id)
         {
-            try
-            {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            AnyoneLoggedIn();
 
             Accommodation acc = _iAccommodationRepository.Read(id);
 
@@ -123,11 +105,7 @@ namespace AintBnB.BusinessLogic.Services
         {
             List<Accommodation> all = new List<Accommodation>();
 
-            foreach (var acc in GetAllAccommodations())
-            {
-                if (acc.Owner.Id == userid)
-                    all.Add(acc);
-            }
+            FindAllAccommodationsOfAUser(all, userid);
 
             if (all.Count == 0)
                 throw new NoneFoundInDatabaseTableException(userid, "accommodations");
@@ -135,22 +113,29 @@ namespace AintBnB.BusinessLogic.Services
             return all;
         }
 
+        private void FindAllAccommodationsOfAUser(List<Accommodation> all, int userid)
+        {
+            foreach (var acc in GetAllAccommodations())
+            {
+                if (acc.Owner.Id == userid)
+                    all.Add(acc);
+            }
+        }
+
         public void UpdateAccommodation(int id, Accommodation accommodation)
         {
-            try
+            if (CorrectUserOrAdminOrEmployee(_iAccommodationRepository.Read(id).Owner.Id))
             {
-                CorrectUser(_iAccommodationRepository.Read(id).Owner.Id);
                 GetAccommodation(id);
                 ValidateUpdatedFields(accommodation.SquareMeters, accommodation.Description, accommodation.PricePerNight);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            List<byte[]> picture = accommodation.Picture;
-            Accommodation acc = new Accommodation { Id = id, SquareMeters = accommodation.SquareMeters, AmountOfBedrooms = accommodation.AmountOfBedrooms, Description = accommodation.Description, PricePerNight = accommodation.PricePerNight, Picture = picture };
 
-            _iAccommodationRepository.Update(id, acc);
+                List<byte[]> picture = accommodation.Picture;
+                Accommodation acc = new Accommodation { Id = id, SquareMeters = accommodation.SquareMeters, AmountOfBedrooms = accommodation.AmountOfBedrooms, Description = accommodation.Description, PricePerNight = accommodation.PricePerNight, Picture = picture };
+
+                _iAccommodationRepository.Update(id, acc);
+            }
+            else
+                throw new AccessException($"Must be performed by the customer with ID {accommodation.Owner.Id}, or by admin or an employee on behalf of customer with ID {accommodation.Owner.Id}!");
         }
 
         private static void ValidateUpdatedFields(int squareMeters, string description, int pricePerNight)
@@ -165,32 +150,23 @@ namespace AintBnB.BusinessLogic.Services
 
         public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days)
         {
-            try
+            int ownerId = _iAccommodationRepository.Read(id).Owner.Id;
+
+            if (CorrectUserOrAdminOrEmployee(ownerId))
             {
-                CorrectUser(_iAccommodationRepository.Read(id).Owner.Id);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                SortedDictionary<string, bool> dateAndStatusOriginal = _iAccommodationRepository.Read(id).Schedule;
+                SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
 
-            SortedDictionary<string, bool> dateAndStatusOriginal = _iAccommodationRepository.Read(id).Schedule;
-            SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
+                DateTime fromDate = DateTime.Parse(dateAndStatusOriginal.Keys.Last()).AddDays(1);
 
-            DateTime fromDate = DateTime.Parse(dateAndStatusOriginal.Keys.Last()).AddDays(1);
+                addDaysToDate(days, fromDate, dateAndStatus);
 
-            addDaysToDate(days, fromDate, dateAndStatus);
+                MergeTwoSortedDictionaries(dateAndStatusOriginal, dateAndStatus);
 
-            MergeTwoSortedDictionaries(dateAndStatusOriginal, dateAndStatus);
-
-            try
-            {
                 UpdateScheduleInDb(id, dateAndStatusOriginal);
             }
-            catch (Exception)
-            {
-                throw;
-            }
+            else
+                throw new AccessException($"Must be performed by the customer with ID {ownerId}, or by admin or an employee on behalf of customer with ID {ownerId}!");
         }
 
         private static void MergeTwoSortedDictionaries(SortedDictionary<string, bool> dateAndStatusOriginal, SortedDictionary<string, bool> dateAndStatus)
@@ -222,23 +198,16 @@ namespace AintBnB.BusinessLogic.Services
 
         public List<Accommodation> FindAvailable(string country, string city, string startdate, int nights)
         {
-            try
-            {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            AnyoneLoggedIn();
 
-            List<Accommodation> availableOnes = new List<Accommodation>();
+            _available = new List<Accommodation>();
 
-            SearchInCountryAndCity(country, city, startdate, nights, availableOnes);
+            SearchInCountryAndCity(country, city, startdate, nights, _available);
 
-            if (availableOnes.Count > 0)
-                return availableOnes;
-            else
+            if (_available.Count == 0)
                 throw new DateException(($"No available accommodations found in {country}, {city} from {startdate} for {nights} nights"));
+
+            return _available;
         }
 
         private void SearchInCountryAndCity(string country, string city, string startdate, int nights, List<Accommodation> availableOnes)
@@ -255,6 +224,36 @@ namespace AintBnB.BusinessLogic.Services
         {
             if (AreAllDatesAvailable(acm.Schedule, startDate, nights))
                 availableOnes.Add(acm);
+        }
+
+        public List<Accommodation> SortListOfAccommodations(string sortBy, string ascOrDesc)
+        {
+            if (_available == null || _available.Count == 0)
+                throw new NoneFoundInDatabaseTableException("available accommodations");
+
+            if (sortBy == "Price")
+            {
+                if (ascOrDesc == "Descending")
+                    _available.Sort((x, y) => y.PricePerNight.CompareTo(x.PricePerNight));
+                else if (ascOrDesc == "Ascending")
+                    _available.Sort((x, y) => x.PricePerNight.CompareTo(y.PricePerNight));
+            }
+            else if (sortBy == "Distance")
+            {
+                if (ascOrDesc == "Descending")
+                    _available.Sort((x, y) => y.KilometersFromCenter.CompareTo(x.KilometersFromCenter));
+                else if (ascOrDesc == "Ascending")
+                    _available.Sort((x, y) => x.KilometersFromCenter.CompareTo(y.KilometersFromCenter));
+            }
+            else if (sortBy == "Size")
+            {
+                if (ascOrDesc == "Descending")
+                    _available.Sort((x, y) => y.SquareMeters.CompareTo(x.SquareMeters));
+                else if (ascOrDesc == "Ascending")
+                    _available.Sort((x, y) => x.SquareMeters.CompareTo(y.SquareMeters));
+            }
+
+            return _available;
         }
     }
 }

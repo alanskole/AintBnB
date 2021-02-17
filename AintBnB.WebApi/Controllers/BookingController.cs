@@ -10,11 +10,15 @@ namespace AintBnB.WebApi.Controllers
     public class BookingController : ControllerBase
     {
         private IBookingService _bookingService;
+        private IUserService _userService;
+        private IAccommodationService _accommodationService;
         private IDeletionService _deletionService;
 
         public BookingController()
         {
             _bookingService = ProvideDependencyFactory.bookingService;
+            _userService = ProvideDependencyFactory.userService;
+            _accommodationService = ProvideDependencyFactory.accommodationService;
             _deletionService = ProvideDependencyFactory.deletionService;
         }
 
@@ -24,8 +28,8 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                User booker = ProvideDependencyFactory.userService.GetUser(bookerId);
-                Accommodation accommodation = ProvideDependencyFactory.accommodationService.GetAccommodation(accommodationId);
+                User booker = _userService.GetUser(bookerId);
+                Accommodation accommodation = _accommodationService.GetAccommodation(accommodationId);
                 Booking booking = _bookingService.Book(startDate, booker, nights, accommodation);
                 return Ok(booking);
             }
@@ -55,7 +59,7 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                return Ok(_bookingService.GetBookingsOnOwnedAccommodation(id));
+                return Ok(_bookingService.GetBookingsOfOwnedAccommodation(id));
             }
             catch (Exception ex)
             {

@@ -5,8 +5,7 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
-using AintBnB.Services;
-using System.Text;
+using AintBnB.CommonMethodsAndProperties;
 
 namespace AintBnB.ViewModels
 {
@@ -19,6 +18,7 @@ namespace AintBnB.ViewModels
         private string _uniquePartOfUri;
         private Booking _booking = new Booking {BookedBy = new User(), Accommodation = new Accommodation(), Dates = new List<string>()};
         private int _userId;
+        List<Booking> _allBookingsOfOwnedAccommodations;
 
         public string StartDate
         {
@@ -57,6 +57,16 @@ namespace AintBnB.ViewModels
             {
                 _userId = value;
                 NotifyPropertyChanged("UserId");
+            }
+        }
+
+        public List<Booking> AllBookingsOfOwnedAccommodations
+        {
+            get { return _allBookingsOfOwnedAccommodations; }
+            set
+            {
+                _allBookingsOfOwnedAccommodations = value;
+                NotifyPropertyChanged("AllBookingsOfOwnedAccommodations");
             }
         }
 
@@ -114,16 +124,14 @@ namespace AintBnB.ViewModels
 
         public async Task<List<Booking>> GetAllBookingsOfOwnedAccommodations()
         {
-            List<Booking> all = new List<Booking>();
-
             _uniquePartOfUri = UserId.ToString() + "/" + "bookingsownaccommodation";
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             if (response.IsSuccessStatusCode)
             {
                 string jsonBookings = await response.Content.ReadAsStringAsync();
-                all = JsonConvert.DeserializeObject<List<Booking>>(jsonBookings);
-                return all;
+                AllBookingsOfOwnedAccommodations = JsonConvert.DeserializeObject<List<Booking>>(jsonBookings);
+                return AllBookingsOfOwnedAccommodations;
             }
             else
                 throw new ArgumentException(response.Content.ReadAsStringAsync().Result);

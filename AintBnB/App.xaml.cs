@@ -1,7 +1,5 @@
 ﻿using System;
-
 using AintBnB.Services;
-
 using Windows.ApplicationModel.Activation;
 using Windows.UI.Xaml;
 

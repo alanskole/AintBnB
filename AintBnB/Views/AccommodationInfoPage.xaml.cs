@@ -6,7 +6,8 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
-using static AintBnB.CommonMethods.CommonViewMethods;
+using Windows.UI.Xaml.Navigation;
+using static AintBnB.CommonMethodsAndProperties.CommonViewMethods;
 
 namespace AintBnB.Views
 {
@@ -38,7 +39,7 @@ namespace AintBnB.Views
 
             try
             {
-                await AuthenticationViewModel.IsAdmin();
+                await AuthenticationViewModel.IsEmployeeOrAdmin();
 
                 foreach (var acc in await AccommodationViewModel.GetAllAccommodations())
                     ids.Add(acc.Id);
@@ -68,6 +69,13 @@ namespace AintBnB.Views
             }
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            WhenNavigatedToView(e, ComboBoxAccommodations);
+        }
+
         private async void ComboBoxAccommodations_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             try
@@ -91,6 +99,7 @@ namespace AintBnB.Views
             {
                 await AccommodationViewModel.UpdateAccommodation();
                 await new MessageDialog("Update ok").ShowAsync();
+                Frame.Navigate(typeof(AccommodationInfoPage));
             }
             catch (Exception ex)
             {
@@ -104,6 +113,7 @@ namespace AintBnB.Views
             {
                 await AccommodationViewModel.ExpandScheduleOfAccommodation();
                 await new MessageDialog("Expansion of schedule ok").ShowAsync();
+                Frame.Navigate(typeof(AccommodationInfoPage));
             }
             catch (Exception ex)
             {

@@ -5,8 +5,7 @@ using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
-using AintBnB.Services;
-using System.Text;
+using AintBnB.CommonMethodsAndProperties;
 
 namespace AintBnB.ViewModels
 {
