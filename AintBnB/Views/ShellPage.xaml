@@ -11,11 +11,7 @@
     xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
     xmlns:i="using:Microsoft.Xaml.Interactivity"
     mc:Ignorable="d" >
-    
-    <Page.Resources>
-        <SolidColorBrush x:Key="NavigationViewSelectionIndicatorForeground" Color="Transparent" />
-    </Page.Resources>
-    
+
     <i:Interaction.Behaviors>
         <ic:EventTriggerBehavior EventName="Loaded">
             <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />

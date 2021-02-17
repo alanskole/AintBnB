@@ -8,29 +8,32 @@
     mc:Ignorable="d" Loaded="Page_Loaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <ScrollViewer>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
-                <RowDefinition></RowDefinition>
-                <RowDefinition Height="*"></RowDefinition>
+                <RowDefinition Height="2*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="0.5*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="1*"></ColumnDefinition>
-                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                <ColumnDefinition Width="1.5*"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="1.5*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <ComboBox
+                Grid.Row="1"
                 Grid.Column="1"
                 x:Name="ComboBoxAccommodations"
                 x:FieldModifier="public"
@@ -40,7 +43,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="1"
+                Grid.Row="2"
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="Street"
@@ -50,7 +53,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="1"
+                Grid.Row="2"
                 Grid.Column="2"
                 IsReadOnly="True"
                 Header="Number"
@@ -60,7 +63,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="2"
+                Grid.Row="3"
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="Zip"
@@ -70,7 +73,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="2"
+                Grid.Row="3"
                 Grid.Column="2"
                 IsReadOnly="True"
                 Header="Area"
@@ -80,7 +83,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="3"
+                Grid.Row="4"
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="City"
@@ -90,7 +93,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="3"
+                Grid.Row="4"
                 Grid.Column="2"
                 IsReadOnly="True"
                 Header="Country"
@@ -100,7 +103,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="1"
                 Header="Square meters"
                 Text="{x:Bind AccommodationViewModel.Accommodation.SquareMeters, Mode=TwoWay}"
@@ -109,7 +112,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="2"
                 Header="Amount of bedrooms"
                 Text="{x:Bind AccommodationViewModel.Accommodation.AmountOfBedrooms, Mode=TwoWay}"
@@ -118,7 +121,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="5"
+                Grid.Row="6"
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="Kilometers from center"
@@ -128,7 +131,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="5"
+                Grid.Row="6"
                 Grid.Column="2"
                 Header="Price per night"
                 Text="{x:Bind AccommodationViewModel.Accommodation.PricePerNight, Mode=TwoWay}"
@@ -137,7 +140,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="6"
+                Grid.Row="7"
                 Grid.Column="1"
                 Header="Expand the schudle by days"
                 Text="{x:Bind AccommodationViewModel.ExpandScheduleByDays, Mode=TwoWay}"
@@ -146,7 +149,7 @@
                 HorizontalAlignment="Center"/>
 
             <Button
-                Grid.Row="6"
+                Grid.Row="7"
                 Grid.Column="2"
                 Click="Button_Click_Expand"
                 Content="Expand schedule"
@@ -154,17 +157,18 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="7"
+                Grid.Row="8"
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
                 Header="Description"
                 Text="{x:Bind AccommodationViewModel.Accommodation.Description, Mode=TwoWay}"
                 Name="description"
                 VerticalAlignment="Center"
-                HorizontalAlignment="Center"/>
+                HorizontalAlignment="Center"
+                MaxWidth="500"/>
 
             <Button
-                Grid.Row="8"
+                Grid.Row="9"
                 Grid.Column="1"
                 Click="Button_Click_Update"
                 Content="Update"
@@ -172,7 +176,7 @@
                 HorizontalAlignment="Center"/>
 
             <Button
-                Grid.Row="8"
+                Grid.Row="9"
                 Grid.Column="2"
                 Click="Button_Click_Delete"
                 Content="Delete"
@@ -180,7 +184,7 @@
                 HorizontalAlignment="Center"/>
 
             <Button
-                Grid.Row="9"
+                Grid.Row="10"
                 Grid.ColumnSpan="2"
                 Grid.Column="1"
                 Click="Button_Click_Upload"
@@ -189,7 +193,7 @@
                 HorizontalAlignment="Center"/>
 
             <ListView
-                Grid.Row="10"
+                Grid.Row="11"
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
                 VerticalAlignment="Center"
@@ -201,7 +205,7 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Image Source="{Binding}" Height="Auto" Width="Auto" />
+                            <Image Source="{Binding}" Height="400" Width="400" />
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>

@@ -63,25 +63,25 @@ namespace AintBnB.BusinessLogic.Services
 
         public void DeleteUser(int id)
         {
-            User user = _iUserRepository.Read(id);
-
-            if (user == null)
-                throw new IdNotFoundException("User", id);
-
-            try
+            if (CorrectUserOrAdmin(id))
             {
-                CorrectUser(id);
+                CheckIfUserCanBeDeleted(_iUserRepository.Read(id));
                 DeleteUsersAccommodations(id);
                 DeleteUsersBookings(id);
+                _iUserRepository.Delete(id);
             }
-            catch (Exception)
-            {
-
-                throw;
-            }
-            _iUserRepository.Delete(id);
+            else
+                throw new AccessException($"Administrator or user with ID {id} only!");
         }
 
+        private static void CheckIfUserCanBeDeleted(User user)
+        {
+            if (user == null)
+                throw new IdNotFoundException("User", user.Id);
+
+            if (user.UserType == UserTypes.Admin)
+                throw new AccessException("Admin cannot be deleted!");
+        }
 
         private void DeleteUsersAccommodations(int id)
         {
@@ -89,14 +89,7 @@ namespace AintBnB.BusinessLogic.Services
             {
                 if (accommodation.Owner == _iUserRepository.Read(id))
                 {
-                    try
-                    {
-                        DeleteAccommodation(accommodation.Id);
-                    }
-                    catch (Exception)
-                    {
-                        throw;
-                    }
+                    DeleteAccommodation(accommodation.Id);
                 }
             }
         }
@@ -123,19 +116,20 @@ namespace AintBnB.BusinessLogic.Services
         {
             Accommodation accommodation = _iAccommodationRepository.Read(id);
 
-            if (accommodation == null)
-                throw new IdNotFoundException("Accommodation", id);
+            CanAccommodationBeDeleted(accommodation);
 
-            try
-            {
-                CorrectUser(accommodation.Owner.Id);
-                DeleteAccommodationBookings(id);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            DeleteAccommodationBookings(accommodation.Id);
+
             _iAccommodationRepository.Delete(id);
+        }
+
+        private void CanAccommodationBeDeleted(Accommodation accommodation)
+        {
+            if (accommodation == null)
+                throw new IdNotFoundException("Accommodation", accommodation.Id);
+
+            if (!CorrectUserOrAdminOrEmployee(accommodation.Owner.Id))
+                throw new AccessException($"Administrator, employee or user with ID {accommodation.Owner.Id} only!");
         }
 
         private void DeleteAccommodationBookings(int id)
@@ -163,23 +157,10 @@ namespace AintBnB.BusinessLogic.Services
             if (booking == null)
                 throw new IdNotFoundException("Booking", id);
 
-            try
-            {
-                CorrectUserOrOwner(booking.Accommodation.Owner.Id, booking.BookedBy.Id);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
-            try
-            {
+            if (CorrectUserOrOwnerOrAdminOrEmployee(booking.Accommodation.Owner.Id, booking.BookedBy.Id))
                 CancelationDeadlineCheck(id);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            else
+                throw new AccessException();
         }
 
         private void CancelationDeadlineCheck(int id)

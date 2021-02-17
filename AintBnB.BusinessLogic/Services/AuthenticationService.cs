@@ -1,13 +1,15 @@
 ﻿using AintBnB.Core.Models;
 using System;
 using AintBnB.BusinessLogic.DependencyProviderFactory;
-using BCrypt.Net;
 using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Repository;
 
 namespace AintBnB.BusinessLogic.Services
 {
     static public class AuthenticationService
     {
+        private static IRepository<User> _userRepository = ProvideDependencyFactory.userRepository;
+
         public static User LoggedInAs;
         public static void AnyoneLoggedIn()
         {
@@ -15,69 +17,105 @@ namespace AintBnB.BusinessLogic.Services
                 throw new LoginExcrption("Not logged in!");
         }
 
-        public static void AdminChecker()
+        public static bool AdminChecker()
         {
-            try
-            {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            AnyoneLoggedIn();
 
-            if (LoggedInAs.UserType != UserTypes.Admin)
-                throw new AccessException();
+            if (LoggedInAs.UserType == UserTypes.Admin)
+                return true;
+
+            return false;
         }
 
-        public static void CorrectUser(int id)
+        public static bool EmployeeChecker()
         {
-            try
-            {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            AnyoneLoggedIn();
 
-            if (id != LoggedInAs.Id)
-            {
-                try
-                {
-                    AdminChecker();
-                }
-                catch (Exception)
-                {
-                    throw new AccessException(id);
-                }
-            }
+            if (LoggedInAs.UserType == UserTypes.Employee)
+                return true;
+
+            return false;
         }
 
-        public static void CorrectUserOrOwner(int idOwner, int userId)
+        public static bool EmployeeCanOnlyHandleCustomerAccounts(int id)
         {
-            try
+            if (EmployeeChecker())
             {
-                AnyoneLoggedIn();
+                if (_userRepository.Read(id).UserType == UserTypes.Customer || id == LoggedInAs.Id)
+                    return true;
             }
-            catch (Exception)
+            return false;
+        }
+
+        public static bool CorrectUserOrAdminOrEmployee(int id)
+        {
+            if (AdminChecker())
+                return true;
+
+            if (id == LoggedInAs.Id)
+                return true;
+
+            User user = _userRepository.Read(id);
+
+            if (EmployeeChecker())
             {
-                throw;
+                if (user.UserType != UserTypes.Admin && user.UserType != UserTypes.Employee)
+                    return true;
             }
+
+            return false;
+        }
+
+        public static bool HasElevatedRights()
+        {
+            if (AdminChecker() || EmployeeChecker())
+                return true;
+
+            return false;
+        }
+
+        public static bool CorrectUserOrAdmin(int id)
+        {
+            if (EmployeeChecker())
+                return false;
+
+            if (AdminChecker())
+                return true;
+
+            if (id == LoggedInAs.Id)
+                return true;
+
+            return false;
+        }
+
+        public static bool CorrectUserOrOwnerOrAdminOrEmployee(int idOwner, int userId)
+        {
+            AnyoneLoggedIn();
 
             if (idOwner != LoggedInAs.Id)
             {
-                try
-                {
-                    CorrectUser(userId);
-                }
-                catch (Exception)
-                {
-                    throw new AccessException(idOwner, userId);
-                }
+                if (!CorrectUserOrAdminOrEmployee(userId))
+                    return false;
             }
+            return true;
         }
-        
+
+        public static bool CheckIfUserIsAllowedToPerformAction(int id)
+        {
+            AnyoneLoggedIn();
+
+            User user = _userRepository.Read(id);
+
+            if (user.UserType != UserTypes.Customer)
+                return false;
+
+            if (user.Id != LoggedInAs.Id)
+            {
+                if (!HasElevatedRights())
+                    return false;
+            }
+            return true;
+        }
 
         public static string HashPassword(string password)
         {
@@ -120,7 +158,7 @@ namespace AintBnB.BusinessLogic.Services
 
         private static void LoginUser(string userName, string password)
         {
-            foreach (User user in ProvideDependencyFactory.userRepository.GetAll())
+            foreach (User user in _userRepository.GetAll())
             {
                 if (string.Equals(user.UserName, userName))
                 {

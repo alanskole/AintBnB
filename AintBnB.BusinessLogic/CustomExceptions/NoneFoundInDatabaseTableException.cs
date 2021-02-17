@@ -10,7 +10,7 @@ namespace AintBnB.BusinessLogic.CustomExceptions
         public NoneFoundInDatabaseTableException(int id, string type) : base($"User with Id {id} doesn't have any {type}!")
         {
         }
-        public NoneFoundInDatabaseTableException(string type) : base($"No {type} found in the database!")
+        public NoneFoundInDatabaseTableException(string type) : base($"No {type} found!")
         {
         }
     }

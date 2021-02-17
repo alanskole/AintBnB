@@ -11,5 +11,6 @@ namespace AintBnB.BusinessLogic.Services
         List<User> GetAllUsers();
         User GetUser(int id);
         void UpdateUser(int id, User updatedUser);
+        List<User> GetAllUsersWithTypeCustomer();
     }
 }

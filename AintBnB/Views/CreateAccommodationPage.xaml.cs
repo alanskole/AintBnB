@@ -1,15 +1,18 @@
 ﻿using AintBnB.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using static AintBnB.CommonMethods.CommonViewMethods;
+using static AintBnB.CommonMethodsAndProperties.CommonViewMethods;
 
 namespace AintBnB.Views
 {
     public sealed partial class CreateAccommodationPage : Page
     {
         public AccommodationViewModel AccommodationViewModel { get; } = new AccommodationViewModel();
+        public UserViewModel UserViewModel { get; } = new UserViewModel();
         public EuropeViewModel EuropeViewModel { get; } = new EuropeViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
 
@@ -22,13 +25,47 @@ namespace AintBnB.Views
         {
             try
             {
+                await FindUserType();
+
                 ComboBoxCountries.ItemsSource = await EuropeViewModel.GetAllCountriesInEurope();
 
-                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
             }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message).ShowAsync();
+            }
+        }
+
+        private async Task FindUserType()
+        {
+            try
+            {
+                await AuthenticationViewModel.IsEmployeeOrAdmin();
+
+                ComboBoxUsers.Visibility = Visibility.Visible;
+
+                List<int> ids = new List<int>();
+
+                foreach (var user in await UserViewModel.GetAllCustomers())
+                    ids.Add(user.Id);
+
+                ComboBoxUsers.ItemsSource = ids;
+            }
+            catch (Exception)
+            {
+                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+            }
+        }
+
+        private void ComboBoxUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                AccommodationViewModel.UserId = int.Parse(ComboBoxUsers.SelectedValue.ToString());
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
 
@@ -52,6 +89,7 @@ namespace AintBnB.Views
             {
                 await AccommodationViewModel.CreateAccommodation();
                 await new MessageDialog("Creation ok!").ShowAsync();
+                Frame.Navigate(typeof(CreateAccommodationPage));
             }
             catch (Exception ex)
             {

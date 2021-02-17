@@ -36,16 +36,9 @@ namespace AintBnB.BusinessLogic.Services
         public User CreateUser(string userName, string password, string firstName, string lastName)
         {
 
-            try
-            {
-                IsUserNameFree(userName);
-                ValidateUser(userName, firstName, lastName);
-                ValidatePassword(password);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            IsUserNameFree(userName);
+            ValidateUser(userName, firstName, lastName);
+            ValidatePassword(password);
 
             User user = new User();
             user.Password = HashPassword(password.Trim());
@@ -84,97 +77,120 @@ namespace AintBnB.BusinessLogic.Services
 
         public User GetUser(int id)
         {
-            try
+            if (CorrectUserOrAdminOrEmployee(id))
             {
-                CorrectUser(id);
+                User user = _iUserRepository.Read(id);
+
+                if (user == null)
+                    throw new IdNotFoundException("User", id);
+
+                OnlyAdminCanViewAdmin(user);
+
+                return user;
             }
-            catch (Exception)
+            throw new AccessException();
+        }
+
+        private static void OnlyAdminCanViewAdmin(User user)
+        {
+            if (user.UserType == UserTypes.Admin)
             {
-
-                throw;
+                if (!AdminChecker())
+                    throw new AccessException("Only admin can view admin");
             }
-
-            User user = _iUserRepository.Read(id);
-
-            if (user == null)
-                throw new IdNotFoundException("User", id);
-
-            return user;
         }
 
         public List<User> GetAllUsers()
         {
-            try
-            {
-                AdminChecker();
-            }
-            catch (Exception)
-            {
+            if (AdminChecker())
+                return AdminCanGetAllUsers();
 
-                throw;
-            }
+            List<User> allCustomersPlusLoggedinEmployee = GetAllUsersWithTypeCustomer();
 
+            allCustomersPlusLoggedinEmployee.Insert(0, LoggedInAs);
+
+            return allCustomersPlusLoggedinEmployee;
+        }
+
+        private List<User> AdminCanGetAllUsers()
+        {
             List<User> all = _iUserRepository.GetAll();
+            IsListEmpty(all);
+            return all;
+        }
 
-            if (all.Count == 0)
-                throw new NoneFoundInDatabaseTableException("users");
+        public List<User> GetAllUsersWithTypeCustomer()
+        {
+            List<User> all = new List<User>();
+
+            if (!HasElevatedRights())
+                return all;
+
+            foreach (var user in _iUserRepository.GetAll())
+            {
+                if (user.UserType == UserTypes.Customer)
+                    all.Add(user);
+            }
+            IsListEmpty(all);
 
             return all;
+        }
+
+        private static void IsListEmpty(List<User> all)
+        {
+            if (all.Count == 0)
+                throw new NoneFoundInDatabaseTableException("users");
         }
 
         public void UpdateUser(int id, User updatedUser)
         {
             User old;
 
-            try
+            if (CorrectUserOrAdminOrEmployee(id))
             {
-                CorrectUser(id);
                 old = GetUser(id);
                 ValidateUser(old.UserName, updatedUser.FirstName, updatedUser.LastName);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
 
-            updatedUser.UserName = old.UserName;
+                if (updatedUser.UserType != old.UserType)
+                    CanUserTypeBeUpdated();
 
-            _iUserRepository.Update(id, updatedUser);
+                updatedUser.UserName = old.UserName;
+
+                _iUserRepository.Update(id, updatedUser);
+            }
+            else
+                throw new AccessException();
+        }
+
+        private static void CanUserTypeBeUpdated()
+        {
+            if (!AdminChecker())
+                throw new AccessException("Only admin can change usertype!");
         }
 
         public void ChangePassword(string old, int userId, string new1, string new2)
         {
-            try
+            if (CorrectUserOrAdminOrEmployee(userId))
             {
-                CorrectUser(userId);
-            }
-            catch (Exception)
-            {
+                if (old == new1)
+                    throw new PasswordChangeException();
 
-                throw;
-            }
+                User user = GetUser(userId);
 
-            if (old == new1)
-                throw new PasswordChangeException();
+                string hashedOriginalPassword = user.Password;
 
-            string hashedOriginalPassword = GetUser(userId).Password;
+                if (new1 != new2)
+                    throw new PasswordChangeException("new");
 
-            if (new1 != new2)
-                throw new PasswordChangeException("new");
-
-            try
-            {
                 ValidatePassword(new1);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
 
-            if (UnHashPassword(old, hashedOriginalPassword))
-                GetUser(userId).Password = HashPassword(new1);
+                if (UnHashPassword(old, hashedOriginalPassword))
+                    user.Password = HashPassword(new1);
+                else
+                    throw new PasswordChangeException("old");
+            }
             else
-                throw new PasswordChangeException("old");
+                throw new AccessException();
         }
     }
 }

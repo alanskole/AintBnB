@@ -8,6 +8,6 @@ namespace AintBnB.BusinessLogic.Services
         Booking GetBooking(int id);
         List<Booking> GetAllBookings();
         Booking Book(string startDate, User booker, int nights, Accommodation accommodation);
-        List<Booking> GetBookingsOnOwnedAccommodation(int userId);
+        List<Booking> GetBookingsOfOwnedAccommodation(int userId);
     }
 }

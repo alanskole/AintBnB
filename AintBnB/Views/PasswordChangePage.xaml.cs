@@ -3,6 +3,7 @@ using System;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Navigation;
 
 namespace AintBnB.Views
 {
@@ -17,15 +18,15 @@ namespace AintBnB.Views
             this.InitializeComponent();
         }
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            try
+            base.OnNavigatedTo(e);
+
+            if (e.Parameter != null)
             {
-                PasswordChangerViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.Message).ShowAsync();
+                var parameter = int.Parse(e.Parameter.ToString());
+
+                PasswordChangerViewModel.UserId = parameter;
             }
         }
 
