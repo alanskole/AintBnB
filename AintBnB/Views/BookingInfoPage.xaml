@@ -21,6 +21,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -150,8 +151,26 @@
                 Text="{x:Bind BookingViewModel.Booking.Price, Mode=TwoWay}"
                 Name="priceOfBooking"/>
 
-            <Button
+            <TextBox
                 Grid.Row="7"
+                Grid.Column="2"
+                IsReadOnly="True"
+                Header="Cancellation deadline in days"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Text="{x:Bind BookingViewModel.Booking.Accommodation.CancellationDeadlineInDays, Mode=TwoWay}"
+                Name="cancellationDeadline"/>
+
+            <Button
+                Grid.Row="8"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_Update"
+                Content="Change Dates"/>
+            
+            <Button
+                Grid.Row="8"
                 Grid.Column="2"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -159,14 +178,14 @@
                 Content="Delete booking"/>
             
             <TextBlock
-                Grid.Row="8"
+                Grid.Row="9"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Text="Dates booked:"/>
 
             <ListView
-                Grid.Row="9"
+                Grid.Row="10"
                 Grid.ColumnSpan="2"
                 Grid.Column="1"
                 VerticalAlignment="Center"

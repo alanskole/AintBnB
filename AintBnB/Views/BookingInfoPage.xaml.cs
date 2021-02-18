@@ -44,6 +44,11 @@ namespace AintBnB.Views
             WhenNavigatedToView(e, ComboBoxBookings);
         }
 
+        private void Button_Click_Update(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(BookingUpdatePage), BookingViewModel.Booking.Id);
+        }
+
         private async void Button_Click_Delete(object sender, RoutedEventArgs e)
         {
             var dialog = new MessageDialog("This will delete the booking! Are you sure?");

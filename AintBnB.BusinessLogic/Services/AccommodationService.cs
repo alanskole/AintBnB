@@ -1,7 +1,7 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.BusinessLogic.DependencyProviderFactory;
 using AintBnB.BusinessLogic.Repository;
-using static AintBnB.BusinessLogic.Services.DateParser;
+using static AintBnB.BusinessLogic.Services.DateService;
 using static AintBnB.BusinessLogic.Services.UpdateScheduleInDatabase;
 using static AintBnB.BusinessLogic.Services.AllCountiresAndCitiesEurope;
 using static AintBnB.BusinessLogic.Services.AuthenticationService;
@@ -38,11 +38,11 @@ namespace AintBnB.BusinessLogic.Services
             _iAccommodationRepository = accommodationRepo;
         }
 
-        public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, List<byte[]> picture, int daysToCreateScheduleFor)
+        public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, List<byte[]> picture, int daysToCreateScheduleFor)
         {
             if (CheckIfUserIsAllowedToPerformAction(owner.Id))
             {
-                Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight);
+                Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight, cancellationDeadlineInDays);
 
                 accommodation.Picture = picture;
 
@@ -77,6 +77,8 @@ namespace AintBnB.BusinessLogic.Services
                 throw new ParameterException("Description", "empty");
             if (accommodation.PricePerNight == 0)
                 throw new ParameterException("PricePerNight", "zero");
+            if (accommodation.CancellationDeadlineInDays < 1)
+                throw new ParameterException("Cancellation deadline", "less than one day");
         }
 
         public Accommodation GetAccommodation(int id)
@@ -127,18 +129,17 @@ namespace AintBnB.BusinessLogic.Services
             if (CorrectUserOrAdminOrEmployee(_iAccommodationRepository.Read(id).Owner.Id))
             {
                 GetAccommodation(id);
-                ValidateUpdatedFields(accommodation.SquareMeters, accommodation.Description, accommodation.PricePerNight);
+                ValidateUpdatedFields(accommodation.SquareMeters, accommodation.Description, accommodation.PricePerNight, accommodation.CancellationDeadlineInDays);
 
-                List<byte[]> picture = accommodation.Picture;
-                Accommodation acc = new Accommodation { Id = id, SquareMeters = accommodation.SquareMeters, AmountOfBedrooms = accommodation.AmountOfBedrooms, Description = accommodation.Description, PricePerNight = accommodation.PricePerNight, Picture = picture };
+                accommodation.Id = id;
 
-                _iAccommodationRepository.Update(id, acc);
+                _iAccommodationRepository.Update(id, accommodation);
             }
             else
                 throw new AccessException($"Must be performed by a customer with ID {accommodation.Owner.Id}, or by admin or an employee on behalf of a customer with ID {accommodation.Owner.Id}!");
         }
 
-        private static void ValidateUpdatedFields(int squareMeters, string description, int pricePerNight)
+        private static void ValidateUpdatedFields(int squareMeters, string description, int pricePerNight, int cancellationDeadlineInDays)
         {
             if (squareMeters == 0)
                 throw new ParameterException("SquareMeters", "zero");
@@ -146,6 +147,8 @@ namespace AintBnB.BusinessLogic.Services
                 throw new ParameterException("Description", "empty");
             if (pricePerNight == 0)
                 throw new ParameterException("PricePerNight", "zero");
+            if (cancellationDeadlineInDays < 1)
+                throw new ParameterException("Cancellation deadline", "less than one day");
         }
 
         public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days)

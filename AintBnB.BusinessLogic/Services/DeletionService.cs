@@ -2,10 +2,11 @@
 using AintBnB.BusinessLogic.Repository;
 using System;
 using AintBnB.BusinessLogic.DependencyProviderFactory;
-using static AintBnB.BusinessLogic.Services.DateParser;
+using static AintBnB.BusinessLogic.Services.DateService;
 using static AintBnB.BusinessLogic.Services.UpdateScheduleInDatabase;
 using static AintBnB.BusinessLogic.Services.AuthenticationService;
 using AintBnB.BusinessLogic.CustomExceptions;
+using System.Collections.Generic;
 
 namespace AintBnB.BusinessLogic.Services
 {
@@ -106,7 +107,7 @@ namespace AintBnB.BusinessLogic.Services
                     }
                     catch (Exception)
                     {
-                        throw new CancelBookingException("user", id);
+                        throw new CancelBookingException("user", id, booking.Accommodation.CancellationDeadlineInDays);
                     }
                 }
             }
@@ -144,7 +145,7 @@ namespace AintBnB.BusinessLogic.Services
                     }
                     catch (Exception)
                     {
-                        throw new CancelBookingException("accommodation", booking.Id);
+                        throw new CancelBookingException("accommodation", booking.Id, booking.Accommodation.CancellationDeadlineInDays);
                     }
                 }
             }
@@ -158,34 +159,30 @@ namespace AintBnB.BusinessLogic.Services
                 throw new IdNotFoundException("Booking", id);
 
             if (CorrectUserOrOwnerOrAdminOrEmployee(booking.Accommodation.Owner.Id, booking.BookedBy.Id))
-                CancelationDeadlineCheck(id);
+                DeadLineExpiration(id, booking.Accommodation.CancellationDeadlineInDays);
             else
                 throw new AccessException();
         }
 
-        private void CancelationDeadlineCheck(int id)
+        private void DeadLineExpiration(int id, int deadlineInDays)
         {
             string firstDateBooked = _iBookingRepository.Read(id).Dates[0];
-            string today = DateFormatterTodaysDate();
 
-            if (DateTime.Parse(today) < DateTime.Parse(firstDateBooked).AddDays(-4))
+            if (CancelationDeadlineCheck(firstDateBooked, deadlineInDays))
             {
                 ResetAvailableStatusAfterDeletingBooking(id);
                 _iBookingRepository.Delete(id);
             }
             else
-                throw new CancelBookingException(id);
+                throw new CancelBookingException(id, deadlineInDays);
         }
 
         private void ResetAvailableStatusAfterDeletingBooking(int id)
         {
             Booking booking = _iBookingRepository.Read(id);
-            foreach (string datesBooked in _iBookingRepository.Read(id).Dates)
-            {
-                if (booking.Accommodation.Schedule.ContainsKey(datesBooked))
-                    booking.Accommodation.Schedule[datesBooked] = true;
-            }
-            UpdateScheduleInDb(booking.Accommodation.Id, booking.Accommodation.Schedule);
+            List<string> dates = booking.Dates;
+            SortedDictionary<string, bool> schedule = booking.Accommodation.Schedule;
+            UpdateTheDatesOfTheScheduleInTheDb(booking, dates, schedule);
         }
     }
 }

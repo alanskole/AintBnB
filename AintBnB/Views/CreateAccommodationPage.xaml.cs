@@ -71,16 +71,19 @@ namespace AintBnB.Views
 
         private async void ComboBoxCountries_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            AccommodationViewModel.Accommodation.Address.Country = ComboBoxCountries.SelectedValue.ToString();
+            ComboBoxCities.SelectedIndex = -1;
 
             EuropeViewModel.Country = ComboBoxCountries.SelectedValue.ToString();
 
             ComboBoxCities.ItemsSource = await EuropeViewModel.GetAllCitiesOfACountry();
+
+            AccommodationViewModel.Accommodation.Address.Country = ComboBoxCountries.SelectedValue.ToString();
         }
 
         private void ComboBoxCities_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            AccommodationViewModel.Accommodation.Address.City = ComboBoxCities.SelectedValue.ToString();
+            if (ComboBoxCities.SelectedIndex != -1)
+                AccommodationViewModel.Accommodation.Address.City = ComboBoxCities.SelectedValue.ToString();
         }
 
         private async void Button_Click_Create_Accommadtion(object sender, RoutedEventArgs e)

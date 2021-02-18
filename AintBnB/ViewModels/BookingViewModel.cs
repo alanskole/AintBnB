@@ -91,6 +91,21 @@ namespace AintBnB.ViewModels
                 throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
 
+        public async Task UpdateBooking()
+        {
+            _uniquePartOfUri = StartDate + "/" + Nights.ToString() + "/" + Booking.Id.ToString();
+
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonBooking = await response.Content.ReadAsStringAsync();
+                Booking = JsonConvert.DeserializeObject<Booking>(jsonBooking);
+                NotifyPropertyChanged("Booking");
+            }
+            else
+                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+        }
+
         public async Task GetABooking()
         {
             _uniquePartOfUri = Booking.Id.ToString();

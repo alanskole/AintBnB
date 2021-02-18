@@ -36,9 +36,12 @@ namespace AintBnB.BusinessLogic.Repository
             return _databaseContext.Booking.Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).FirstOrDefault(bk => bk.Id == id);
         }
 
-        public void Update(int id, Booking t)
+        public void Update(int id, Booking updatedBooking)
         {
-            throw new NotImplementedException();
+            Booking oldBooking = Read(id);
+            oldBooking.Dates = updatedBooking.Dates;
+            oldBooking.Price = updatedBooking.Price;
+            _databaseContext.SaveChanges();
         }
     }
 }

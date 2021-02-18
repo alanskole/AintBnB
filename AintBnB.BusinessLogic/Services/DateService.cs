@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AintBnB.BusinessLogic.Services
 {
-    public static class DateParser
+    public static class DateService
     {
         public static String DateFormatterTodaysDate()
         {
@@ -19,10 +19,28 @@ namespace AintBnB.BusinessLogic.Services
         {
             string lastDate = DateFormatterCustomDate(DateTime.Parse(fromDate).AddDays(nights));
 
-            if (!schedule.ContainsKey(fromDate) || !schedule.ContainsKey(lastDate))
+            if (StartDateIsInThePast(fromDate) || !schedule.ContainsKey(fromDate) || !schedule.ContainsKey(lastDate))
                 return false;
 
             return true;
+        }
+
+        private static bool StartDateIsInThePast(string startDate)
+        {
+            DateTime dateToCheck = DateTime.Parse(startDate);
+            if (dateToCheck >= DateTime.Today)
+                return false;
+            return true;
+        }
+
+        public static bool CancelationDeadlineCheck(string firstDateBooked, int deadlineInDays)
+        {
+            deadlineInDays -= 1;
+
+            if (DateTime.Today < DateTime.Parse(firstDateBooked).AddDays(-deadlineInDays))
+                return true;
+            else
+                return false;
         }
 
         public static bool AreAllDatesAvailable(SortedDictionary<string, bool> schedule, string fromDate, int nights)

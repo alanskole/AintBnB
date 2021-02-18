@@ -19,6 +19,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -149,9 +150,18 @@
                 Text="{x:Bind AccommodationViewModel.DaysSchedule, Mode=TwoWay}"
                 Name="daysSchedule"/>
 
-            <Button
+            <TextBox
                 Grid.Row="7"
                 Grid.Column="1"
+                Header="Cancellation deadline in days"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Text="{x:Bind AccommodationViewModel.Accommodation.CancellationDeadlineInDays, Mode=TwoWay}"
+                Name="cancellationDeadline"/>
+
+            <Button
+                Grid.Row="7"
+                Grid.Column="2"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 x:Name="Upload"
@@ -159,8 +169,9 @@
                 Content="Upload Photo"/>
 
             <Button
-                Grid.Row="7"
-                Grid.Column="2"
+                Grid.Row="8"
+                Grid.ColumnSpan="2"
+                Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Click="Button_Click_Create_Accommadtion"

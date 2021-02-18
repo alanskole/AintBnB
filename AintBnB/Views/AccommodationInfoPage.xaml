@@ -142,6 +142,15 @@
             <TextBox
                 Grid.Row="7"
                 Grid.Column="1"
+                Header="Cancellation deadline in days"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Text="{x:Bind AccommodationViewModel.Accommodation.CancellationDeadlineInDays, Mode=TwoWay}"
+                Name="cancellationDeadline"/>
+
+            <TextBox
+                Grid.Row="8"
+                Grid.Column="1"
                 Header="Expand the schudle by days"
                 Text="{x:Bind AccommodationViewModel.ExpandScheduleByDays, Mode=TwoWay}"
                 Name="expand"
@@ -149,7 +158,7 @@
                 HorizontalAlignment="Center"/>
 
             <Button
-                Grid.Row="7"
+                Grid.Row="8"
                 Grid.Column="2"
                 Click="Button_Click_Expand"
                 Content="Expand schedule"
@@ -157,7 +166,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
-                Grid.Row="8"
+                Grid.Row="9"
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
                 Header="Description"
@@ -168,24 +177,23 @@
                 MaxWidth="500"/>
 
             <Button
-                Grid.Row="9"
-                Grid.Column="1"
+                Grid.Row="7"
+                Grid.Column="2"
                 Click="Button_Click_Update"
                 Content="Update"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
 
             <Button
-                Grid.Row="9"
+                Grid.Row="10"
                 Grid.Column="2"
                 Click="Button_Click_Delete"
-                Content="Delete"
+                Content="Delete Accommodation"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
 
             <Button
                 Grid.Row="10"
-                Grid.ColumnSpan="2"
                 Grid.Column="1"
                 Click="Button_Click_Upload"
                 Content="Upload photos"
