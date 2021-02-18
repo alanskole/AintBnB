@@ -75,14 +75,18 @@ namespace AintBnB.Views
 
         private async void ComboBoxCountries_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            ComboBoxCities.SelectedIndex = -1;
+
             EuropeViewModel.Country = ComboBoxCountries.SelectedValue.ToString();
 
             ComboBoxCities.ItemsSource = await EuropeViewModel.GetAllCitiesOfACountry();
+
         }
 
         private void ComboBoxCities_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            EuropeViewModel.City = ComboBoxCities.SelectedValue.ToString();
+            if (ComboBoxCities.SelectedIndex != -1)
+                EuropeViewModel.City = ComboBoxCities.SelectedValue.ToString();
         }
 
         private async void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)

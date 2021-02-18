@@ -62,5 +62,14 @@ namespace AintBnB.CommonMethodsAndProperties
                 comboBox.SelectedIndex = parameter;
             }
         }
+
+        public static string DatePickerParser(CalendarDatePicker datePicker)
+        {
+            var date = datePicker.Date;
+
+            DateTime dt = date.Value.DateTime;
+
+            return dt.ToString("yyyy-MM-dd");
+        }
     }
 }
