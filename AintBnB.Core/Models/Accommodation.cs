@@ -15,6 +15,7 @@ namespace AintBnB.Core.Models
         private double _kilometersFromCenter;
         private string _description;
         private int _pricePerNight;
+        private int _cancellationDeadlineInDays;
         private SortedDictionary<string, bool> _schedule;
         private List<byte[]> _picture;
 
@@ -99,6 +100,16 @@ namespace AintBnB.Core.Models
             }
         }
 
+        public int CancellationDeadlineInDays
+        {
+            get { return _cancellationDeadlineInDays; }
+            set
+            {
+                _cancellationDeadlineInDays = value;
+                NotifyPropertyChanged("CancellationDeadlineInDays");
+            }
+        }
+
         public SortedDictionary<string, bool> Schedule
         {
             get { return _schedule; }
@@ -122,10 +133,12 @@ namespace AintBnB.Core.Models
         public override string ToString()
         {
             return ($"Accommodation ID: {Id} \nOwner: {Owner} \nAddress: {Address} \nSquare meters: {SquareMeters} " +
-                $"\nBedrooms: {AmountOfBedrooms} \nKilometers from center: {KilometersFromCenter} \nNightly price: {PricePerNight} \nDescription: {Description}");
+                $"\nBedrooms: {AmountOfBedrooms} \nKilometers from center: {KilometersFromCenter} " +
+                $"\nNightly price: {PricePerNight} \nCancellation deadline in days: {CancellationDeadlineInDays}" +
+                $"\nDescription: {Description}");
         }
 
-        public Accommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight)
+        public Accommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays)
         {
             Owner = owner;
             Address = address;
@@ -134,6 +147,7 @@ namespace AintBnB.Core.Models
             KilometersFromCenter = kilometersFromCenter;
             Description = description;
             PricePerNight = pricePerNight;
+            CancellationDeadlineInDays = cancellationDeadlineInDays;
         }
 
         public Accommodation()

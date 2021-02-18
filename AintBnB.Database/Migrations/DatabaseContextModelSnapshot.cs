@@ -32,6 +32,9 @@ namespace AintBnB.Database.Migrations
                     b.Property<int>("AmountOfBedrooms")
                         .HasColumnType("int");
 
+                    b.Property<int>("CancellationDeadlineInDays")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
