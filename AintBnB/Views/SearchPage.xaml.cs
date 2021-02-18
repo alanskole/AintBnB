@@ -174,11 +174,7 @@ namespace AintBnB.Views
 
         private void MyDatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
         {
-            var date = MyDatePicker.Date;
-
-            DateTime dt = date.Value.DateTime;
-
-            AccommodationViewModel.FromDate = dt.ToString("yyyy-MM-dd");
+            AccommodationViewModel.FromDate = DatePickerParser(MyDatePicker);
         }
 
         private async void Button_Click_SortByPriceAsc(object sender, RoutedEventArgs e)
