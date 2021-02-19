@@ -40,7 +40,7 @@ namespace AintBnB.Views
             {
                 await BookingViewModel.UpdateBooking();
                 await new MessageDialog("Update ok!").ShowAsync();
-                Frame.Navigate(typeof(BookingInfoPage), BookingViewModel.Booking.Id);
+                Frame.Navigate(typeof(AllBookingsPage));
             }
             catch (Exception ex)
             {
