@@ -7,6 +7,7 @@ using static AintBnB.BusinessLogic.Services.AuthenticationService;
 using System;
 using System.Collections.Generic;
 using AintBnB.BusinessLogic.CustomExceptions;
+using System.Linq;
 
 namespace AintBnB.BusinessLogic.Services
 {
@@ -123,6 +124,9 @@ namespace AintBnB.BusinessLogic.Services
             if (booker.Id == accommodation.Owner.Id)
                 throw new ParameterException("Accommodation", "be booked by the owner");
 
+            if (nights < 1)
+                throw new ParameterException("Nights", "less than one");
+
             Booking booking = BookIfAvailableAndUserHasPermission(startDate, booker, nights, accommodation);
             IBookingRepository.Create(booking);
             return booking;
@@ -132,8 +136,6 @@ namespace AintBnB.BusinessLogic.Services
         {
             if (CheckIfUserIsAllowedToPerformAction(booker.Id))
             {
-                if (nights < 1)
-                    throw new ParameterException("Nights", "less than one");
 
                 startDate = startDate.Trim();
                 return TryToBookIfAllDatesAvailable(startDate, booker, nights, accommodation);
@@ -178,16 +180,136 @@ namespace AintBnB.BusinessLogic.Services
         public void UpdateBooking(string newStartDate, int nights, int bookingId)
         {
             Booking originalBooking = IBookingRepository.Read(bookingId);
-            int deadlineInDays = originalBooking.Accommodation.CancellationDeadlineInDays;
+            
+            CanBookingBeUpdated(newStartDate, nights, originalBooking);
 
-            if (CancelationDeadlineCheck(originalBooking.Dates[0], deadlineInDays))
+            if (!AreAllDatesAvailable(originalBooking.Accommodation.Schedule, newStartDate, nights))
             {
-                Booking newBooking = BookIfAvailableAndUserHasPermission(newStartDate, originalBooking.BookedBy, nights, originalBooking.Accommodation);
-                UpdateTheDatesOfTheScheduleInTheDb(originalBooking, originalBooking.Dates, originalBooking.Accommodation.Schedule);
-                IBookingRepository.Update(bookingId, newBooking);
+                SortedSet<string> unavailableDates = new SortedSet<string>(GetUnavailableDates(originalBooking.Accommodation.Schedule, newStartDate, nights));
+
+                SortedSet<string> datesOriginal = new SortedSet<string>(originalBooking.Dates);
+
+                if (!datesOriginal.Contains(unavailableDates.Min) || !datesOriginal.Contains(unavailableDates.Max))
+                    throw new DateException("Not all dates are available, cannot update the booking dates!");
+
+                SortedSet<string> newDates = new SortedSet<string>();
+
+                UpdatedDates(newStartDate, nights, newDates);
+
+                DateTime originalBookingStartDate = DateTime.Parse(datesOriginal.Min);
+                DateTime originalBookingEndDate = DateTime.Parse(datesOriginal.Max);
+                DateTime newBookingStartDate = DateTime.Parse(newStartDate);
+                DateTime newBookingEndDate = DateTime.Parse(newStartDate).AddDays(nights);
+
+                SortedSet<string> datesToRemove = new SortedSet<string>();
+
+                DatesFromOriginalBookingToCancel(newStartDate, datesOriginal, newDates, originalBookingStartDate, originalBookingEndDate, newBookingStartDate, newBookingEndDate, datesToRemove);
+
+                datesOriginal.ExceptWith(datesToRemove);
+                datesOriginal.UnionWith(newDates);
+
+                ResetCancelledDatesToAvailable(originalBooking, datesToRemove);
+
+                originalBooking.Dates = datesOriginal.ToList();
+
+                originalBooking.Price = originalBooking.Dates.Count * originalBooking.Accommodation.PricePerNight;
             }
             else
-                throw new CancelBookingException(originalBooking.Id, deadlineInDays);
+            {
+                originalBooking = BookIfAvailableAndUserHasPermission(newStartDate, originalBooking.BookedBy, nights, originalBooking.Accommodation);
+                UpdateTheDatesOfTheScheduleInTheDb(originalBooking, originalBooking.Dates, originalBooking.Accommodation.Schedule);
+            }
+            IBookingRepository.Update(bookingId, originalBooking);
+        }
+
+        private static void CanBookingBeUpdated(string newStartDate, int nights, Booking originalBooking)
+        {
+            if (!CheckIfUserIsAllowedToPerformAction(originalBooking.BookedBy.Id))
+                throw new AccessException($"Must be performed by the booker, or by admin or an employee on behalf of the booker!");
+
+            if (nights < 1)
+                throw new ParameterException("Nights", "less than one");
+
+            if (originalBooking.Dates[0] == newStartDate && originalBooking.Dates.Count == nights)
+                throw new ParameterException("Updated dates", "the same as original dates");
+
+            if (originalBooking.Dates[0] != newStartDate)
+            {
+                int deadlineInDays = originalBooking.Accommodation.CancellationDeadlineInDays;
+
+                if (!CancelationDeadlineCheck(originalBooking.Dates[0], deadlineInDays))
+                    throw new CancelBookingException(originalBooking.Id, deadlineInDays);
+            }
+        }
+
+        private static void UpdatedDates(string newStartDate, int nights, SortedSet<string> newDates)
+        {
+            for (int i = 0; i < nights; i++)
+            {
+                string date = DateFormatterCustomDate(DateTime.Parse(newStartDate).AddDays(i));
+                newDates.Add(date);
+            }
+        }
+
+        private static void DatesFromOriginalBookingToCancel(string newStartDate, SortedSet<string> datesOriginal, SortedSet<string> newDates, DateTime originalBookingStartDate, DateTime originalBookingEndDate, DateTime newBookingStartDate, DateTime newBookingEndDate, SortedSet<string> datesToRemove)
+        {
+            if (newBookingStartDate >= originalBookingStartDate && newBookingStartDate <= originalBookingEndDate
+                                && newBookingEndDate >= originalBookingStartDate && newBookingEndDate <= originalBookingEndDate)
+            {
+                NewDatesAreBetweenOriginalDates(datesOriginal, newDates, datesToRemove);
+            }
+            else if (newBookingStartDate >= originalBookingStartDate && newBookingStartDate <= originalBookingEndDate
+                && !(newBookingEndDate >= originalBookingStartDate && newBookingEndDate <= originalBookingEndDate))
+            {
+                OnlyStartOfNewDatesAreBetweenOldDates(newStartDate, datesOriginal, datesToRemove);
+            }
+            else if (!(newBookingStartDate >= originalBookingStartDate && newBookingStartDate <= originalBookingEndDate)
+                && newBookingEndDate >= originalBookingStartDate && newBookingEndDate <= originalBookingEndDate)
+            {
+                OnlyEndDateIsBetweenOldDates(datesOriginal, newDates, datesToRemove);
+            }
+        }
+
+        private static void NewDatesAreBetweenOriginalDates(SortedSet<string> datesOriginal, SortedSet<string> newDates, SortedSet<string> datesToRemove)
+        {
+            foreach (var date in datesOriginal)
+            {
+                if (!newDates.Contains(date))
+                    datesToRemove.Add(date);
+            }
+        }
+
+        private static void OnlyStartOfNewDatesAreBetweenOldDates(string newStartDate, SortedSet<string> datesOriginal, SortedSet<string> datesToRemove)
+        {
+            foreach (var date in datesOriginal)
+            {
+                if (date == newStartDate)
+                    break;
+
+                datesToRemove.Add(date);
+            }
+        }
+
+        private static void OnlyEndDateIsBetweenOldDates(SortedSet<string> datesOriginal, SortedSet<string> newDates, SortedSet<string> datesToRemove)
+        {
+            foreach (var date in datesOriginal)
+            {
+                if (!newDates.Contains(date))
+                    datesToRemove.Add(date);
+            }
+        }
+
+        private static void ResetCancelledDatesToAvailable(Booking originalBooking, SortedSet<string> datesToRemove)
+        {
+            foreach (var date in datesToRemove)
+            {
+                if (originalBooking.Accommodation.Schedule.ContainsKey(date))
+                {
+                    originalBooking.Accommodation.Schedule[date] = true;
+                }
+            }
+
+            UpdateScheduleInDb(originalBooking.Accommodation.Id, originalBooking.Accommodation.Schedule);
         }
     }
 }

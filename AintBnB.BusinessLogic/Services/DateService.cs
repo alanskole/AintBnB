@@ -51,8 +51,6 @@ namespace AintBnB.BusinessLogic.Services
 
                 for (int i = 0; i < nights; i++)
                 {
-                    if (!schedule.ContainsKey(DateFormatterCustomDate(from.AddDays(i))))
-                        return false;
 
                     if (schedule[DateFormatterCustomDate(from.AddDays(i))] == false)
                         return false;
@@ -61,6 +59,24 @@ namespace AintBnB.BusinessLogic.Services
                 return true;
             }
             return false;
+        }
+
+        public static List<string> GetUnavailableDates(SortedDictionary<string, bool> schedule, string fromDate, int nights)
+        {
+            List<string> unavailableDates = new List<string>();
+
+            if (AreDatesWithinRangeOfSchedule(schedule, fromDate, nights))
+            {
+                DateTime from = DateTime.Parse(fromDate);
+
+                for (int i = 0; i < nights; i++)
+                {
+                    if (schedule[DateFormatterCustomDate(from.AddDays(i))] == false)
+                        unavailableDates.Add(DateFormatterCustomDate(from.AddDays(i)));
+                }
+
+            }
+            return unavailableDates;
         }
     }
 }
