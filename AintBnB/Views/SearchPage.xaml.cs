@@ -135,6 +135,11 @@ namespace AintBnB.Views
             BookingViewModel.Nights = int.Parse(nights.Text);
             BookingViewModel.Booking.Accommodation.Id = AccommodationViewModel.AvailableAccommodations[index].Id;
 
+            var res = await DialogeMessageAsync($"Are you sure you want to submit the booking?", "Book");
+
+            if ((int)res.Id == 1)
+                return;
+
             try
             {
                 await BookingViewModel.BookAccommodation();
@@ -162,6 +167,7 @@ namespace AintBnB.Views
             {
                 listView.ItemsSource = await AccommodationViewModel.GetAvailable();
 
+                RatingAsc.Visibility = Visibility.Visible;
                 PriceAsc.Visibility = Visibility.Visible;
                 SizeAsc.Visibility = Visibility.Visible;
                 DistanceAsc.Visibility = Visibility.Visible;
@@ -176,12 +182,18 @@ namespace AintBnB.Views
         {
             AccommodationViewModel.FromDate = DatePickerParser(MyDatePicker);
         }
-
+        private async void Button_Click_SortByRatingAsc(object sender, RoutedEventArgs e)
+        {
+            await Sort("Rating", "Ascending", RatingAsc, RatingDesc);
+        }
+        private async void Button_Click_SortByRatingDesc(object sender, RoutedEventArgs e)
+        {
+            await Sort("Rating", "Descending", RatingDesc, RatingAsc);
+        }
         private async void Button_Click_SortByPriceAsc(object sender, RoutedEventArgs e)
         {
             await Sort("Price", "Ascending", PriceAsc, PriceDesc);
         }
-
         private async void Button_Click_SortByPriceDesc(object sender, RoutedEventArgs e)
         {
             await Sort("Price", "Descending", PriceDesc, PriceAsc);
