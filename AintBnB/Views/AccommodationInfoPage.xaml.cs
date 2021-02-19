@@ -166,7 +166,6 @@ namespace AintBnB.Views
 
             var contentDialog = new ContentDialog
             {
-                FullSizeDesired = true,
                 Content = new Image()
                 {
                     Width = 480,

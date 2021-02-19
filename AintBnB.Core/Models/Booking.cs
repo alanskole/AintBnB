@@ -12,6 +12,7 @@ namespace AintBnB.Core.Models
         private Accommodation _accommodation;
         private List<string> _dates;
         private int _price;
+        private int _rating;
 
         public int Id
         {
@@ -63,9 +64,19 @@ namespace AintBnB.Core.Models
             }
         }
 
+        public int Rating
+        {
+            get { return _rating; }
+            set
+            {
+                _rating = value;
+                NotifyPropertyChanged("Rating");
+            }
+        }
+
         public override string ToString()
         {
-            return ($"Booking ID: {Id} \nBooked by: {BookedBy}. \nAccommodation: {Accommodation}. \nDates Booked: {string.Join(", ", Dates.ToArray())}. \nTotal price: {Price}");
+            return ($"Booking ID: {Id} \nBooked by: {BookedBy}. \nAccommodation: {Accommodation}. \nDates Booked: {string.Join(", ", Dates.ToArray())}. \nTotal price: {Price} {(Rating < 1 ? "" : $"\nYour rating: {Rating}")}");
         }
 
         public Booking(User bookedBy, Accommodation accommodation, List<string> dates, int price)

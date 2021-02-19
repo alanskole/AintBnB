@@ -78,7 +78,7 @@ namespace AintBnB.ViewModels
 
         public async Task BookAccommodation()
         {
-            _uniquePartOfUri = StartDate + "/" + Booking.BookedBy.Id.ToString() + "/" + Nights.ToString() + "/" + Booking.Accommodation.Id.ToString();
+            _uniquePartOfUri = StartDate + "/" + Booking.BookedBy.Id + "/" + Nights + "/" + Booking.Accommodation.Id;
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             if (response.IsSuccessStatusCode)
@@ -93,7 +93,7 @@ namespace AintBnB.ViewModels
 
         public async Task UpdateBooking()
         {
-            _uniquePartOfUri = StartDate + "/" + Nights.ToString() + "/" + Booking.Id.ToString();
+            _uniquePartOfUri = StartDate + "/" + Nights + "/" + Booking.Id;
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             if (response.IsSuccessStatusCode)
@@ -101,6 +101,19 @@ namespace AintBnB.ViewModels
                 string jsonBooking = await response.Content.ReadAsStringAsync();
                 Booking = JsonConvert.DeserializeObject<Booking>(jsonBooking);
                 NotifyPropertyChanged("Booking");
+            }
+            else
+                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+        }
+
+        public async Task Rate()
+        {
+            _uniquePartOfUri = "rate/" + Booking.Id + "/" + Booking.Rating;
+
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonBooking = await response.Content.ReadAsStringAsync();
             }
             else
                 throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
@@ -139,7 +152,7 @@ namespace AintBnB.ViewModels
 
         public async Task<List<Booking>> GetAllBookingsOfOwnedAccommodations()
         {
-            _uniquePartOfUri = UserId.ToString() + "/" + "bookingsownaccommodation";
+            _uniquePartOfUri = UserId + "/" + "bookingsownaccommodation";
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             if (response.IsSuccessStatusCode)

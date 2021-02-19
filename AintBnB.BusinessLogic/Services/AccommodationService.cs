@@ -255,6 +255,13 @@ namespace AintBnB.BusinessLogic.Services
                 else if (ascOrDesc == "Ascending")
                     _available.Sort((x, y) => x.SquareMeters.CompareTo(y.SquareMeters));
             }
+            else if (sortBy == "Rating")
+            {
+                if (ascOrDesc == "Descending")
+                    _available.Sort((x, y) => y.AverageRating.CompareTo(x.AverageRating));
+                else if (ascOrDesc == "Ascending")
+                    _available.Sort((x, y) => x.AverageRating.CompareTo(y.AverageRating));
+            }
 
             return _available;
         }

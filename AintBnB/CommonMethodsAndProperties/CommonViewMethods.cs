@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
+using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
@@ -70,6 +71,16 @@ namespace AintBnB.CommonMethodsAndProperties
             DateTime dt = date.Value.DateTime;
 
             return dt.ToString("yyyy-MM-dd");
+        }
+
+        public static async Task<IUICommand> DialogeMessageAsync(string message, string buttonText)
+        {
+            var dialog = new MessageDialog(message);
+            dialog.Commands.Add(new UICommand { Label = buttonText, Id = 0 });
+            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
+            var res = await dialog.ShowAsync();
+
+            return res;
         }
     }
 }

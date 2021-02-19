@@ -83,6 +83,26 @@
 
             <Button
                 Grid.Row="1"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_SortByRatingAsc"
+                Content="Rating Ascending"
+                Name="RatingAsc"
+                Visibility="Collapsed"/>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_SortByRatingDesc"
+                Content="Rating Descending"
+                Name="RatingDesc"
+                Visibility="Collapsed"/>
+
+            <Button
+                Grid.Row="1"
                 Grid.Column="2"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -169,8 +189,7 @@
                 x:Name="contentDialog"
                 Title="Book Accommodation"
                 PrimaryButtonText="Book"
-                CloseButtonText="Cancel"
-                FullSizeDesired="True">
+                CloseButtonText="Cancel">
                     <ListView Name="listViewPicture">
                         <ListView.ItemTemplate>
                             <DataTemplate>
