@@ -44,31 +44,76 @@ namespace AintBnB.Views
             WhenNavigatedToView(e, ComboBoxBookings);
         }
 
-        private void Button_Click_Update(object sender, RoutedEventArgs e)
+        private async void Button_Click_Update(object sender, RoutedEventArgs e)
         {
-            Frame.Navigate(typeof(BookingUpdatePage), BookingViewModel.Booking.Id);
-        }
+            contentDialog.Visibility = Visibility.Visible;
 
-        private async void Button_Click_Delete(object sender, RoutedEventArgs e)
-        {
-            var dialog = new MessageDialog("This will delete the booking! Are you sure?");
-            dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
-            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-            var res = await dialog.ShowAsync();
+            ContentDialogResult result = await contentDialog.ShowAsync();
 
-            if ((int)res.Id == 0)
+            if (result == ContentDialogResult.Primary)
             {
+                var res = await DialogeMessageAsync("Are you sure you want to change the booking dates?", "Change");
+
+                if ((int)res.Id == 1)
+                    return;
+
                 try
                 {
-                    await BookingViewModel.DeleteABooking();
-                    await new MessageDialog("Deletion ok!").ShowAsync();
-                    Frame.Navigate(typeof(BookingInfoPage));
+                    await BookingViewModel.UpdateBooking();
+                    await new MessageDialog("Update ok!").ShowAsync();
+                    Frame.Navigate(typeof(AllBookingsPage));
                 }
                 catch (Exception ex)
                 {
                     await new MessageDialog(ex.Message).ShowAsync();
                 }
             }
+        }
+
+        private void MyDatePicker_DateChanged(CalendarDatePicker sender, CalendarDatePickerDateChangedEventArgs args)
+        {
+            BookingViewModel.StartDate = DatePickerParser(MyDatePicker);
+        }
+
+        private async void Button_Click_Rate(object sender, RoutedEventArgs e)
+        {
+            int rating = (int)ComboBoxRating.SelectedItem;
+
+            var res = await DialogeMessageAsync($"Ratings cannot be changed, are you sure you want to rate it {rating}?", "Rate");
+
+            if ((int)res.Id == 1)
+                return;
+
+            try
+            {
+                BookingViewModel.Booking.Rating = rating;
+                await BookingViewModel.Rate();
+                Frame.Navigate(typeof(AllBookingsPage));
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
+        }
+
+        private async void Button_Click_Delete(object sender, RoutedEventArgs e)
+        {
+            var res = await DialogeMessageAsync("This will delete the booking! Are you sure?", "Delete");
+
+            if ((int)res.Id == 1)
+                return;
+
+            try
+            {
+                await BookingViewModel.DeleteABooking();
+                await new MessageDialog("Deletion ok!").ShowAsync();
+                Frame.Navigate(typeof(BookingInfoPage));
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
+
         }
 
         private async void ComboBoxBookings_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -84,6 +129,13 @@ namespace AintBnB.Views
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message).ShowAsync();
+            }
+
+            if (BookingViewModel.Booking.Rating > 0)
+            {
+                Rating.Visibility = Visibility.Visible;
+                ComboBoxRating.Visibility = Visibility.Collapsed;
+                RateButton.Visibility = Visibility.Collapsed;
             }
         }
     }

@@ -18,6 +18,8 @@ namespace AintBnB.Core.Models
         private int _cancellationDeadlineInDays;
         private SortedDictionary<string, bool> _schedule;
         private List<byte[]> _picture;
+        private double _averageRating;
+        private int _amountOfRatings;
 
         public int Id
         {
@@ -130,11 +132,38 @@ namespace AintBnB.Core.Models
             }
         }
 
+        public double AverageRating
+        {
+            get { return _averageRating; }
+            set
+            {
+                _averageRating = Math.Floor(value * 10) / 10;
+                NotifyPropertyChanged("AverageRating");
+            }
+        }
+
+        public int AmountOfRatings
+        {
+            get { return _amountOfRatings; }
+            set
+            {
+                _amountOfRatings = value;
+                NotifyPropertyChanged("AmountOfRatings");
+            }
+        }
+
         public override string ToString()
         {
-            return ($"Accommodation ID: {Id} \nOwner: {Owner} \nAddress: {Address} \nSquare meters: {SquareMeters} " +
-                $"\nBedrooms: {AmountOfBedrooms} \nKilometers from center: {KilometersFromCenter} " +
-                $"\nNightly price: {PricePerNight} \nCancellation deadline in days: {CancellationDeadlineInDays}" +
+            return 
+                ($"Accommodation ID: {Id} " +
+                $"\nOwner: {Owner} " +
+                $"\nAddress: {Address} " +
+                $"\nSquare meters: {SquareMeters} " +
+                $"\nBedrooms: {AmountOfBedrooms} " +
+                $"\nKilometers from center: {KilometersFromCenter} " +
+                $"\nNightly price: {PricePerNight} " +
+                $"\nCancellation deadline in days: {CancellationDeadlineInDays}" +
+                $"\nAverage rating: {AverageRating} based on {AmountOfRatings} ratings" +
                 $"\nDescription: {Description}");
         }
 

@@ -22,6 +22,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -90,7 +91,7 @@
                 HorizontalAlignment="Center"
                 Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Street, Mode=TwoWay}"
                 Name="streetOfAccommodation"/>
-            
+
             <TextBox
                 Grid.Row="4"
                 Grid.Column="2"
@@ -168,7 +169,7 @@
                 HorizontalAlignment="Center"
                 Click="Button_Click_Update"
                 Content="Change Dates"/>
-            
+
             <Button
                 Grid.Row="8"
                 Grid.Column="2"
@@ -176,16 +177,50 @@
                 HorizontalAlignment="Center"
                 Click="Button_Click_Delete"
                 Content="Delete booking"/>
-            
-            <TextBlock
+
+            <TextBox
                 Grid.Row="9"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Header="Rating"
+                Name="Rating"
+                Text="{x:Bind BookingViewModel.Booking.Rating, Mode=TwoWay}"
+                Visibility="Collapsed"
+                IsReadOnly="True"/>
+
+            <ComboBox
+                Grid.Row="9"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Header="Rating"
+                Name="ComboBoxRating">
+                <x:Int32>1</x:Int32>
+                <x:Int32>2</x:Int32>
+                <x:Int32>3</x:Int32>
+                <x:Int32>4</x:Int32>
+                <x:Int32>5</x:Int32>
+            </ComboBox>
+
+            <Button
+                Grid.Row="9"
+                Grid.Column="2"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_Rate"
+                Content="Rate"
+                Name="RateButton"/>
+
+            <TextBlock
+                Grid.Row="10"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Text="Dates booked:"/>
 
             <ListView
-                Grid.Row="10"
+                Grid.Row="11"
                 Grid.ColumnSpan="2"
                 Grid.Column="1"
                 VerticalAlignment="Center"
@@ -193,6 +228,34 @@
                 x:Name="listView"
                 IsItemClickEnabled="True"
                 SelectionMode="Single"/>
+
+            <ContentDialog
+                Grid.ColumnSpan="4"
+                Grid.RowSpan="12"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Visibility="Collapsed"
+                x:Name="contentDialog"
+                Title="Change Dates"
+                PrimaryButtonText="Change"
+                CloseButtonText="Cancel">
+                <StackPanel>
+                    <CalendarDatePicker
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        DateChanged="MyDatePicker_DateChanged"
+                        Header="From date"
+                        x:Name="MyDatePicker"
+                        FirstDayOfWeek="Monday"/>
+                    
+                    <TextBox
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Header="Nights"
+                        Text="{x:Bind BookingViewModel.Nights, Mode=TwoWay}"
+                        Name="nights"/>
+                </StackPanel>
+            </ContentDialog>
         </Grid>
     </ScrollViewer>
 </Page>

@@ -13,6 +13,9 @@ namespace AintBnB.Views
     public sealed partial class UserInfoPage : Page
     {
         public UserViewModel UserViewModel { get; } = new UserViewModel();
+
+        public PasswordChangerViewModel PasswordChangerViewModel { get; } = new PasswordChangerViewModel();
+
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
         public UserInfoPage()
         {
@@ -113,49 +116,72 @@ namespace AintBnB.Views
             }
         }
 
-        private void Button_Click_ChangePass(object sender, RoutedEventArgs e)
+        private async void Button_Click_ChangePass(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(PasswordChangePage), UserViewModel.User.Id);
-        }
+            contentDialog.Visibility = Visibility.Visible;
 
-        private async void Button_Click_DeleteUser(object sender, RoutedEventArgs e)
-        {
-            var dialog = new MessageDialog("This will make your account vanish instantly! Are you sure?");
-            dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
-            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-            var res = await dialog.ShowAsync();
+            ContentDialogResult result = await contentDialog.ShowAsync();
 
-            if ((int)res.Id == 0)
+            if (result == ContentDialogResult.Primary)
             {
-                bool wasDeleted = false;
+
+                PasswordChangerViewModel.UserId = UserViewModel.User.Id;
                 try
                 {
-                    await UserViewModel.DeleteAUser();
-
-                    await new MessageDialog("Deletion ok!").ShowAsync();
-
-                    wasDeleted = true;
+                    await PasswordChangerViewModel.ChangePassword();
+                    await new MessageDialog("Password changed!").ShowAsync();
                 }
                 catch (Exception ex)
                 {
                     await new MessageDialog(ex.Message).ShowAsync();
                 }
-
-                try
+                finally
                 {
-                    await AuthenticationViewModel.IsAdmin();
-                    Frame.Navigate(typeof(AllUsersPage));
-                }
-                catch (Exception)
-                {
-                    if (wasDeleted)
-                    {
-                        await AuthenticationViewModel.LogoutFromApp();
-                        Frame.Navigate(typeof(MainPage));
-                    }
-
+                    old.Password = "";
+                    new1.Password = "";
+                    new2.Password = "";
                 }
             }
+
+        }
+
+        private async void Button_Click_DeleteUser(object sender, RoutedEventArgs e)
+        {
+            var res = await DialogeMessageAsync("This will make the account vanish instantly! Are you sure?", "Ok");
+
+            if ((int)res.Id == 1)
+                return;
+
+
+            bool wasDeleted = false;
+            try
+            {
+                await UserViewModel.DeleteAUser();
+
+                await new MessageDialog("Deletion ok!").ShowAsync();
+
+                wasDeleted = true;
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
+
+            try
+            {
+                await AuthenticationViewModel.IsAdmin();
+                Frame.Navigate(typeof(AllUsersPage));
+            }
+            catch (Exception)
+            {
+                if (wasDeleted)
+                {
+                    await AuthenticationViewModel.LogoutFromApp();
+                    Frame.Navigate(typeof(MainPage));
+                }
+
+            }
+
         }
 
         private async void ComboBoxUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)

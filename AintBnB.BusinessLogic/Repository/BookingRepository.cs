@@ -41,6 +41,7 @@ namespace AintBnB.BusinessLogic.Repository
             Booking oldBooking = Read(id);
             oldBooking.Dates = updatedBooking.Dates;
             oldBooking.Price = updatedBooking.Price;
+            oldBooking.Rating = updatedBooking.Rating;
             _databaseContext.SaveChanges();
         }
     }

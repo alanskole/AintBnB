@@ -3,6 +3,7 @@ using System;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using static AintBnB.CommonMethodsAndProperties.CommonViewMethods;
 
 namespace AintBnB.Views
 {
@@ -59,26 +60,24 @@ namespace AintBnB.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                var dialog = new MessageDialog("This will delete the booking of your accommodation! Are you sure?");
-                dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
-                dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-                var res = await dialog.ShowAsync();
+                var res = await DialogeMessageAsync("This will delete the booking of your accommodation! Are you sure?", "Delete");
 
-                if ((int)res.Id == 0)
+                if ((int)res.Id == 1)
+                    return;
+
+                try
                 {
-                    try
-                    {
-                        await BookingViewModel.DeleteABooking();
+                    await BookingViewModel.DeleteABooking();
 
-                        await new MessageDialog("Booking deleted!").ShowAsync();
+                    await new MessageDialog("Booking deleted!").ShowAsync();
 
-                        Frame.Navigate(typeof(AllBookingsOfOwnedAccommodations));
-                    }
-                    catch (Exception ex)
-                    {
-                        await new MessageDialog(ex.Message).ShowAsync();
-                    }
+                    Frame.Navigate(typeof(AllBookingsOfOwnedAccommodations));
                 }
+                catch (Exception ex)
+                {
+                    await new MessageDialog(ex.Message).ShowAsync();
+                }
+
             }
         }
     }

@@ -56,7 +56,9 @@ namespace AintBnB.Database.Migrations
                     PricePerNight = table.Column<int>(type: "int", nullable: false),
                     CancellationDeadlineInDays = table.Column<int>(type: "int", nullable: false),
                     Schedule = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Picture = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Picture = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    AverageRating = table.Column<double>(type: "float", nullable: false),
+                    AmountOfRatings = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -84,7 +86,8 @@ namespace AintBnB.Database.Migrations
                     BookedById = table.Column<int>(type: "int", nullable: true),
                     AccommodationId = table.Column<int>(type: "int", nullable: true),
                     Dates = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Price = table.Column<int>(type: "int", nullable: false)
+                    Price = table.Column<int>(type: "int", nullable: false),
+                    Rating = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

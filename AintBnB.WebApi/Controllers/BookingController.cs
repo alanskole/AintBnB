@@ -41,13 +41,28 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{newStartDate}/{nights}/{bookingId}")]
-        public IActionResult Book([FromRoute] string newStartDate, [FromRoute] int nights, [FromRoute] int bookingId)
+        public IActionResult UpdateBooking([FromRoute] string newStartDate, [FromRoute] int nights, [FromRoute] int bookingId)
         {
             try
             {
                 Booking booking = _bookingService.GetBooking(bookingId);
                 _bookingService.UpdateBooking(newStartDate, nights, bookingId);
                 return Ok(booking);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/rate/{bookingId}/{rating}")]
+        public IActionResult LeaveRating([FromRoute] int bookingId, [FromRoute] int rating)
+        {
+            try
+            {
+                _bookingService.Rate(bookingId, rating);
+                return Ok("Rated");
             }
             catch (Exception ex)
             {

@@ -9,7 +9,7 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" >
         <Grid>
-            
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="2*"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
@@ -28,7 +28,7 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition Width="0.5*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            
+
             <ComboBox
                 Grid.Row="1"
                 Grid.Column="1"
@@ -59,7 +59,7 @@
                 HorizontalAlignment="Center"
                 Text="{x:Bind UserViewModel.User.UserName, Mode=TwoWay}"
                 Name="userName"/>
-            
+
             <TextBox
                 Grid.Row="3"
                 Grid.Column="1"
@@ -106,7 +106,7 @@
                 Content="Update User"
                 Click="Button_Click_UpdateUser"
                 Name="UpdateUserButton"/>
-            
+
             <Button
                 Grid.Row="8"
                 Grid.Column="1"
@@ -115,7 +115,7 @@
                 Content="Change Password"
                 Click="Button_Click_ChangePass"
                 Name="ChangePasswordButton"/>
-            
+
             <Button
                 Grid.Row="9"
                 Grid.Column="1"
@@ -124,7 +124,42 @@
                 Content="Delete User"
                 Click="Button_Click_DeleteUser"
                 Name="DeleteButton"/>
-            
+
+            <ContentDialog
+                Grid.ColumnSpan="11"
+                Grid.RowSpan="3"
+                Grid.Row="4"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Visibility="Collapsed"
+                x:Name="contentDialog"
+                Title="Change Password"
+                PrimaryButtonText="Change"
+                CloseButtonText="Cancel">
+                <StackPanel>
+                    <PasswordBox
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Header="Current password"
+                        Password="{x:Bind PasswordChangerViewModel.Old, Mode=TwoWay}"
+                        Name="old"/>
+
+                    <PasswordBox
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Header="New password"
+                        Password="{x:Bind PasswordChangerViewModel.New1, Mode=TwoWay}"
+                        Name="new1"/>
+
+                    <PasswordBox
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Header="Confirm new password"
+                        Password="{x:Bind PasswordChangerViewModel.New2, Mode=TwoWay}"
+                        Name="new2"/>
+                </StackPanel>
+            </ContentDialog>
+
         </Grid>
     </ScrollViewer>
 </Page>

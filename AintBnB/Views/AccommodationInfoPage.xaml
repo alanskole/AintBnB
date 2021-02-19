@@ -23,6 +23,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -148,6 +149,14 @@
                 Text="{x:Bind AccommodationViewModel.Accommodation.CancellationDeadlineInDays, Mode=TwoWay}"
                 Name="cancellationDeadline"/>
 
+            <Button
+                Grid.Row="7"
+                Grid.Column="2"
+                Click="Button_Click_Update"
+                Content="Update"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"/>
+
             <TextBox
                 Grid.Row="8"
                 Grid.Column="1"
@@ -168,6 +177,26 @@
             <TextBox
                 Grid.Row="9"
                 Grid.Column="1"
+                IsReadOnly="True"
+                Header="Average rating"
+                Text="{x:Bind AccommodationViewModel.Accommodation.AverageRating, Mode=TwoWay}"
+                Name="avgRating"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"/>
+
+            <TextBox
+                Grid.Row="9"
+                Grid.Column="2"
+                IsReadOnly="True"
+                Header="Amount of ratings"
+                Text="{x:Bind AccommodationViewModel.Accommodation.AmountOfRatings, Mode=TwoWay}"
+                Name="amountOfRatings"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"/>
+
+            <TextBox
+                Grid.Row="10"
+                Grid.Column="1"
                 Grid.ColumnSpan="2"
                 Header="Description"
                 Text="{x:Bind AccommodationViewModel.Accommodation.Description, Mode=TwoWay}"
@@ -177,15 +206,7 @@
                 MaxWidth="500"/>
 
             <Button
-                Grid.Row="7"
-                Grid.Column="2"
-                Click="Button_Click_Update"
-                Content="Update"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"/>
-
-            <Button
-                Grid.Row="10"
+                Grid.Row="11"
                 Grid.Column="2"
                 Click="Button_Click_Delete"
                 Content="Delete Accommodation"
@@ -193,7 +214,7 @@
                 HorizontalAlignment="Center"/>
 
             <Button
-                Grid.Row="10"
+                Grid.Row="11"
                 Grid.Column="1"
                 Click="Button_Click_Upload"
                 Content="Upload photos"
@@ -201,7 +222,7 @@
                 HorizontalAlignment="Center"/>
 
             <ListView
-                Grid.Row="11"
+                Grid.Row="12"
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
                 VerticalAlignment="Center"
