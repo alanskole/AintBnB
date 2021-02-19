@@ -17,12 +17,12 @@ namespace AintBnB.BusinessLogic.Services
             UpdateScheduleInDb(booking.Accommodation.Id, booking.Accommodation.Schedule);
         }
 
-        public static void UpdateScheduleInDb(int id, SortedDictionary<string, bool> schedule)
+        public static void UpdateScheduleInDb(int accId, SortedDictionary<string, bool> schedule)
         {
-            var acc = ProvideDependencyFactory.databaseContext.Accommodation.Find(id);
+            var acc = ProvideDependencyFactory.databaseContext.Accommodation.Find(accId);
 
             if (acc == null)
-                throw new IdNotFoundException("Accommodation", id);
+                throw new IdNotFoundException("Accommodation", accId);
 
             acc.Schedule = new SortedDictionary<string, bool>(schedule);
             ProvideDependencyFactory.databaseContext.SaveChanges();
