@@ -1,5 +1,6 @@
 ﻿using AintBnB.ViewModels;
 using System;
+using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -19,14 +20,7 @@ namespace AintBnB.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                await AuthenticationViewModel.IsAnyoneLoggedIn();
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.Message).ShowAsync();
-            }
+            await CheckIfAnyoneIsLoggedIn();
 
             bool normalUserLoggedIn = false;
 
@@ -54,6 +48,18 @@ namespace AintBnB.Views
                         await new MessageDialog(ex.Message).ShowAsync();
                     }
                 }
+            }
+        }
+
+        private async Task CheckIfAnyoneIsLoggedIn()
+        {
+            try
+            {
+                await AuthenticationViewModel.IsAnyoneLoggedIn();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
             }
         }
 

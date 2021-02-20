@@ -44,6 +44,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="2"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -54,6 +55,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="2"
                 Grid.Column="2"
                 IsReadOnly="True"
@@ -64,6 +66,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="3"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -74,6 +77,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="3"
                 Grid.Column="2"
                 IsReadOnly="True"
@@ -84,6 +88,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="4"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -94,6 +99,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="4"
                 Grid.Column="2"
                 IsReadOnly="True"
@@ -104,6 +110,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="5"
                 Grid.Column="1"
                 Header="Square meters"
@@ -113,6 +120,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="5"
                 Grid.Column="2"
                 Header="Amount of bedrooms"
@@ -122,6 +130,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="6"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -132,6 +141,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="6"
                 Grid.Column="2"
                 Header="Price per night"
@@ -141,6 +151,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="7"
                 Grid.Column="1"
                 Header="Cancellation deadline in days"
@@ -150,14 +161,17 @@
                 Name="cancellationDeadline"/>
 
             <Button
+                Visibility="Collapsed"
                 Grid.Row="7"
                 Grid.Column="2"
                 Click="Button_Click_Update"
                 Content="Update"
                 VerticalAlignment="Center"
-                HorizontalAlignment="Center"/>
+                HorizontalAlignment="Center"
+                x:Name="updateButton"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="8"
                 Grid.Column="1"
                 Header="Expand the schudle by days"
@@ -167,14 +181,17 @@
                 HorizontalAlignment="Center"/>
 
             <Button
+                Visibility="Collapsed"
                 Grid.Row="8"
                 Grid.Column="2"
                 Click="Button_Click_Expand"
                 Content="Expand schedule"
                 VerticalAlignment="Center"
-                HorizontalAlignment="Center"/>
+                HorizontalAlignment="Center"
+                Name="expandButton"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="9"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -185,6 +202,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="9"
                 Grid.Column="2"
                 IsReadOnly="True"
@@ -195,6 +213,7 @@
                 HorizontalAlignment="Center"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="10"
                 Grid.Column="1"
                 Grid.ColumnSpan="2"
@@ -206,20 +225,24 @@
                 MaxWidth="500"/>
 
             <Button
+                Visibility="Collapsed"
                 Grid.Row="11"
                 Grid.Column="2"
                 Click="Button_Click_Delete"
                 Content="Delete Accommodation"
                 VerticalAlignment="Center"
-                HorizontalAlignment="Center"/>
+                HorizontalAlignment="Center"
+                x:Name="deleteButton"/>
 
             <Button
+                Visibility="Collapsed"
                 Grid.Row="11"
                 Grid.Column="1"
                 Click="Button_Click_Upload"
                 Content="Upload photos"
                 VerticalAlignment="Center"
-                HorizontalAlignment="Center"/>
+                HorizontalAlignment="Center"
+                x:Name="uploadButton"/>
 
             <ListView
                 Grid.Row="12"
