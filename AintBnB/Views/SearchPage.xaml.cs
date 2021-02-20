@@ -29,9 +29,6 @@ namespace AintBnB.Views
             {
                 await AuthenticationViewModel.IsAnyoneLoggedIn();
 
-                await FindUserType();
-
-
                 ComboBoxCountries.ItemsSource = await EuropeViewModel.GetAllCountriesInEurope();
 
             }
@@ -39,6 +36,8 @@ namespace AintBnB.Views
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
+
+            await FindUserType();
         }
 
         private async Task FindUserType()
@@ -47,30 +46,28 @@ namespace AintBnB.Views
             {
                 await AuthenticationViewModel.IsEmployeeOrAdmin();
 
-                ComboBoxUsers.Visibility = Visibility.Visible;
-
-                List<int> ids = new List<int>();
-
-                foreach (var user in await UserViewModel.GetAllCustomers())
-                    ids.Add(user.Id);
-
-                ComboBoxUsers.ItemsSource = ids;
+                await FillComboboxWithTheIdsOfAllTheCustomers();
             }
             catch (Exception)
             {
             }
         }
 
+        private async Task FillComboboxWithTheIdsOfAllTheCustomers()
+        {
+            ComboBoxUsers.Visibility = Visibility.Visible;
+
+            List<int> ids = new List<int>();
+
+            foreach (var user in await UserViewModel.GetAllCustomers())
+                ids.Add(user.Id);
+
+            ComboBoxUsers.ItemsSource = ids;
+        }
+
         private void ComboBoxUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
-                BookingViewModel.Booking.BookedBy.Id = int.Parse(ComboBoxUsers.SelectedValue.ToString());
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            BookingViewModel.Booking.BookedBy.Id = int.Parse(ComboBoxUsers.SelectedValue.ToString());
         }
 
         private async void ComboBoxCountries_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -114,23 +111,14 @@ namespace AintBnB.Views
             listView.SelectedItem = null;
 
             if (result == ContentDialogResult.Primary)
-            {
                 await Book(index);
-            }
         }
 
         private async Task Book(int index)
         {
             BookingViewModel.StartDate = AccommodationViewModel.FromDate;
 
-            try
-            {
-                await AuthenticationViewModel.IsEmployeeOrAdmin();
-            }
-            catch (Exception)
-            {
-                BookingViewModel.Booking.BookedBy.Id = await AuthenticationViewModel.IdOfLoggedInUser();
-            }
+            await IfNotAdminOrEmployeeGetIdOfLoggedInCustomer();
 
             BookingViewModel.Nights = int.Parse(nights.Text);
             BookingViewModel.Booking.Accommodation.Id = AccommodationViewModel.AvailableAccommodations[index].Id;
@@ -140,11 +128,28 @@ namespace AintBnB.Views
             if ((int)res.Id == 1)
                 return;
 
+            await BookTheAccommodation();
+        }
+
+        private async Task IfNotAdminOrEmployeeGetIdOfLoggedInCustomer()
+        {
+            try
+            {
+                await AuthenticationViewModel.IsEmployeeOrAdmin();
+            }
+            catch (Exception)
+            {
+                BookingViewModel.Booking.BookedBy.Id = await AuthenticationViewModel.IdOfLoggedInUser();
+            }
+        }
+
+        private async Task BookTheAccommodation()
+        {
             try
             {
                 await BookingViewModel.BookAccommodation();
                 await new MessageDialog("Booking successful!").ShowAsync();
-                Frame.Navigate(typeof(SearchPage));
+                Frame.Navigate(typeof(AllBookingsPage));
             }
             catch (Exception ex)
             {

@@ -43,6 +43,7 @@
                 SelectionChanged="ComboBoxBookings_SelectionChanged"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="2"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -53,6 +54,7 @@
                 Name="bookedById"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="2"
                 Grid.Column="2"
                 IsReadOnly="True"
@@ -63,6 +65,7 @@
                 Name="bookedByUsername"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="3"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -73,6 +76,7 @@
                 Name="bookedByFirstname"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="3"
                 Grid.Column="2"
                 IsReadOnly="True"
@@ -83,6 +87,7 @@
                 Name="bookedByLastname"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="4"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -93,6 +98,7 @@
                 Name="streetOfAccommodation"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="4"
                 Grid.Column="2"
                 IsReadOnly="True"
@@ -103,6 +109,7 @@
                 Name="numberOfAccommodation"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="5"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -113,6 +120,7 @@
                 Name="zipOfAccommodation"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="5"
                 Grid.Column="2"
                 IsReadOnly="True"
@@ -123,6 +131,7 @@
                 Name="areaOfAccommodation"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="6"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -133,6 +142,7 @@
                 Name="cityOfAccommodation"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="6"
                 Grid.Column="2"
                 IsReadOnly="True"
@@ -143,6 +153,7 @@
                 Name="countryOfAccommodation"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="7"
                 Grid.Column="1"
                 IsReadOnly="True"
@@ -153,6 +164,7 @@
                 Name="priceOfBooking"/>
 
             <TextBox
+                Visibility="Collapsed"
                 Grid.Row="7"
                 Grid.Column="2"
                 IsReadOnly="True"
@@ -163,20 +175,24 @@
                 Name="cancellationDeadline"/>
 
             <Button
+                Visibility="Collapsed"
                 Grid.Row="8"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Click="Button_Click_Update"
-                Content="Change Dates"/>
+                Content="Change Dates"
+                Name="updateButton"/>
 
             <Button
+                Visibility="Collapsed"
                 Grid.Row="8"
                 Grid.Column="2"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Click="Button_Click_Delete"
-                Content="Delete booking"/>
+                Content="Delete booking"
+                Name="deleteButton"/>
 
             <TextBox
                 Grid.Row="9"
@@ -190,6 +206,7 @@
                 IsReadOnly="True"/>
 
             <ComboBox
+                Visibility="Collapsed"
                 Grid.Row="9"
                 Grid.Column="1"
                 VerticalAlignment="Center"
@@ -204,6 +221,7 @@
             </ComboBox>
 
             <Button
+                Visibility="Collapsed"
                 Grid.Row="9"
                 Grid.Column="2"
                 VerticalAlignment="Center"
@@ -213,11 +231,13 @@
                 Name="RateButton"/>
 
             <TextBlock
+                Visibility="Collapsed"
                 Grid.Row="10"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="Dates booked:"/>
+                Text="Dates booked:"
+                Name="datesBooked"/>
 
             <ListView
                 Grid.Row="11"

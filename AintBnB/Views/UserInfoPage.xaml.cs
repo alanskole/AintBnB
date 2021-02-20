@@ -22,28 +22,25 @@ namespace AintBnB.Views
             this.InitializeComponent();
         }
 
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            int userid = await IdOfLoggedInUser();
-            await FindUserType(userid);
-            await VisibilityOfMakeEmployeeButton();
-            IsComboBoxEmpty();
+            base.OnNavigatedTo(e);
+
+            WhenNavigatedToView(e, ComboBoxUsers);
         }
 
-        private async Task<int> IdOfLoggedInUser()
+        private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            int userid = 0;
             try
             {
-                userid = await AuthenticationViewModel.IdOfLoggedInUser();
-
+                int userid = await AuthenticationViewModel.IdOfLoggedInUser();
+                await FindUserType(userid);
             }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
 
-            return userid;
         }
 
         private async Task FindUserType(int userid)
@@ -52,24 +49,95 @@ namespace AintBnB.Views
             {
                 await AuthenticationViewModel.IsEmployeeOrAdmin();
 
-                List<int> ids = new List<int>();
+                await FillComboBoxWithUserIds();
 
-                foreach (var user in await UserViewModel.GetAllUsers())
-                    ids.Add(user.Id);
-
-                ComboBoxUsers.ItemsSource = ids;
+                if (ComboBoxUsers.SelectedIndex == -1)
+                    ComboBoxUsers.SelectedValue = userid;
             }
             catch (Exception)
             {
-                ComboBoxUsers.Visibility = Visibility.Collapsed;
+                await GetCustomerById(userid);
+            }
+        }
 
-                UserViewModel.User.Id = userid;
+        private async Task FillComboBoxWithUserIds()
+        {
+            List<int> ids = new List<int>();
+
+            foreach (var user in await UserViewModel.GetAllUsers())
+                ids.Add(user.Id);
+
+            ComboBoxUsers.ItemsSource = ids;
+        }
+
+        private async Task GetCustomerById(int userid)
+        {
+            ComboBoxUsers.Visibility = Visibility.Collapsed;
+
+            UserViewModel.User.Id = userid;
+
+            await UserViewModel.GetAUser();
+
+            userIdTextBox.Visibility = Visibility.Visible;
+        }
+
+        private async void ComboBoxUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                UserViewModel.User.Id = int.Parse(ComboBoxUsers.SelectedValue.ToString());
 
                 await UserViewModel.GetAUser();
 
-                userIdTextBox.Visibility = Visibility.Visible;
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
 
-                ShowButtons();
+            await VisibilityDeleteButton();
+
+            await VisibilityOfMakeEmployeeButton();
+        }
+
+        private async Task VisibilityDeleteButton()
+        {
+
+            try
+            {
+                await AuthenticationViewModel.IsAdmin();
+
+                ShowDeleteButtonIfAdminIsLoggedIn();
+
+            }
+            catch (Exception)
+            {
+                HideDeleteButtonIfEmployeeIsLoggedIn();
+            }
+        }
+
+        private void ShowDeleteButtonIfAdminIsLoggedIn()
+        {
+
+            if (userType.Text != "Admin")
+                DeleteButton.Visibility = Visibility.Visible;
+        }
+
+        private void HideDeleteButtonIfEmployeeIsLoggedIn()
+        {
+            DeleteButton.Visibility = Visibility.Collapsed;
+        }
+
+        private async void Button_Click_MakeEmployee(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                await UserViewModel.MakeEmployee();
+                await VisibilityOfMakeEmployeeButton();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
             }
         }
 
@@ -90,25 +158,12 @@ namespace AintBnB.Views
             }
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-
-            WhenNavigatedToView(e, ComboBoxUsers);
-        }
-
-        private async void Button_Click_MakeEmployee(object sender, RoutedEventArgs e)
-        {
-            await UserViewModel.MakeEmployee();
-        }
-
         private async void Button_Click_UpdateUser(object sender, RoutedEventArgs e)
         {
             try
             {
                 await UserViewModel.UpdateAUser();
                 await new MessageDialog("Update ok!").ShowAsync();
-                Frame.Navigate(typeof(UserInfoPage));
             }
             catch (Exception ex)
             {
@@ -154,6 +209,7 @@ namespace AintBnB.Views
 
 
             bool wasDeleted = false;
+
             try
             {
                 await UserViewModel.DeleteAUser();
@@ -167,6 +223,12 @@ namespace AintBnB.Views
                 await new MessageDialog(ex.Message).ShowAsync();
             }
 
+            if (wasDeleted)
+                await RedirectToCorrectViewBasedOnUserType();
+        }
+
+        private async Task RedirectToCorrectViewBasedOnUserType()
+        {
             try
             {
                 await AuthenticationViewModel.IsAdmin();
@@ -174,89 +236,8 @@ namespace AintBnB.Views
             }
             catch (Exception)
             {
-                if (wasDeleted)
-                {
-                    await AuthenticationViewModel.LogoutFromApp();
-                    Frame.Navigate(typeof(MainPage));
-                }
-
-            }
-
-        }
-
-        private async void ComboBoxUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            try
-            {
-                UserViewModel.User.Id = int.Parse(ComboBoxUsers.SelectedValue.ToString());
-
-                await UserViewModel.GetAUser();
-
-                IsComboBoxEmpty();
-
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.Message).ShowAsync();
-            }
-        }
-
-        private void IsComboBoxEmpty()
-        {
-            if (ComboBoxUsers.Visibility == Visibility.Visible && ComboBoxUsers.SelectedIndex == -1)
-                HideButtonsWhenNoUserChosen();
-            else
-                ShowButtons();
-        }
-
-        private async void ShowButtons()
-        {
-            userName.Visibility = Visibility.Visible;
-            firstName.Visibility = Visibility.Visible;
-            lastName.Visibility = Visibility.Visible;
-            userType.Visibility = Visibility.Visible;
-            UpdateUserButton.Visibility = Visibility.Visible;
-            ChangePasswordButton.Visibility = Visibility.Visible;
-
-            VisibilityDeleteButton();
-
-            await VisibilityOfMakeEmployeeButton();
-        }
-
-        private void HideButtonsWhenNoUserChosen()
-        {
-            userName.Visibility = Visibility.Collapsed;
-            firstName.Visibility = Visibility.Collapsed;
-            lastName.Visibility = Visibility.Collapsed;
-            userType.Visibility = Visibility.Collapsed;
-            EmployeeButton.Visibility = Visibility.Collapsed;
-            UpdateUserButton.Visibility = Visibility.Collapsed;
-            ChangePasswordButton.Visibility = Visibility.Collapsed;
-            DeleteButton.Visibility = Visibility.Collapsed;
-        }
-
-        private async void VisibilityDeleteButton()
-        {
-            try
-            {
-                await AuthenticationViewModel.IsAdmin();
-
-                DeleteButton.Visibility = Visibility.Visible;
-            }
-            catch (Exception)
-            {
-            }
-
-            if (userType.Text == "Admin")
-                DeleteButton.Visibility = Visibility.Collapsed;
-
-            try
-            {
-                await AuthenticationViewModel.IsEmployee();
-                DeleteButton.Visibility = Visibility.Collapsed;
-            }
-            catch (Exception)
-            {
+                await AuthenticationViewModel.LogoutFromApp();
+                Frame.Navigate(typeof(MainPage));
             }
         }
     }
