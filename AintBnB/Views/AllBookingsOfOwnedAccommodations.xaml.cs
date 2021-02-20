@@ -1,5 +1,7 @@
 ﻿using AintBnB.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -11,6 +13,8 @@ namespace AintBnB.Views
     {
         public BookingViewModel BookingViewModel { get; } = new BookingViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
+        public UserViewModel UserViewModel { get; } = new UserViewModel();
+
         private bool _skipSelectionChanged;
 
         public AllBookingsOfOwnedAccommodations()
@@ -20,10 +24,63 @@ namespace AintBnB.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            await CheckIfAnyoneIsLoggedIn();
+
             try
             {
-                BookingViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+                await AuthenticationViewModel.IsEmployeeOrAdmin();
 
+                await FillComboboxWithIdsOfAllTheCustomers();
+            }
+            catch (Exception)
+            {
+                await FillListWithBookings(await AuthenticationViewModel.IdOfLoggedInUser());
+            }
+        }
+
+        private async Task CheckIfAnyoneIsLoggedIn()
+        {
+            try
+            {
+                await AuthenticationViewModel.IsAnyoneLoggedIn();
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
+        }
+
+        private async Task FillComboboxWithIdsOfAllTheCustomers()
+        {
+            List<int> ids = new List<int>();
+
+            foreach (var user in await UserViewModel.GetAllCustomers())
+                ids.Add(user.Id);
+
+            ComboBoxUsers.ItemsSource = ids;
+
+            ComboBoxUsers.Visibility = Visibility.Visible;
+        }
+
+        private async void ComboBoxUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            try
+            {
+                await FillListWithBookings(int.Parse(ComboBoxUsers.SelectedValue.ToString()));
+
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
+        }
+
+        private async Task FillListWithBookings(int userId)
+        {
+            BookingViewModel.UserId = userId;
+
+            try
+            {
                 listView.ItemsSource = await BookingViewModel.GetAllBookingsOfOwnedAccommodations();
             }
             catch (Exception ex)
@@ -65,19 +122,23 @@ namespace AintBnB.Views
                 if ((int)res.Id == 1)
                     return;
 
-                try
-                {
-                    await BookingViewModel.DeleteABooking();
+                await DeleteBooking();
+            }
+        }
 
-                    await new MessageDialog("Booking deleted!").ShowAsync();
+        private async Task DeleteBooking()
+        {
+            try
+            {
+                await BookingViewModel.DeleteABooking();
 
-                    Frame.Navigate(typeof(AllBookingsOfOwnedAccommodations));
-                }
-                catch (Exception ex)
-                {
-                    await new MessageDialog(ex.Message).ShowAsync();
-                }
+                await new MessageDialog("Booking deleted!").ShowAsync();
 
+                Frame.Navigate(typeof(AllBookingsOfOwnedAccommodations));
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
             }
         }
     }

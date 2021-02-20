@@ -76,7 +76,7 @@ namespace AintBnB.Core.Models
 
         public override string ToString()
         {
-            return ($"Booking ID: {Id} \nBooked by: {BookedBy}. \nAccommodation: {Accommodation}. \nDates Booked: {string.Join(", ", Dates.ToArray())}. \nTotal price: {Price} {(Rating < 1 ? "" : $"\nYour rating: {Rating}")}");
+            return ($"Booking ID: {Id} \nBooked by: {BookedBy}. \nAccommodation: {Accommodation}. \nDates Booked: {string.Join(", ", Dates.ToArray())}. \nTotal price: {Price} {(Rating < 1 ? "" : $"\nRating given by the booker: {Rating}")}");
         }
 
         public Booking(User bookedBy, Accommodation accommodation, List<string> dates, int price)

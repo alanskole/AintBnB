@@ -23,12 +23,18 @@ namespace AintBnB.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
+            await CheckIfAnyoneIsLoggedIn();
+
+            await FindUserType();
+
+            ComboBoxCountries.ItemsSource = await EuropeViewModel.GetAllCountriesInEurope();
+        }
+
+        private async Task CheckIfAnyoneIsLoggedIn()
+        {
             try
             {
-                await FindUserType();
-
-                ComboBoxCountries.ItemsSource = await EuropeViewModel.GetAllCountriesInEurope();
-
+                await AuthenticationViewModel.IsAnyoneLoggedIn();
             }
             catch (Exception ex)
             {
@@ -42,14 +48,7 @@ namespace AintBnB.Views
             {
                 await AuthenticationViewModel.IsEmployeeOrAdmin();
 
-                ComboBoxUsers.Visibility = Visibility.Visible;
-
-                List<int> ids = new List<int>();
-
-                foreach (var user in await UserViewModel.GetAllCustomers())
-                    ids.Add(user.Id);
-
-                ComboBoxUsers.ItemsSource = ids;
+                await FillComboboxWithIdsOfAllCustomers();
             }
             catch (Exception)
             {
@@ -57,16 +56,21 @@ namespace AintBnB.Views
             }
         }
 
+        private async Task FillComboboxWithIdsOfAllCustomers()
+        {
+            ComboBoxUsers.Visibility = Visibility.Visible;
+
+            List<int> ids = new List<int>();
+
+            foreach (var user in await UserViewModel.GetAllCustomers())
+                ids.Add(user.Id);
+
+            ComboBoxUsers.ItemsSource = ids;
+        }
+
         private void ComboBoxUsers_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            try
-            {
-                AccommodationViewModel.UserId = int.Parse(ComboBoxUsers.SelectedValue.ToString());
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            AccommodationViewModel.UserId = int.Parse(ComboBoxUsers.SelectedValue.ToString());
         }
 
         private async void ComboBoxCountries_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -92,7 +96,7 @@ namespace AintBnB.Views
             {
                 await AccommodationViewModel.CreateAccommodation();
                 await new MessageDialog("Creation ok!").ShowAsync();
-                Frame.Navigate(typeof(CreateAccommodationPage));
+                Frame.Navigate(typeof(AllAccommodationsPage));
             }
             catch (Exception ex)
             {

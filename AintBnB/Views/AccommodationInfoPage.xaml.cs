@@ -22,6 +22,13 @@ namespace AintBnB.Views
             this.InitializeComponent();
         }
 
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            WhenNavigatedToView(e, ComboBoxAccommodations);
+        }
+
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
             try
@@ -33,9 +40,13 @@ namespace AintBnB.Views
                 await new MessageDialog(ex.Message).ShowAsync();
             }
 
-            List<int> ids = new List<int>();
-
             bool normalUserLoggedIn = false;
+            await FindUserTypeOfLoggedInUser(normalUserLoggedIn);
+        }
+
+        private async Task FindUserTypeOfLoggedInUser(bool normalUserLoggedIn)
+        {
+            List<int> ids = new List<int>();
 
             try
             {
@@ -50,30 +61,28 @@ namespace AintBnB.Views
             }
             finally
             {
-                if (normalUserLoggedIn)
-                {
-                    AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
-
-                    try
-                    {
-                        foreach (var acc in await AccommodationViewModel.GetAllAccommodationsOfAUser())
-                            ids.Add(acc.Id);
-                    }
-                    catch (Exception ex)
-                    {
-                        await new MessageDialog(ex.Message).ShowAsync();
-                    }
-                }
-
-                ComboBoxAccommodations.ItemsSource = ids;
+                await FillComboboxWithAccommodationIds(ids, normalUserLoggedIn);
             }
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        private async Task FillComboboxWithAccommodationIds(List<int> ids, bool normalUserLoggedIn)
         {
-            base.OnNavigatedTo(e);
+            if (normalUserLoggedIn)
+            {
+                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
 
-            WhenNavigatedToView(e, ComboBoxAccommodations);
+                try
+                {
+                    foreach (var acc in await AccommodationViewModel.GetAllAccommodationsOfAUser())
+                        ids.Add(acc.Id);
+                }
+                catch (Exception ex)
+                {
+                    await new MessageDialog(ex.Message).ShowAsync();
+                }
+            }
+
+            ComboBoxAccommodations.ItemsSource = ids;
         }
 
         private async void ComboBoxAccommodations_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -88,10 +97,32 @@ namespace AintBnB.Views
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
-
+            ShowButtons();
             GetPhotos();
         }
 
+        private void ShowButtons()
+        {
+            street.Visibility = Visibility.Visible;
+            number.Visibility = Visibility.Visible;
+            zip.Visibility = Visibility.Visible;
+            area.Visibility = Visibility.Visible;
+            city.Visibility = Visibility.Visible;
+            country.Visibility = Visibility.Visible;
+            sqm.Visibility = Visibility.Visible;
+            bedrooms.Visibility = Visibility.Visible;
+            kmFromCenter.Visibility = Visibility.Visible;
+            pricePerNight.Visibility = Visibility.Visible;
+            cancellationDeadline.Visibility = Visibility.Visible;
+            updateButton.Visibility = Visibility.Visible;
+            expand.Visibility = Visibility.Visible;
+            expandButton.Visibility = Visibility.Visible;
+            avgRating.Visibility = Visibility.Visible;
+            amountOfRatings.Visibility = Visibility.Visible;
+            description.Visibility = Visibility.Visible;
+            deleteButton.Visibility = Visibility.Visible;
+            uploadButton.Visibility = Visibility.Visible;
+        }
 
         private async void Button_Click_Update(object sender, RoutedEventArgs e)
         {
@@ -99,7 +130,6 @@ namespace AintBnB.Views
             {
                 await AccommodationViewModel.UpdateAccommodation();
                 await new MessageDialog("Update ok").ShowAsync();
-                Frame.Navigate(typeof(AccommodationInfoPage));
             }
             catch (Exception ex)
             {
@@ -113,7 +143,6 @@ namespace AintBnB.Views
             {
                 await AccommodationViewModel.ExpandScheduleOfAccommodation();
                 await new MessageDialog("Expansion of schedule ok").ShowAsync();
-                Frame.Navigate(typeof(AccommodationInfoPage));
             }
             catch (Exception ex)
             {
@@ -123,26 +152,28 @@ namespace AintBnB.Views
 
         private async void Button_Click_Delete(object sender, RoutedEventArgs e)
         {
-            var dialog = new MessageDialog("This will delete the accommodation! Are you sure?");
-            dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
-            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-            var res = await dialog.ShowAsync();
+            var res = await DialogeMessageAsync("This will delete the accommodation! Are you sure?", "Delete");
 
+            if ((int)res.Id == 1)
+                return;
+
+            await DeleteAcc();
+        }
+
+        private async Task DeleteAcc()
+        {
             try
             {
-                if ((int)res.Id == 0)
-                {
-                    await AccommodationViewModel.DeleteAccommodation();
-                    await new MessageDialog("Deletion ok!").ShowAsync();
-                    Frame.Navigate(typeof(AccommodationInfoPage));
-                }
+                await AccommodationViewModel.DeleteAccommodation();
+                await new MessageDialog("Deletion ok!").ShowAsync();
+                Frame.Navigate(typeof(AllAccommodationsPage));
+
             }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
         }
-
 
         private async void GetPhotos()
         {
@@ -188,21 +219,18 @@ namespace AintBnB.Views
 
         private async Task DeleteThePhoto()
         {
-            var dialog = new MessageDialog("This will delete the photo! Are you sure?");
-            dialog.Commands.Add(new UICommand { Label = "Ok", Id = 0 });
-            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-            var res = await dialog.ShowAsync();
+            var res = await DialogeMessageAsync("This will delete the photo! Are you sure?", "Delete");
 
-            if ((int)res.Id == 0)
-            {
-                int index = listViewPicture.SelectedIndex;
+            if ((int)res.Id == 1)
+                return;
 
-                AccommodationViewModel.Accommodation.Picture.Remove(AccommodationViewModel.Accommodation.Picture[index]);
+            int index = listViewPicture.SelectedIndex;
 
-                await AccommodationViewModel.UpdateAccommodation();
+            AccommodationViewModel.Accommodation.Picture.Remove(AccommodationViewModel.Accommodation.Picture[index]);
 
-                Refresh();
-            }
+            await AccommodationViewModel.UpdateAccommodation();
+
+            Refresh();
         }
 
         private async void Button_Click_Upload(object sender, RoutedEventArgs e)
