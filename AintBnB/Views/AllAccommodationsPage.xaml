@@ -8,17 +8,19 @@
     mc:Ignorable="d" Loaded="Page_Loaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <ListView
-            x:Name="listView"
-            IsItemClickEnabled="True"
-            SelectionMode="Single"
-            SelectionChanged="listView_SelectionChanged">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </Grid>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid>
+            <ListView
+                x:Name="listView"
+                IsItemClickEnabled="True"
+                SelectionMode="Single"
+                SelectionChanged="listView_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+    </ScrollViewer>
 </Page>
