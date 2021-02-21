@@ -162,6 +162,9 @@ namespace AintBnB.BusinessLogic.Services
             {
                 if (string.Equals(user.UserName, userName))
                 {
+                    if (user.UserType == UserTypes.RequestToBeEmployee)
+                        throw new LoginExcrption("The request to have an employee account must be approved by admin before it can be used!");
+
                     if (UnHashPassword(password, user.Password))
                     {
                         LoggedInAs = user;

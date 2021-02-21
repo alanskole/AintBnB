@@ -24,7 +24,7 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                User newUser = _userService.CreateUser(user.UserName, user.Password, user.FirstName, user.LastName);
+                User newUser = _userService.CreateUser(user.UserName, user.Password, user.FirstName, user.LastName, user.UserType);
                 return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + newUser.Id, newUser);
             }
             catch (Exception ex)
@@ -87,6 +87,20 @@ namespace AintBnB.WebApi.Controllers
             try
             {
                 return Ok(_userService.GetAllUsersWithTypeCustomer());
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("api/[controller]/requests")]
+        public IActionResult GetAllEmployeeRequests()
+        {
+            try
+            {
+                return Ok(_userService.GetAllEmployeeRequests());
             }
             catch (Exception ex)
             {

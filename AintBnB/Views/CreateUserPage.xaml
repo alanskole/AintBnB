@@ -18,6 +18,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -79,8 +80,17 @@
                 Text="{x:Bind UserViewModel.User.LastName, Mode=TwoWay}"
                 Name="lastName"/>
 
-            <Button
+            <CheckBox
                 Grid.Row="7"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                x:Name="EmpReq">
+                Request to become employee
+            </CheckBox>
+
+            <Button
+                Grid.Row="8"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"

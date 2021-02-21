@@ -147,7 +147,7 @@ namespace AintBnB.Views
             {
                 await AuthenticationViewModel.IsAdmin();
 
-                if (userType.Text == "Customer")
+                if (userType.Text == "RequestToBeEmployee")
                     EmployeeButton.Visibility = Visibility.Visible;
                 else
                     EmployeeButton.Visibility = Visibility.Collapsed;

@@ -17,7 +17,7 @@ namespace AintBnB.ViewModels
         private string _uri;
         private string _uniquePartOfUri;
         private string _passwordConfirm;
-
+        private List<User> _allEmployeeRequests;
         public User User
         {
             get { return _user; }
@@ -38,6 +38,16 @@ namespace AintBnB.ViewModels
             }
         }
 
+        public List<User> AllEmployeeRequests
+        {
+            get { return _allEmployeeRequests; }
+            set
+            {
+                _allEmployeeRequests = value;
+                NotifyPropertyChanged("AllEmployeeRequests");
+            }
+        }
+
         public UserViewModel()
         {
             _clientProvider.ControllerPartOfUri = "api/user/";
@@ -48,6 +58,11 @@ namespace AintBnB.ViewModels
         {
             User.UserType = UserTypes.Employee;
             await UpdateAUser();
+        }
+
+        public void RequestToBecomeEmployee()
+        {
+            User.UserType = UserTypes.RequestToBeEmployee;
         }
 
         public async Task CreateTheUser()
@@ -105,6 +120,20 @@ namespace AintBnB.ViewModels
                 string jsonUsers = await response.Content.ReadAsStringAsync();
                 _all = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
                 return _all;
+            }
+            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+        }
+
+        public async Task<List<User>> GetAllEmployeeRequests()
+        {
+            _uniquePartOfUri = "requests";
+
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            if (response.IsSuccessStatusCode)
+            {
+                string jsonUsers = await response.Content.ReadAsStringAsync();
+                AllEmployeeRequests = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
+                return AllEmployeeRequests;
             }
             throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
