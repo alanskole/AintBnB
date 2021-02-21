@@ -8,27 +8,30 @@
     mc:Ignorable="d" Loaded="Page_Loaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <ListView x:Name="listView"
-            IsItemClickEnabled="True"
-            SelectionMode="Single"
-            SelectionChanged="listView_SelectionChanged">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <ListView
+                x:Name="listView"
+                IsItemClickEnabled="True"
+                SelectionMode="Single"
+                SelectionChanged="listView_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
 
-        <ContentDialog
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            Visibility="Collapsed"
-            x:Name="contentDialog"
-            Title="Approve employee status or delete account"
-            PrimaryButtonText="Approve"
-            SecondaryButtonText="Delete"
-            CloseButtonText="Cancel"/>
+            <ContentDialog
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Visibility="Collapsed"
+                x:Name="contentDialog"
+                Title="Approve employee status or delete account"
+                PrimaryButtonText="Approve"
+                SecondaryButtonText="Delete"
+                CloseButtonText="Cancel"/>
 
-    </Grid>
+        </Grid>
+    </ScrollViewer>
 </Page>
