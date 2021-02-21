@@ -49,7 +49,8 @@
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             </Style>
             <Style TargetType="ListViewItem">
-                <Setter Property="BorderThickness" Value="10"/>
+                <Setter Property="BorderBrush" Value="DodgerBlue" />
+                <Setter Property="BorderThickness" Value="2"/>
                 <Setter Property="Margin" Value="10"/>
                 <Setter Property="Padding" Value="10,10,10,10"/>
             </Style>

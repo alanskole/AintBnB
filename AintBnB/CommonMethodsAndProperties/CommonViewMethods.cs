@@ -14,6 +14,35 @@ namespace AintBnB.CommonMethodsAndProperties
 {
     static public class CommonViewMethods
     {
+        public static void WhenNavigatedToView(NavigationEventArgs e, ComboBox comboBox)
+        {
+            if (e.Parameter != null)
+            {
+                var parameter = int.Parse(e.Parameter.ToString());
+
+                comboBox.SelectedIndex = parameter;
+            }
+        }
+
+        public static async Task<IUICommand> DialogeMessageAsync(string message, string buttonText)
+        {
+            var dialog = new MessageDialog(message);
+            dialog.Commands.Add(new UICommand { Label = buttonText, Id = 0 });
+            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
+            var res = await dialog.ShowAsync();
+
+            return res;
+        }
+
+        public static string DatePickerParser(CalendarDatePicker datePicker)
+        {
+            var date = datePicker.Date;
+
+            DateTime dt = date.Value.DateTime;
+
+            return dt.ToString("yyyy-MM-dd");
+        }
+
         public static async Task PhotoUpload(List<byte[]> picture)
         {
             FileOpenPicker picker = new FileOpenPicker();
@@ -35,7 +64,7 @@ namespace AintBnB.CommonMethodsAndProperties
             }
         }
 
-        public static async Task ConvertBytesToBitmapImageList(List<byte[]> originalBytes,List<BitmapImage> convertedToBitmapImage)
+        public static async Task ConvertBytesToBitmapImageList(List<byte[]> originalBytes, List<BitmapImage> convertedToBitmapImage)
         {
             using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
             {
@@ -52,35 +81,6 @@ namespace AintBnB.CommonMethodsAndProperties
                     }
                 }
             }
-        }
-
-        public static void WhenNavigatedToView(NavigationEventArgs e, ComboBox comboBox)
-        {
-            if (e.Parameter != null)
-            {
-                var parameter = int.Parse(e.Parameter.ToString());
-
-                comboBox.SelectedIndex = parameter;
-            }
-        }
-
-        public static string DatePickerParser(CalendarDatePicker datePicker)
-        {
-            var date = datePicker.Date;
-
-            DateTime dt = date.Value.DateTime;
-
-            return dt.ToString("yyyy-MM-dd");
-        }
-
-        public static async Task<IUICommand> DialogeMessageAsync(string message, string buttonText)
-        {
-            var dialog = new MessageDialog(message);
-            dialog.Commands.Add(new UICommand { Label = buttonText, Id = 0 });
-            dialog.Commands.Add(new UICommand { Label = "Cancel", Id = 1 });
-            var res = await dialog.ShowAsync();
-
-            return res;
         }
     }
 }
