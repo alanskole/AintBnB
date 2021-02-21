@@ -100,15 +100,7 @@ namespace AintBnB.Views
 
             BookingViewModel.Booking.Id = BookingViewModel.AllBookingsOfOwnedAccommodations[listView.SelectedIndex].Id;
 
-            var container = new StackPanel();
-
-            var contentDialog = new ContentDialog
-            {
-                Title = "Delete Booking",
-                Content = container,
-                PrimaryButtonText = "Delete",
-                CloseButtonText = "Cancel"
-            };
+            contentDialog.Visibility = Visibility.Visible;
 
             ContentDialogResult result = await contentDialog.ShowAsync();
 

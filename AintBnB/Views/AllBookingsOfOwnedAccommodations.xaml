@@ -8,33 +8,45 @@
     mc:Ignorable="d" Loaded="Page_Loaded"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"></RowDefinition>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
 
-        <ComboBox
-            Visibility="Collapsed"
-            Grid.Row="0"
-            VerticalAlignment="Center"
-            HorizontalAlignment="Center"
-            x:Name="ComboBoxUsers"
-            x:FieldModifier="public"
-            Header="User ID"
-            SelectionChanged="ComboBoxUsers_SelectionChanged"/>
-        
-        <ListView
-            Grid.Row="1"
-            x:Name="listView"
-            IsItemClickEnabled="True"
-            SelectionMode="Single"
-            SelectionChanged="listView_SelectionChanged">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </Grid>
+            <ComboBox
+                Visibility="Collapsed"
+                Grid.Row="0"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                x:Name="ComboBoxUsers"
+                x:FieldModifier="public"
+                Header="User ID"
+                SelectionChanged="ComboBoxUsers_SelectionChanged"/>
+
+            <ListView
+                Grid.Row="1"
+                x:Name="listView"
+                IsItemClickEnabled="True"
+                SelectionMode="Single"
+                SelectionChanged="listView_SelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ContentDialog
+                Grid.Row="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Visibility="Collapsed"
+                x:Name="contentDialog"
+                Title="Delete Booking"
+                PrimaryButtonText="Delete"
+                CloseButtonText="Cancel"/>
+        </Grid>
+    </ScrollViewer>
 </Page>

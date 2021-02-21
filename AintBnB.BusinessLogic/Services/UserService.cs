@@ -33,7 +33,7 @@ namespace AintBnB.BusinessLogic.Services
             _iUserRepository = userRepo;
         }
 
-        public User CreateUser(string userName, string password, string firstName, string lastName)
+        public User CreateUser(string userName, string password, string firstName, string lastName, UserTypes userType)
         {
 
             IsUserNameFree(userName);
@@ -50,6 +50,8 @@ namespace AintBnB.BusinessLogic.Services
 
             if (user.Id == 1)
                 user.UserType = UserTypes.Admin;
+            else if (userType == UserTypes.RequestToBeEmployee)
+                user.UserType = UserTypes.RequestToBeEmployee;
 
             return user;
         }
@@ -121,10 +123,12 @@ namespace AintBnB.BusinessLogic.Services
 
         public List<User> GetAllUsersWithTypeCustomer()
         {
-            List<User> all = new List<User>();
+
 
             if (!HasElevatedRights())
-                return all;
+                throw new AccessException();
+
+            List<User> all = new List<User>();
 
             foreach (var user in _iUserRepository.GetAll())
             {
@@ -132,6 +136,26 @@ namespace AintBnB.BusinessLogic.Services
                     all.Add(user);
             }
             IsListEmpty(all);
+
+            return all;
+        }
+
+        public List<User> GetAllEmployeeRequests()
+        {
+
+            if (!AdminChecker())
+                throw new AccessException("Admin only!");
+
+            List<User> all = new List<User>();
+
+            foreach (var user in _iUserRepository.GetAll())
+            {
+                if (user.UserType == UserTypes.RequestToBeEmployee)
+                    all.Add(user);
+            }
+
+            if (all.Count == 0)
+                throw new NoneFoundInDatabaseTableException("requests to become employee");
 
             return all;
         }
