@@ -1,10 +1,9 @@
 ﻿using AintBnB.ViewModels;
 using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Navigation;
 using static AintBnB.CommonMethodsAndProperties.CommonViewMethods;
 
 
@@ -60,9 +59,7 @@ namespace AintBnB.Views
                 if ((int)res.Id == 1)
                     return;
 
-                await UserViewModel.GetAUser();
-
-                await UserViewModel.MakeEmployee();
+                await Approve();
             }
 
             if (result == ContentDialogResult.Secondary)
@@ -73,11 +70,42 @@ namespace AintBnB.Views
                 if ((int)res.Id == 1)
                     return;
 
-                await UserViewModel.DeleteAUser();
+                await Delete();
             }
-
-            Frame.Navigate(typeof(AllUsersPage));
         }
 
+        private async Task Approve()
+        {
+            try
+            {
+                await UserViewModel.GetAUser();
+
+                await UserViewModel.MakeEmployee();
+
+                await new MessageDialog("Successfully approved employee request!").ShowAsync();
+
+                Frame.Navigate(typeof(AllUsersPage));
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
+        }
+
+        private async Task Delete()
+        {
+            try
+            {
+                await UserViewModel.DeleteAUser();
+
+                await new MessageDialog("Account deleted!").ShowAsync();
+
+                Frame.Navigate(typeof(AllUsersPage));
+            }
+            catch (Exception ex)
+            {
+                await new MessageDialog(ex.Message).ShowAsync();
+            }
+        }
     }
 }
