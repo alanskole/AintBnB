@@ -1,7 +1,7 @@
 ﻿using AintBnB.Core.Models;
 using System.Collections.Generic;
 
-namespace AintBnB.BusinessLogic.Services
+namespace AintBnB.BusinessLogic.Interfaces
 {
     public interface IBookingService
     {

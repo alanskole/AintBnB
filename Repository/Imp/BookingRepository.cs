@@ -1,6 +1,6 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.Database.DbCtx;
-using AintBnB.BusinessLogic.DependencyProviderFactory;
+using AintBnB.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,22 +8,24 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace AintBnB.BusinessLogic.Repository
+namespace AintBnB.Repository.Imp
 {
     public class BookingRepository : IRepository<Booking>
     {
-        public readonly DatabaseContext _databaseContext = ProvideDependencyFactory.databaseContext;
+        private DatabaseContext _databaseContext;
 
+        public BookingRepository(DatabaseContext databaseContext)
+        {
+            _databaseContext = databaseContext;
+        }
         public void Create(Booking booking)
         {
             _databaseContext.Booking.Add(booking);
-            _databaseContext.SaveChanges();
         }
 
         public void Delete(int id)
         {
             _databaseContext.Booking.Remove(Read(id));
-            _databaseContext.SaveChanges();
         }
 
         public List<Booking> GetAll()
@@ -42,7 +44,6 @@ namespace AintBnB.BusinessLogic.Repository
             oldBooking.Dates = updatedBooking.Dates;
             oldBooking.Price = updatedBooking.Price;
             oldBooking.Rating = updatedBooking.Rating;
-            _databaseContext.SaveChanges();
         }
     }
 }

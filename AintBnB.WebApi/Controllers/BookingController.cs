@@ -1,6 +1,5 @@
 ﻿using AintBnB.Core.Models;
-using AintBnB.BusinessLogic.DependencyProviderFactory;
-using AintBnB.BusinessLogic.Services;
+using AintBnB.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -14,12 +13,12 @@ namespace AintBnB.WebApi.Controllers
         private IAccommodationService _accommodationService;
         private IDeletionService _deletionService;
 
-        public BookingController()
+        public BookingController(IBookingService bookingService, IUserService userService, IAccommodationService accommodationService, IDeletionService deletionService)
         {
-            _bookingService = ProvideDependencyFactory.bookingService;
-            _userService = ProvideDependencyFactory.userService;
-            _accommodationService = ProvideDependencyFactory.accommodationService;
-            _deletionService = ProvideDependencyFactory.deletionService;
+            _bookingService = bookingService;
+            _userService = userService;
+            _accommodationService = accommodationService;
+            _deletionService = deletionService;
         }
 
         [HttpGet]

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AintBnB.BusinessLogic.Services
+namespace AintBnB.BusinessLogic.Helpers
 {
-    public static class DateService
+    public static class DateHelper
     {
         public static String DateFormatterTodaysDate()
         {

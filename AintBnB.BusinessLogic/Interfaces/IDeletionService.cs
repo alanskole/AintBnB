@@ -1,4 +1,4 @@
-﻿namespace AintBnB.BusinessLogic.Services
+﻿namespace AintBnB.BusinessLogic.Interfaces
 {
     public interface IDeletionService
     {

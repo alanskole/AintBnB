@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
-using AintBnB.BusinessLogic.Services;
-using AintBnB.BusinessLogic.DependencyProviderFactory;
+using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Core.Models;
 
 namespace AintBnB.WebApi.Controllers
@@ -12,10 +11,10 @@ namespace AintBnB.WebApi.Controllers
         private IUserService _userService;
         private IDeletionService _deletionService;
 
-        public UserController()
+        public UserController(IUserService userService, IDeletionService deletionService)
         {
-            _userService = ProvideDependencyFactory.userService;
-            _deletionService = ProvideDependencyFactory.deletionService;
+            _userService = userService;
+            _deletionService = deletionService;
         }
 
         [HttpPost]

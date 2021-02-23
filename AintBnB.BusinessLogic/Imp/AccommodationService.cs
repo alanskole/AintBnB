@@ -1,46 +1,29 @@
 ﻿using AintBnB.Core.Models;
-using AintBnB.BusinessLogic.DependencyProviderFactory;
-using AintBnB.BusinessLogic.Repository;
-using static AintBnB.BusinessLogic.Services.DateService;
-using static AintBnB.BusinessLogic.Services.UpdateScheduleInDatabase;
-using static AintBnB.BusinessLogic.Services.AllCountiresAndCitiesEurope;
-using static AintBnB.BusinessLogic.Services.AuthenticationService;
+using static AintBnB.BusinessLogic.Helpers.DateHelper;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.BusinessLogic.Helpers.AllCountiresAndCitiesEurope;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Repository.Interfaces;
 
-namespace AintBnB.BusinessLogic.Services
+namespace AintBnB.BusinessLogic.Imp
 {
     public class AccommodationService : IAccommodationService
     {
-        private IRepository<Accommodation> _iAccommodationRepository;
+        private IUnitOfWork _unitOfWork;
         private List<Accommodation> _available;
 
-        public IRepository<Accommodation> IAccommodationRepository
+        public AccommodationService(IUnitOfWork unitOfWork)
         {
-            get { return _iAccommodationRepository; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentException("IAccommodationRepository cannot be null");
-                _iAccommodationRepository = value;
-            }
-        }
-
-        public AccommodationService()
-        {
-            _iAccommodationRepository = ProvideDependencyFactory.accommodationRepository;
-        }
-
-        public AccommodationService(IRepository<Accommodation> accommodationRepo)
-        {
-            _iAccommodationRepository = accommodationRepo;
+            _unitOfWork = unitOfWork;
         }
 
         public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, List<byte[]> picture, int daysToCreateScheduleFor)
         {
-            if (CheckIfUserIsAllowedToPerformAction(owner.Id))
+            if (CheckIfUserIsAllowedToPerformAction(owner))
             {
                 Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight, cancellationDeadlineInDays);
 
@@ -52,7 +35,8 @@ namespace AintBnB.BusinessLogic.Services
                 ValidateAccommodation(accommodation);
 
                 CreateScheduleForXAmountOfDays(accommodation, daysToCreateScheduleFor);
-                _iAccommodationRepository.Create(accommodation);
+                _unitOfWork.AccommodationRepository.Create(accommodation);
+                _unitOfWork.Commit();
                 return accommodation;
             }
             throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
@@ -85,7 +69,7 @@ namespace AintBnB.BusinessLogic.Services
         {
             AnyoneLoggedIn();
 
-            Accommodation acc = _iAccommodationRepository.Read(id);
+            Accommodation acc = _unitOfWork.AccommodationRepository.Read(id);
 
             if (acc == null)
                 throw new IdNotFoundException("Accommodation", id);
@@ -95,7 +79,7 @@ namespace AintBnB.BusinessLogic.Services
 
         public List<Accommodation> GetAllAccommodations()
         {
-            List<Accommodation> all = _iAccommodationRepository.GetAll();
+            List<Accommodation> all = _unitOfWork.AccommodationRepository.GetAll();
 
             if (all.Count == 0)
                 throw new NoneFoundInDatabaseTableException("accommodations");
@@ -126,14 +110,15 @@ namespace AintBnB.BusinessLogic.Services
 
         public void UpdateAccommodation(int id, Accommodation accommodation)
         {
-            if (CorrectUserOrAdminOrEmployee(_iAccommodationRepository.Read(id).Owner.Id))
+            if (CorrectUserOrAdminOrEmployee(_unitOfWork.AccommodationRepository.Read(id).Owner))
             {
                 GetAccommodation(id);
                 ValidateUpdatedFields(accommodation.SquareMeters, accommodation.Description, accommodation.PricePerNight, accommodation.CancellationDeadlineInDays);
 
                 accommodation.Id = id;
 
-                _iAccommodationRepository.Update(id, accommodation);
+                _unitOfWork.AccommodationRepository.Update(id, accommodation);
+                _unitOfWork.Commit();
             }
             else
                 throw new AccessException($"Must be performed by a customer with ID {accommodation.Owner.Id}, or by admin or an employee on behalf of a customer with ID {accommodation.Owner.Id}!");
@@ -153,23 +138,24 @@ namespace AintBnB.BusinessLogic.Services
 
         public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days)
         {
-            int ownerId = _iAccommodationRepository.Read(id).Owner.Id;
+            User owner = _unitOfWork.AccommodationRepository.Read(id).Owner;
 
-            if (CorrectUserOrAdminOrEmployee(ownerId))
+            if (CorrectUserOrAdminOrEmployee(owner))
             {
-                SortedDictionary<string, bool> dateAndStatusOriginal = _iAccommodationRepository.Read(id).Schedule;
                 SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
 
-                DateTime fromDate = DateTime.Parse(dateAndStatusOriginal.Keys.Last()).AddDays(1);
+                DateTime fromDate = DateTime.Parse(_unitOfWork.AccommodationRepository.Read(id).Schedule.Keys.Last()).AddDays(1);
 
                 addDaysToDate(days, fromDate, dateAndStatus);
 
-                MergeTwoSortedDictionaries(dateAndStatusOriginal, dateAndStatus);
+                MergeTwoSortedDictionaries(_unitOfWork.AccommodationRepository.Read(id).Schedule, dateAndStatus);
 
-                UpdateScheduleInDb(id, dateAndStatusOriginal);
+                _unitOfWork.AccommodationRepository.Update(id, _unitOfWork.AccommodationRepository.Read(id));
+
+                _unitOfWork.Commit();
             }
             else
-                throw new AccessException($"Must be performed by a customer with ID {ownerId}, or by admin or an employee on behalf of a customer with ID {ownerId}!");
+                throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
         }
 
         private static void MergeTwoSortedDictionaries(SortedDictionary<string, bool> dateAndStatusOriginal, SortedDictionary<string, bool> dateAndStatus)
@@ -215,7 +201,7 @@ namespace AintBnB.BusinessLogic.Services
 
         private void SearchInCountryAndCity(string country, string city, string startdate, int nights, List<Accommodation> availableOnes)
         {
-            foreach (Accommodation accommodation in _iAccommodationRepository.GetAll())
+            foreach (Accommodation accommodation in _unitOfWork.AccommodationRepository.GetAll())
             {
                 if (string.Equals(accommodation.Address.Country, country, StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(accommodation.Address.City, city, StringComparison.OrdinalIgnoreCase))

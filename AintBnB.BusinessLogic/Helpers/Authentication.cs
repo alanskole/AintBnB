@@ -1,15 +1,12 @@
 ﻿using AintBnB.Core.Models;
 using System;
-using AintBnB.BusinessLogic.DependencyProviderFactory;
 using AintBnB.BusinessLogic.CustomExceptions;
-using AintBnB.BusinessLogic.Repository;
+using System.Collections.Generic;
 
-namespace AintBnB.BusinessLogic.Services
+namespace AintBnB.BusinessLogic.Helpers
 {
-    static public class AuthenticationService
+    public static class Authentication
     {
-        private static IRepository<User> _userRepository = ProvideDependencyFactory.userRepository;
-
         public static User LoggedInAs;
         public static void AnyoneLoggedIn()
         {
@@ -37,29 +34,17 @@ namespace AintBnB.BusinessLogic.Services
             return false;
         }
 
-        public static bool EmployeeCanOnlyHandleCustomerAccounts(int id)
-        {
-            if (EmployeeChecker())
-            {
-                if (_userRepository.Read(id).UserType == UserTypes.Customer || id == LoggedInAs.Id)
-                    return true;
-            }
-            return false;
-        }
-
-        public static bool CorrectUserOrAdminOrEmployee(int id)
+        public static bool CorrectUserOrAdminOrEmployee(User user)
         {
             if (AdminChecker())
                 return true;
 
-            if (id == LoggedInAs.Id)
+            if (user.Id == LoggedInAs.Id)
                 return true;
-
-            User user = _userRepository.Read(id);
 
             if (EmployeeChecker())
             {
-                if (user.UserType != UserTypes.Admin && user.UserType != UserTypes.Employee)
+                if (user.UserType == UserTypes.Customer)
                     return true;
             }
 
@@ -88,23 +73,21 @@ namespace AintBnB.BusinessLogic.Services
             return false;
         }
 
-        public static bool CorrectUserOrOwnerOrAdminOrEmployee(int idOwner, int userId)
+        public static bool CorrectUserOrOwnerOrAdminOrEmployee(int idOwner, User user)
         {
             AnyoneLoggedIn();
 
             if (idOwner != LoggedInAs.Id)
             {
-                if (!CorrectUserOrAdminOrEmployee(userId))
+                if (!CorrectUserOrAdminOrEmployee(user))
                     return false;
             }
             return true;
         }
 
-        public static bool CheckIfUserIsAllowedToPerformAction(int id)
+        public static bool CheckIfUserIsAllowedToPerformAction(User user)
         {
             AnyoneLoggedIn();
-
-            User user = _userRepository.Read(id);
 
             if (user.UserType != UserTypes.Customer)
                 return false;
@@ -142,7 +125,7 @@ namespace AintBnB.BusinessLogic.Services
             LoggedInAs = null;
         }
 
-        public static void TryToLogin(string userName, string password)
+        public static void TryToLogin(string userName, string password, List<User> allUsers)
         {
             try
             {
@@ -150,15 +133,15 @@ namespace AintBnB.BusinessLogic.Services
             }
             catch (Exception)
             {
-                LoginUser(userName, password);
+                LoginUser(userName, password, allUsers);
                 return;
             }
             throw new AlreadyLoggedInException();
         }
 
-        private static void LoginUser(string userName, string password)
+        private static void LoginUser(string userName, string password, List<User> allUsers)
         {
-            foreach (User user in _userRepository.GetAll())
+            foreach (User user in allUsers)
             {
                 if (string.Equals(user.UserName, userName))
                 {
