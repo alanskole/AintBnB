@@ -136,7 +136,6 @@ namespace AintBnB.BusinessLogic.Services
         {
             if (CheckIfUserIsAllowedToPerformAction(booker.Id))
             {
-
                 startDate = startDate.Trim();
                 return TryToBookIfAllDatesAvailable(startDate, booker, nights, accommodation);
             }
@@ -213,11 +212,14 @@ namespace AintBnB.BusinessLogic.Services
                 originalBooking.Dates = datesOriginal.ToList();
 
                 originalBooking.Price = originalBooking.Dates.Count * originalBooking.Accommodation.PricePerNight;
+
+                SetStatusToUnavailable(originalBooking.Accommodation, originalBooking.Dates);
             }
             else
             {
+                List<string> oldDates = originalBooking.Dates;
                 originalBooking = BookIfAvailableAndUserHasPermission(newStartDate, originalBooking.BookedBy, nights, originalBooking.Accommodation);
-                UpdateTheDatesOfTheScheduleInTheDb(originalBooking, originalBooking.Dates, originalBooking.Accommodation.Schedule);
+                UpdateTheDatesOfTheScheduleInTheDb(originalBooking, oldDates, originalBooking.Accommodation.Schedule);
             }
             IBookingRepository.Update(bookingId, originalBooking);
         }
