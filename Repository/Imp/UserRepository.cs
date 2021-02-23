@@ -1,28 +1,30 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.Database.DbCtx;
-using AintBnB.BusinessLogic.DependencyProviderFactory;
+using AintBnB.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
-namespace AintBnB.BusinessLogic.Repository
+namespace AintBnB.Repository.Imp
 {
     public class UserRepository : IRepository<User>
     {
-        public readonly DatabaseContext _databaseContext = ProvideDependencyFactory.databaseContext;
+        private DatabaseContext _databaseContext;
 
+        public UserRepository(DatabaseContext databaseContext)
+        {
+            _databaseContext = databaseContext;
+        }
         public void Create(User user)
         {
             _databaseContext.User.Add(user);
-            _databaseContext.SaveChanges();
         }
 
         public void Delete(int id)
         {
             _databaseContext.User.Remove(Read(id));
-            _databaseContext.SaveChanges();
         }
 
         public List<User> GetAll()
@@ -43,7 +45,6 @@ namespace AintBnB.BusinessLogic.Repository
             user.FirstName = updatedUser.FirstName;
             user.LastName = updatedUser.LastName;
             user.UserType = updatedUser.UserType;
-            _databaseContext.SaveChanges();
         }
     }
 }

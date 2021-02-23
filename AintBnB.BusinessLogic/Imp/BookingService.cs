@@ -1,47 +1,31 @@
 ﻿using AintBnB.Core.Models;
-using AintBnB.BusinessLogic.DependencyProviderFactory;
-using AintBnB.BusinessLogic.Repository;
-using static AintBnB.BusinessLogic.Services.DateService;
-using static AintBnB.BusinessLogic.Services.UpdateScheduleInDatabase;
-using static AintBnB.BusinessLogic.Services.AuthenticationService;
+using static AintBnB.BusinessLogic.Helpers.DateHelper;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.BusinessLogic.Helpers.UpdateCancelledDatesInSchedule;
 using System;
 using System.Collections.Generic;
 using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
 using System.Linq;
+using AintBnB.Repository.Interfaces;
 
-namespace AintBnB.BusinessLogic.Services
+namespace AintBnB.BusinessLogic.Imp
 {
     public class BookingService : IBookingService
     {
-        private IRepository<Booking> _iBookingRepository;
+        private IUnitOfWork _unitOfWork;
 
-        public IRepository<Booking> IBookingRepository
+        public BookingService(IUnitOfWork unitOfWork)
         {
-            get { return _iBookingRepository; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentException("IBookingRepository cannot be null");
-                _iBookingRepository = value;
-            }
-        }
-
-        public BookingService()
-        {
-            _iBookingRepository = ProvideDependencyFactory.bookingRepository;
-        }
-
-        public BookingService(IRepository<Booking> bookingRepo)
-        {
-            _iBookingRepository = bookingRepo;
+            _unitOfWork = unitOfWork;
 
         }
 
         public Booking GetBooking(int id)
         {
-            if (CorrectUserOrOwnerOrAdminOrEmployee(_iBookingRepository.Read(id).Accommodation.Owner.Id, _iBookingRepository.Read(id).BookedBy.Id))
+            if (CorrectUserOrOwnerOrAdminOrEmployee(_unitOfWork.BookingRepository.Read(id).Accommodation.Owner.Id, _unitOfWork.BookingRepository.Read(id).BookedBy))
             {
-                Booking booking = IBookingRepository.Read(id);
+                Booking booking = _unitOfWork.BookingRepository.Read(id);
 
                 if (booking == null)
                     throw new IdNotFoundException("Booking", id);
@@ -67,7 +51,7 @@ namespace AintBnB.BusinessLogic.Services
 
         private void FindAllBookingsOfOwnedAccommodation(int userid, List<Booking> bookingsOfOwnedAccommodation)
         {
-            foreach (var booking in IBookingRepository.GetAll())
+            foreach (var booking in _unitOfWork.BookingRepository.GetAll())
             {
                 if (booking.Accommodation.Owner.Id == userid)
                     bookingsOfOwnedAccommodation.Add(booking);
@@ -88,7 +72,7 @@ namespace AintBnB.BusinessLogic.Services
 
         private List<Booking> GetAllInSystem()
         {
-            List<Booking> all = IBookingRepository.GetAll();
+            List<Booking> all = _unitOfWork.BookingRepository.GetAll();
 
             if (all.Count == 0)
                 throw new NoneFoundInDatabaseTableException("bookings");
@@ -110,7 +94,7 @@ namespace AintBnB.BusinessLogic.Services
 
         private void FindAllBookingsOfLoggedInUser(List<Booking> bookingsOfLoggedInUser)
         {
-            foreach (var booking in IBookingRepository.GetAll())
+            foreach (var booking in _unitOfWork.BookingRepository.GetAll())
             {
                 if (booking.BookedBy.Id == LoggedInAs.Id)
                 {
@@ -128,15 +112,20 @@ namespace AintBnB.BusinessLogic.Services
                 throw new ParameterException("Nights", "less than one");
 
             Booking booking = BookIfAvailableAndUserHasPermission(startDate, booker, nights, accommodation);
-            IBookingRepository.Create(booking);
+
+            _unitOfWork.BookingRepository.Create(booking);
+
+            _unitOfWork.AccommodationRepository.Update(accommodation.Id, accommodation);
+
+            _unitOfWork.Commit();
+
             return booking;
         }
 
         private Booking BookIfAvailableAndUserHasPermission(string startDate, User booker, int nights, Accommodation accommodation)
         {
-            if (CheckIfUserIsAllowedToPerformAction(booker.Id))
+            if (CheckIfUserIsAllowedToPerformAction(booker))
             {
-
                 startDate = startDate.Trim();
                 return TryToBookIfAllDatesAvailable(startDate, booker, nights, accommodation);
             }
@@ -173,14 +162,12 @@ namespace AintBnB.BusinessLogic.Services
         {
             for (int i = 0; i < datesBooked.Count; i++)
                 accommodation.Schedule[datesBooked[i]] = false;
-
-            UpdateScheduleInDb(accommodation.Id, accommodation.Schedule);
         }
 
         public void UpdateBooking(string newStartDate, int nights, int bookingId)
         {
-            Booking originalBooking = IBookingRepository.Read(bookingId);
-            
+            Booking originalBooking = _unitOfWork.BookingRepository.Read(bookingId);
+
             CanBookingBeUpdated(newStartDate, nights, originalBooking);
 
             if (!AreAllDatesAvailable(originalBooking.Accommodation.Schedule, newStartDate, nights))
@@ -208,23 +195,30 @@ namespace AintBnB.BusinessLogic.Services
                 datesOriginal.ExceptWith(datesToRemove);
                 datesOriginal.UnionWith(newDates);
 
-                ResetCancelledDatesToAvailable(originalBooking, datesToRemove);
+                ResetDatesToAvailable(datesToRemove.ToList(), originalBooking.Accommodation.Schedule);
 
                 originalBooking.Dates = datesOriginal.ToList();
 
                 originalBooking.Price = originalBooking.Dates.Count * originalBooking.Accommodation.PricePerNight;
+                
+                SetStatusToUnavailable(originalBooking.Accommodation, originalBooking.Dates);
             }
             else
             {
+                List<string> oldDates = originalBooking.Dates;
                 originalBooking = BookIfAvailableAndUserHasPermission(newStartDate, originalBooking.BookedBy, nights, originalBooking.Accommodation);
-                UpdateTheDatesOfTheScheduleInTheDb(originalBooking, originalBooking.Dates, originalBooking.Accommodation.Schedule);
+                ResetDatesToAvailable(oldDates, originalBooking.Accommodation.Schedule);
             }
-            IBookingRepository.Update(bookingId, originalBooking);
+            _unitOfWork.BookingRepository.Update(bookingId, originalBooking);
+
+            _unitOfWork.AccommodationRepository.Update(originalBooking.Accommodation.Id, originalBooking.Accommodation);
+
+            _unitOfWork.Commit();
         }
 
         private static void CanBookingBeUpdated(string newStartDate, int nights, Booking originalBooking)
         {
-            if (!CheckIfUserIsAllowedToPerformAction(originalBooking.BookedBy.Id))
+            if (!CheckIfUserIsAllowedToPerformAction(originalBooking.BookedBy))
                 throw new AccessException($"Must be performed by the booker, or by admin or an employee on behalf of the booker!");
 
             if (nights < 1)
@@ -299,22 +293,9 @@ namespace AintBnB.BusinessLogic.Services
             }
         }
 
-        private static void ResetCancelledDatesToAvailable(Booking originalBooking, SortedSet<string> datesToRemove)
-        {
-            foreach (var date in datesToRemove)
-            {
-                if (originalBooking.Accommodation.Schedule.ContainsKey(date))
-                {
-                    originalBooking.Accommodation.Schedule[date] = true;
-                }
-            }
-
-            UpdateScheduleInDb(originalBooking.Accommodation.Id, originalBooking.Accommodation.Schedule);
-        }
-
         public void Rate(int bookingId, int rating)
         {
-            Booking booking = IBookingRepository.Read(bookingId);
+            Booking booking = _unitOfWork.BookingRepository.Read(bookingId);
 
             CanRatingBeGiven(booking, booking.BookedBy, rating);
 
@@ -328,7 +309,7 @@ namespace AintBnB.BusinessLogic.Services
             accommodation.AverageRating = (currentRating + rating) / (amountOfRatings + 1);
             accommodation.AmountOfRatings += 1;
 
-            IBookingRepository.Update(booking.Id, booking);
+            _unitOfWork.Commit();
         }
 
         private static void CanRatingBeGiven(Booking booking, User booker, int rating)

@@ -1,13 +1,21 @@
-﻿using static AintBnB.BusinessLogic.Services.AuthenticationService;
+﻿using static AintBnB.BusinessLogic.Helpers.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
 
 namespace AintBnB.WebApi.Controllers
 {
     [ApiController]
     public class AuthenticationController : ControllerBase
     {
+        private IUserService _userService;
+
+        public AuthenticationController(IUserService userService)
+        {
+            _userService = userService;
+        }
+
         [HttpGet]
         [Route("api/[controller]/anyoneloggedin")]
         public IActionResult IsAnyoneLoggedIn()
@@ -37,7 +45,7 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]/{id}")]
         public IActionResult DoesUserHaveCorrectRights([FromRoute] int id)
         {
-            if (CorrectUserOrAdminOrEmployee(id))
+            if (CorrectUserOrAdminOrEmployee(_userService.GetUser(id)))
                 return Ok("User can access");
             else
                 return BadRequest(new AccessException());
@@ -45,7 +53,7 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/elevatedrights")]
-        public IActionResult IsUserAdminOrEmployee([FromRoute] int id)
+        public IActionResult IsUserAdminOrEmployee()
         {
             if (HasElevatedRights())
                 return Ok("User can access");
@@ -94,7 +102,7 @@ namespace AintBnB.WebApi.Controllers
             {
                 string[] words = check.Split(' ');
 
-                TryToLogin(words[0], words[1]);
+                TryToLogin(words[0], words[1], _userService.GetAllUsers());
 
                 return Ok("Login ok!");
             }

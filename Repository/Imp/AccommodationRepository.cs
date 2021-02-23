@@ -1,22 +1,26 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.Database.DbCtx;
-using AintBnB.BusinessLogic.DependencyProviderFactory;
 using System.Collections.Generic;
 using System.Linq;
 using System;
 using Microsoft.EntityFrameworkCore;
+using AintBnB.Repository.Interfaces;
 
-namespace AintBnB.BusinessLogic.Repository
+namespace AintBnB.Repository.Imp
 {
     public class AccommodationRepository : IRepository<Accommodation>
     {
-        public readonly DatabaseContext _databaseContext = ProvideDependencyFactory.databaseContext;
+        private DatabaseContext _databaseContext;
+
+        public AccommodationRepository(DatabaseContext databaseContext)
+        {
+            _databaseContext = databaseContext;
+        }
 
         public void Create(Accommodation accommodation)
         {
             _databaseContext.Address.Add(accommodation.Address);
             _databaseContext.Accommodation.Add(accommodation);
-            _databaseContext.SaveChanges();
         }
 
         public void Delete(int id)
@@ -24,7 +28,6 @@ namespace AintBnB.BusinessLogic.Repository
             var acc = _databaseContext.Accommodation.Find(id);
             _databaseContext.Address.Remove(acc.Address);
             _databaseContext.Accommodation.Remove(Read(id));
-            _databaseContext.SaveChanges();
         }
 
         public List<Accommodation> GetAll()
@@ -46,7 +49,7 @@ namespace AintBnB.BusinessLogic.Repository
             acc.PricePerNight = accommodation.PricePerNight;
             acc.Picture = accommodation.Picture;
             acc.CancellationDeadlineInDays = accommodation.CancellationDeadlineInDays;
-            _databaseContext.SaveChanges();
+            acc.Schedule = new SortedDictionary<string, bool>(accommodation.Schedule);
         }
     }
 }

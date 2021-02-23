@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace AintBnB.BusinessLogic.Repository
+namespace AintBnB.Repository.Interfaces
 {
     public interface IRepository<T>
     {
