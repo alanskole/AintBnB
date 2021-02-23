@@ -1,3 +1,8 @@
+using AintBnB.BusinessLogic.Imp;
+using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Database.DbCtx;
+using AintBnB.Repository.Imp;
+using AintBnB.Repository.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -25,6 +30,12 @@ namespace AintBnB.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSingleton<IUnitOfWork, UnitOfWork>();
+            services.AddSingleton<DatabaseContext, DatabaseContext>();
+            services.AddScoped<IAccommodationService, AccommodationService>();
+            services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<IDeletionService, DeletionService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddControllers();
         }
 

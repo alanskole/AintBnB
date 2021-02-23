@@ -1,36 +1,20 @@
 ﻿using AintBnB.Core.Models;
-using AintBnB.BusinessLogic.Repository;
 using System;
 using System.Collections.Generic;
-using AintBnB.BusinessLogic.DependencyProviderFactory;
 using AintBnB.BusinessLogic.CustomExceptions;
-using static AintBnB.BusinessLogic.Services.AuthenticationService;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
+using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Repository.Interfaces;
 
-namespace AintBnB.BusinessLogic.Services
+namespace AintBnB.BusinessLogic.Imp
 {
     public class UserService : IUserService
     {
-        private IRepository<User> _iUserRepository;
+        private IUnitOfWork _unitOfWork;
 
-        public IRepository<User> IUserRepository
+        public UserService(IUnitOfWork unitOfWork)
         {
-            get { return _iUserRepository; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentException("IUserRepository cannot be null");
-                _iUserRepository = value;
-            }
-        }
-
-        public UserService()
-        {
-            _iUserRepository = ProvideDependencyFactory.userRepository;
-        }
-
-        public UserService(IRepository<User> userRepo)
-        {
-            _iUserRepository = userRepo;
+            _unitOfWork = unitOfWork;
         }
 
         public User CreateUser(string userName, string password, string firstName, string lastName, UserTypes userType)
@@ -46,13 +30,13 @@ namespace AintBnB.BusinessLogic.Services
             user.FirstName = firstName.Trim();
             user.LastName = lastName.Trim();
 
-            _iUserRepository.Create(user);
+            _unitOfWork.UserRepository.Create(user);
 
             if (user.Id == 1)
                 user.UserType = UserTypes.Admin;
             else if (userType == UserTypes.RequestToBeEmployee)
                 user.UserType = UserTypes.RequestToBeEmployee;
-
+            _unitOfWork.Commit();
             return user;
         }
 
@@ -68,7 +52,7 @@ namespace AintBnB.BusinessLogic.Services
 
         private void IsUserNameFree(string userName)
         {
-            foreach (User user in _iUserRepository.GetAll())
+            foreach (User user in _unitOfWork.UserRepository.GetAll())
             {
                 if (string.Equals(user.UserName, userName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -79,13 +63,13 @@ namespace AintBnB.BusinessLogic.Services
 
         public User GetUser(int id)
         {
-            if (CorrectUserOrAdminOrEmployee(id))
+            User user = _unitOfWork.UserRepository.Read(id);
+
+            if (user == null)
+                throw new IdNotFoundException("User", id);
+
+            if (CorrectUserOrAdminOrEmployee(user))
             {
-                User user = _iUserRepository.Read(id);
-
-                if (user == null)
-                    throw new IdNotFoundException("User", id);
-
                 OnlyAdminCanViewAdmin(user);
 
                 return user;
@@ -104,6 +88,15 @@ namespace AintBnB.BusinessLogic.Services
 
         public List<User> GetAllUsers()
         {
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                return AdminCanGetAllUsers();
+            }
+
             if (AdminChecker())
                 return AdminCanGetAllUsers();
 
@@ -116,7 +109,7 @@ namespace AintBnB.BusinessLogic.Services
 
         private List<User> AdminCanGetAllUsers()
         {
-            List<User> all = _iUserRepository.GetAll();
+            List<User> all = _unitOfWork.UserRepository.GetAll();
             IsListEmpty(all);
             return all;
         }
@@ -130,7 +123,7 @@ namespace AintBnB.BusinessLogic.Services
 
             List<User> all = new List<User>();
 
-            foreach (var user in _iUserRepository.GetAll())
+            foreach (var user in _unitOfWork.UserRepository.GetAll())
             {
                 if (user.UserType == UserTypes.Customer)
                     all.Add(user);
@@ -148,7 +141,7 @@ namespace AintBnB.BusinessLogic.Services
 
             List<User> all = new List<User>();
 
-            foreach (var user in _iUserRepository.GetAll())
+            foreach (var user in _unitOfWork.UserRepository.GetAll())
             {
                 if (user.UserType == UserTypes.RequestToBeEmployee)
                     all.Add(user);
@@ -168,11 +161,10 @@ namespace AintBnB.BusinessLogic.Services
 
         public void UpdateUser(int id, User updatedUser)
         {
-            User old;
+            User old = GetUser(id);
 
-            if (CorrectUserOrAdminOrEmployee(id))
+            if (CorrectUserOrAdminOrEmployee(old))
             {
-                old = GetUser(id);
                 ValidateUser(old.UserName, updatedUser.FirstName, updatedUser.LastName);
 
                 if (updatedUser.UserType != old.UserType)
@@ -180,7 +172,8 @@ namespace AintBnB.BusinessLogic.Services
 
                 updatedUser.UserName = old.UserName;
 
-                _iUserRepository.Update(id, updatedUser);
+                _unitOfWork.UserRepository.Update(id, updatedUser);
+                _unitOfWork.Commit();
             }
             else
                 throw new AccessException();
@@ -194,12 +187,12 @@ namespace AintBnB.BusinessLogic.Services
 
         public void ChangePassword(string old, int userId, string new1, string new2)
         {
-            if (CorrectUserOrAdminOrEmployee(userId))
+            User user = GetUser(userId);
+
+            if (CorrectUserOrAdminOrEmployee(user))
             {
                 if (old == new1)
                     throw new PasswordChangeException();
-
-                User user = GetUser(userId);
 
                 string hashedOriginalPassword = user.Password;
 
@@ -209,7 +202,10 @@ namespace AintBnB.BusinessLogic.Services
                 ValidatePassword(new1);
 
                 if (UnHashPassword(old, hashedOriginalPassword))
+                {
                     user.Password = HashPassword(new1);
+                    _unitOfWork.Commit();
+                }
                 else
                     throw new PasswordChangeException("old");
             }

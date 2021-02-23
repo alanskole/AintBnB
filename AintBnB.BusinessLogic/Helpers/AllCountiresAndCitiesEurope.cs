@@ -3,16 +3,15 @@ using System.Data;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
-using AintBnB.BusinessLogic.DependencyProviderFactory;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using AintBnB.BusinessLogic.CustomExceptions;
 
-namespace AintBnB.BusinessLogic.Services
+namespace AintBnB.BusinessLogic.Helpers
 {
     public static class AllCountiresAndCitiesEurope
     {
-        private static string conString = ProvideDependencyFactory.databaseContext.Database.GetConnectionString();
+        private static string conString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AintBnB.Database;Integrated Security=True";
         private static SqlConnection con = new SqlConnection(conString);
 
         public static List<string> GetCitiesOfACountry(string countryName)
@@ -66620,7 +66619,7 @@ namespace AintBnB.BusinessLogic.Services
 
             }
 
-            using (var bulk = new SqlBulkCopy(ProvideDependencyFactory.databaseContext.Database.GetConnectionString()))
+            using (var bulk = new SqlBulkCopy(conString))
             {
                 bulk.DestinationTableName = "City";
                 bulk.WriteToServer(dt);
