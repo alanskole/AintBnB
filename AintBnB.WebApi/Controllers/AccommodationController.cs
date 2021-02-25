@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using AintBnB.BusinessLogic.Interfaces;
+using System.Collections.Generic;
 
 namespace AintBnB.WebApi.Controllers
 {
@@ -50,13 +51,13 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("api/[controller]/sort/{sortBy}/{ascOrDesc}")]
-        public IActionResult SortAvailableList([FromRoute] string sortBy, [FromRoute] string ascOrDesc)
+        public IActionResult SortAvailableList([FromBody] List<Accommodation> available, [FromRoute] string sortBy, [FromRoute] string ascOrDesc)
         {
             try
             {
-                return Ok(_accommodationService.SortListOfAccommodations(sortBy, ascOrDesc));
+                return Ok(_accommodationService.SortListOfAccommodations(available, sortBy, ascOrDesc));
             }
             catch (Exception ex)
             {

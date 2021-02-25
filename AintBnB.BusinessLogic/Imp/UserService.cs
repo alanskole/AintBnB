@@ -19,35 +19,47 @@ namespace AintBnB.BusinessLogic.Imp
 
         public User CreateUser(string userName, string password, string firstName, string lastName, UserTypes userType)
         {
+            userName = userName.Trim();
+            password = password.Trim();
+            firstName = firstName.Trim();
+            lastName = lastName.Trim();
 
             IsUserNameFree(userName);
             ValidateUser(userName, firstName, lastName);
             ValidatePassword(password);
 
             User user = new User();
-            user.Password = HashPassword(password.Trim());
-            user.UserName = userName.Trim();
-            user.FirstName = firstName.Trim();
-            user.LastName = lastName.Trim();
+            user.Password = HashPassword(password);
+            user.UserName = userName;
+            user.FirstName = firstName;
+            user.LastName = lastName;
 
             _unitOfWork.UserRepository.Create(user);
 
-            if (user.Id == 1)
-                user.UserType = UserTypes.Admin;
-            else if (userType == UserTypes.RequestToBeEmployee)
-                user.UserType = UserTypes.RequestToBeEmployee;
+            UserTypeCheck(user);
+
             _unitOfWork.Commit();
             return user;
         }
 
+        private void UserTypeCheck(User user)
+        {
+            if (_unitOfWork.UserRepository.GetAll().Count == 0)
+                user.UserType = UserTypes.Admin;
+            else if (user.UserType == UserTypes.RequestToBeEmployee)
+                user.UserType = UserTypes.RequestToBeEmployee;
+            else
+                user.UserType = UserTypes.Customer;
+        }
+
         public void ValidateUser(string userName, string firstName, string lastName)
         {
-            if (userName == null || userName.Trim().Length == 0)
+            if (userName == null || userName.Length == 0)
                 throw new ParameterException("UserName", "empty");
-            if (firstName == null || firstName.Trim().Length == 0)
-                throw new ParameterException("FirstName", "empty");
-            if (lastName == null || lastName.Trim().Length == 0)
-                throw new ParameterException("LastName", "empty");
+            if (!onlyLettersOneSpaceOrDash.IsMatch(firstName))
+                throw new ParameterException("FirstName", "containing any other than letters and one space or dash between names");
+            if (!onlyLettersOneSpaceOrDash.IsMatch(lastName))
+                throw new ParameterException("LastName", "containing any other than letters and one space or dash between names");
         }
 
         private void IsUserNameFree(string userName)
@@ -56,7 +68,7 @@ namespace AintBnB.BusinessLogic.Imp
             {
                 if (string.Equals(user.UserName, userName, StringComparison.OrdinalIgnoreCase))
                 {
-                    throw new LoginExcrption("Username already taken!");
+                    throw new ParameterException("Username already taken!");
                 }
             }
         }
@@ -70,33 +82,34 @@ namespace AintBnB.BusinessLogic.Imp
 
             if (CorrectUserOrAdminOrEmployee(user))
             {
-                OnlyAdminCanViewAdmin(user);
-
                 return user;
             }
             throw new AccessException();
         }
 
-        private static void OnlyAdminCanViewAdmin(User user)
+
+        public List<User> GetAllUsersForLogin()
         {
-            if (user.UserType == UserTypes.Admin)
+            try
             {
-                if (!AdminChecker())
-                    throw new AccessException("Only admin can view admin");
+                AnyoneLoggedIn();
+                throw new AlreadyLoggedInException();
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    return AdminCanGetAllUsers();
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
             }
         }
 
         public List<User> GetAllUsers()
         {
-            try
-            {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                return AdminCanGetAllUsers();
-            }
-
             if (AdminChecker())
                 return AdminCanGetAllUsers();
 
@@ -116,8 +129,6 @@ namespace AintBnB.BusinessLogic.Imp
 
         public List<User> GetAllUsersWithTypeCustomer()
         {
-
-
             if (!HasElevatedRights())
                 throw new AccessException();
 
@@ -187,9 +198,9 @@ namespace AintBnB.BusinessLogic.Imp
 
         public void ChangePassword(string old, int userId, string new1, string new2)
         {
-            User user = GetUser(userId);
+            User user = _unitOfWork.UserRepository.Read(userId);
 
-            if (CorrectUserOrAdminOrEmployee(user))
+            if (LoggedInAs.Id == user.Id)
             {
                 if (old == new1)
                     throw new PasswordChangeException();
@@ -210,7 +221,7 @@ namespace AintBnB.BusinessLogic.Imp
                     throw new PasswordChangeException("old");
             }
             else
-                throw new AccessException();
+                throw new AccessException("Only the owner of the account can change their password!");
         }
     }
 }

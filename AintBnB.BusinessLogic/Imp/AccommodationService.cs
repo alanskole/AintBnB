@@ -8,13 +8,13 @@ using System.Linq;
 using AintBnB.BusinessLogic.CustomExceptions;
 using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Repository.Interfaces;
+using System.Text.RegularExpressions;
 
 namespace AintBnB.BusinessLogic.Imp
 {
     public class AccommodationService : IAccommodationService
     {
         private IUnitOfWork _unitOfWork;
-        private List<Accommodation> _available;
 
         public AccommodationService(IUnitOfWork unitOfWork)
         {
@@ -32,6 +32,7 @@ namespace AintBnB.BusinessLogic.Imp
                 if (daysToCreateScheduleFor < 1)
                     daysToCreateScheduleFor = 1;
 
+
                 ValidateAccommodation(accommodation);
 
                 CreateScheduleForXAmountOfDays(accommodation, daysToCreateScheduleFor);
@@ -44,20 +45,27 @@ namespace AintBnB.BusinessLogic.Imp
 
         public void ValidateAccommodation(Accommodation accommodation)
         {
+            accommodation.Description = accommodation.Description.Trim();
+            accommodation.Address.Street = accommodation.Address.Street.Trim();
+            accommodation.Address.Number = accommodation.Address.Number.Trim();
+            accommodation.Address.Zip = accommodation.Address.Zip.Trim();
+            accommodation.Address.City = accommodation.Address.City.Trim();
+            accommodation.Address.Country = accommodation.Address.Country.Trim();
+
             if (accommodation.Owner.Id == 0)
-                throw new IdNotFoundException("User");
-            if (accommodation.Address.Street == null || accommodation.Address.Street.Trim().Length == 0)
+                throw new ParameterException("Id", "zero");
+            if (!onlyLettersNumbersOneSpaceOrDash.IsMatch(accommodation.Address.Street))
                 throw new ParameterException("Street", "empty");
-            if (accommodation.Address.Number == 0)
+            if (!onlyNumbersFollowedByAnOptionalLetter.IsMatch(accommodation.Address.Number))
                 throw new ParameterException("Number", "zero");
-            if (accommodation.Address.Zip == 0)
-                throw new ParameterException("Zip", "zero");
-            if (accommodation.Address.Area == null || accommodation.Address.Area.Trim().Length == 0)
+            if (!zipCodeFormatsOfTheWorld.IsMatch(accommodation.Address.Zip))
+                throw new ParameterException("Zip", "empty");
+            if (!onlyLettersNumbersOneSpaceOrDash.IsMatch(accommodation.Address.Area))
                 throw new ParameterException("Area", "empty");
-            IsCountryAndCityCorrect(accommodation.Address.Country.Trim(), accommodation.Address.City.Trim());
+            IsCountryAndCityCorrect(accommodation.Address.Country, accommodation.Address.City);
             if (accommodation.SquareMeters == 0)
                 throw new ParameterException("SquareMeters", "zero");
-            if (accommodation.Description == null || accommodation.Description.Trim().Length == 0)
+            if (accommodation.Description == null || accommodation.Description.Length == 0)
                 throw new ParameterException("Description", "empty");
             if (accommodation.PricePerNight == 0)
                 throw new ParameterException("PricePerNight", "zero");
@@ -113,6 +121,9 @@ namespace AintBnB.BusinessLogic.Imp
             if (CorrectUserOrAdminOrEmployee(_unitOfWork.AccommodationRepository.Read(id).Owner))
             {
                 GetAccommodation(id);
+
+                accommodation.Description = accommodation.Description.Trim();
+
                 ValidateUpdatedFields(accommodation.SquareMeters, accommodation.Description, accommodation.PricePerNight, accommodation.CancellationDeadlineInDays);
 
                 accommodation.Id = id;
@@ -128,7 +139,7 @@ namespace AintBnB.BusinessLogic.Imp
         {
             if (squareMeters == 0)
                 throw new ParameterException("SquareMeters", "zero");
-            if (description == null || description.Trim().Length == 0)
+            if (description == null || description.Length == 0)
                 throw new ParameterException("Description", "empty");
             if (pricePerNight == 0)
                 throw new ParameterException("PricePerNight", "zero");
@@ -189,23 +200,23 @@ namespace AintBnB.BusinessLogic.Imp
         {
             AnyoneLoggedIn();
 
-            _available = new List<Accommodation>();
+            List<Accommodation> available = new List<Accommodation>();
 
-            SearchInCountryAndCity(country, city, startdate, nights, _available);
+            SearchInCountryAndCity(country, city, startdate, nights, available);
 
-            if (_available.Count == 0)
+            if (available.Count == 0)
                 throw new DateException(($"No available accommodations found in {country}, {city} from {startdate} for {nights} nights"));
 
-            return _available;
+            return available;
         }
 
-        private void SearchInCountryAndCity(string country, string city, string startdate, int nights, List<Accommodation> availableOnes)
+        private void SearchInCountryAndCity(string country, string city, string startdate, int nights, List<Accommodation> available)
         {
             foreach (Accommodation accommodation in _unitOfWork.AccommodationRepository.GetAll())
             {
                 if (string.Equals(accommodation.Address.Country, country, StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(accommodation.Address.City, city, StringComparison.OrdinalIgnoreCase))
-                    AreDatesWithinRangeOfScheduleOfTheAccommodation(availableOnes, accommodation, startdate, nights);
+                    AreDatesWithinRangeOfScheduleOfTheAccommodation(available, accommodation, startdate, nights);
             }
         }
 
@@ -215,41 +226,41 @@ namespace AintBnB.BusinessLogic.Imp
                 availableOnes.Add(acm);
         }
 
-        public List<Accommodation> SortListOfAccommodations(string sortBy, string ascOrDesc)
+        public List<Accommodation> SortListOfAccommodations(List<Accommodation> available, string sortBy, string ascOrDesc)
         {
-            if (_available == null || _available.Count == 0)
+            if (available == null || available.Count == 0)
                 throw new NoneFoundInDatabaseTableException("available accommodations");
 
             if (sortBy == "Price")
             {
                 if (ascOrDesc == "Descending")
-                    _available.Sort((x, y) => y.PricePerNight.CompareTo(x.PricePerNight));
+                    available.Sort((x, y) => y.PricePerNight.CompareTo(x.PricePerNight));
                 else if (ascOrDesc == "Ascending")
-                    _available.Sort((x, y) => x.PricePerNight.CompareTo(y.PricePerNight));
+                    available.Sort((x, y) => x.PricePerNight.CompareTo(y.PricePerNight));
             }
             else if (sortBy == "Distance")
             {
                 if (ascOrDesc == "Descending")
-                    _available.Sort((x, y) => y.KilometersFromCenter.CompareTo(x.KilometersFromCenter));
+                    available.Sort((x, y) => y.KilometersFromCenter.CompareTo(x.KilometersFromCenter));
                 else if (ascOrDesc == "Ascending")
-                    _available.Sort((x, y) => x.KilometersFromCenter.CompareTo(y.KilometersFromCenter));
+                    available.Sort((x, y) => x.KilometersFromCenter.CompareTo(y.KilometersFromCenter));
             }
             else if (sortBy == "Size")
             {
                 if (ascOrDesc == "Descending")
-                    _available.Sort((x, y) => y.SquareMeters.CompareTo(x.SquareMeters));
+                    available.Sort((x, y) => y.SquareMeters.CompareTo(x.SquareMeters));
                 else if (ascOrDesc == "Ascending")
-                    _available.Sort((x, y) => x.SquareMeters.CompareTo(y.SquareMeters));
+                    available.Sort((x, y) => x.SquareMeters.CompareTo(y.SquareMeters));
             }
             else if (sortBy == "Rating")
             {
                 if (ascOrDesc == "Descending")
-                    _available.Sort((x, y) => y.AverageRating.CompareTo(x.AverageRating));
+                    available.Sort((x, y) => y.AverageRating.CompareTo(x.AverageRating));
                 else if (ascOrDesc == "Ascending")
-                    _available.Sort((x, y) => x.AverageRating.CompareTo(y.AverageRating));
+                    available.Sort((x, y) => x.AverageRating.CompareTo(y.AverageRating));
             }
 
-            return _available;
+            return available;
         }
     }
 }

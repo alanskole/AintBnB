@@ -11,8 +11,7 @@ namespace AintBnB.BusinessLogic.Helpers
 {
     public static class AllCountiresAndCitiesEurope
     {
-        private static string conString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AintBnB.Database;Integrated Security=True";
-        private static SqlConnection con = new SqlConnection(conString);
+        public static SqlConnection con;
 
         public static List<string> GetCitiesOfACountry(string countryName)
         {
@@ -74,11 +73,19 @@ namespace AintBnB.BusinessLogic.Helpers
             con.Open();
             using (SqlCommand cmd = new SqlCommand("SELECT COUNT(*) FROM dbo.City", con))
             {
-                Int32 count = (Int32)cmd.ExecuteScalar();
-                con.Close();
-                if (count > 0)
-                    return true;
-
+                try
+                {
+                    Int32 count = (Int32)cmd.ExecuteScalar();
+                    con.Close();
+                    if (count > 0)
+                        return true;
+                }
+                catch (Exception)
+                {
+                    con.Close();
+                    CreateDb();
+                    return false;
+                }
                 return false;
             }
         }
@@ -113,14 +120,9 @@ namespace AintBnB.BusinessLogic.Helpers
             }
         }
 
-        public static void AllEuropeanCities()
+        private static void CreateDb()
         {
-            if (AreThereCountriesAndCitiesInDatabaseTable())
-                return;
-
-
             con.Open();
-
 
             using (SqlCommand cmd = new SqlCommand("CREATE TABLE[dbo].[City] (" +
             "[CountryId] INT NOT NULL," +
@@ -131,6 +133,17 @@ namespace AintBnB.BusinessLogic.Helpers
                 cmd.ExecuteNonQuery();
                 cmd.Dispose();
             }
+
+            con.Close();
+        }
+
+        public static void AllEuropeanCities()
+        {
+            if (AreThereCountriesAndCitiesInDatabaseTable())
+                return;
+
+
+            con.Open();
 
             DataTable dt = new DataTable("City");
             Dictionary<string, List<string>> europe = new Dictionary<string, List<string>>();
@@ -66619,7 +66632,7 @@ namespace AintBnB.BusinessLogic.Helpers
 
             }
 
-            using (var bulk = new SqlBulkCopy(conString))
+            using (var bulk = new SqlBulkCopy(con.ConnectionString))
             {
                 bulk.DestinationTableName = "City";
                 bulk.WriteToServer(dt);

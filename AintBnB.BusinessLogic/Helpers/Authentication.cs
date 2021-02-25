@@ -2,11 +2,17 @@
 using System;
 using AintBnB.BusinessLogic.CustomExceptions;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using System.Net;
 
 namespace AintBnB.BusinessLogic.Helpers
 {
     public static class Authentication
     {
+        public static Regex onlyLettersOneSpaceOrDash = new Regex(@"^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff]+([\s-]?[A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff]+){1,})$");
+        public static Regex onlyLettersNumbersOneSpaceOrDash = new Regex(@"^([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff0-9]([\s-]?[A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff0-9]+)*){2,}$");
+        public static Regex onlyNumbersFollowedByAnOptionalLetter = new Regex(@"^[1-9]+[0-9]*[A-Za-z]?$");
+        public static Regex zipCodeFormatsOfTheWorld = new Regex(@"^[A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff0-9][A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff0-9\- ]{1,11}$");
         public static User LoggedInAs;
         public static void AnyoneLoggedIn()
         {
@@ -102,12 +108,12 @@ namespace AintBnB.BusinessLogic.Helpers
 
         public static string HashPassword(string password)
         {
-            return BCrypt.Net.BCrypt.HashPassword(password);
+            return BCrypt.Net.BCrypt.HashPassword(WebUtility.HtmlEncode(password));
         }
 
         public static bool UnHashPassword(string password, string correctHash)
         {
-            return BCrypt.Net.BCrypt.Verify(password, correctHash);
+            return BCrypt.Net.BCrypt.Verify(WebUtility.HtmlEncode(password), correctHash);
         }
 
         public static void ValidatePassword(string password)
