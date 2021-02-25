@@ -14,16 +14,8 @@ namespace AintBnB.Database.DbCtx
         public DbSet<Booking> Booking { get; set; }
         public DbSet<User> User { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
-            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder
-            {
-                DataSource = "(localdb)\\MSSQLLocalDB",
-                InitialCatalog = "AintBnB.Database",
-                IntegratedSecurity = true
-            };
-
-            optionsBuilder.UseSqlServer(builder.ConnectionString.ToString());
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
