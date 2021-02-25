@@ -24,7 +24,6 @@ namespace AintBnB.ViewModels
         private List<Accommodation> _availableAccommodations;
         private string _sortBy = "";
         private string _ascOrDesc = "";
-
         public int UserId
         {
             get { return _userId; }
@@ -149,13 +148,12 @@ namespace AintBnB.ViewModels
 
         public async Task<List<Accommodation>> GetAllAccommodations()
         {
-            List<Accommodation> all = new List<Accommodation>();
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri));
             if (response.IsSuccessStatusCode)
             {
                 string jsonAccList = await response.Content.ReadAsStringAsync();
-                all = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAccList);
+                List<Accommodation> all = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAccList);
                 return all;
             }
             else
@@ -166,13 +164,12 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = UserId.ToString() + "/allaccommodations";
 
-            List<Accommodation> all = new List<Accommodation>();
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             if (response.IsSuccessStatusCode)
             {
                 string jsonAccList = await response.Content.ReadAsStringAsync();
-                all = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAccList);
+                List<Accommodation> all = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAccList);
                 return all;
             }
             else
@@ -193,19 +190,18 @@ namespace AintBnB.ViewModels
             throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
         }
 
-        public async Task<List<Accommodation>> SortAvailableList()
+        public async Task SortAvailableList()
         {
             _uniquePartOfUri = "sort/" + SortBy + "/" + AscOrDesc;
 
+            string availableJson = JsonConvert.SerializeObject(AvailableAccommodations);
+            HttpResponseMessage response = await _clientProvider.client.PostAsync(
+                new Uri(_uri + _uniquePartOfUri), new StringContent(availableJson, Encoding.UTF8, "application/json"));
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonAcc = await response.Content.ReadAsStringAsync();
-                AvailableAccommodations = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAcc);
-                return AvailableAccommodations;
-            }
-            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            if (!response.IsSuccessStatusCode)
+                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+
+            AvailableAccommodations = JsonConvert.DeserializeObject<List<Accommodation>>(await response.Content.ReadAsStringAsync());
         }
 
         public async Task DeleteAccommodation()

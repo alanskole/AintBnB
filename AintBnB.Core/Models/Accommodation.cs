@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Net;
 using System.Runtime.CompilerServices;
 
 namespace AintBnB.Core.Models
@@ -84,10 +85,10 @@ namespace AintBnB.Core.Models
 
         public string Description
         {
-            get { return _description; }
+            get { return WebUtility.HtmlDecode(_description); }
             set
             {
-                _description = value;
+                _description = WebUtility.HtmlEncode(value);
                 NotifyPropertyChanged("Description");
             }
         }

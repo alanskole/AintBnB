@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Net;
 using System.Runtime.CompilerServices;
 
 namespace AintBnB.Core.Models
@@ -11,7 +12,7 @@ namespace AintBnB.Core.Models
         private string _password;
         private string _firstName;
         private string _lastName;
-        private UserTypes _userType = UserTypes.Customer;
+        private UserTypes _userType;
 
         public int Id
         {
@@ -24,10 +25,10 @@ namespace AintBnB.Core.Models
         }
         public string UserName
         {
-            get { return _userName; }
+            get { return WebUtility.HtmlDecode(_userName); }
             set
             {
-                _userName = value;
+                _userName = WebUtility.HtmlEncode(value);
                 NotifyPropertyChanged("UserName");
             }
         }
@@ -74,15 +75,15 @@ namespace AintBnB.Core.Models
 
         public override string ToString()
         {
-            return "User ID: " + _id + ", Username: " + _userName + ", Firstname: " + _firstName + ", Lastname: " + _lastName + ", Usertype: " + _userType;
+            return "User ID: " + Id + ", Username: " + UserName + ", Firstname: " + FirstName + ", Lastname: " + LastName + ", Usertype: " + UserType;
         }
 
         public User(string userName, string password, string firstName, string lastName)
         {
-            UserName = userName.Trim();
-            Password = password.Trim();
-            FirstName = firstName.Trim();
-            LastName = lastName.Trim();
+            UserName = userName;
+            Password = password;
+            FirstName = firstName;
+            LastName = lastName;
         }
 
         public User()

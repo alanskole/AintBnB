@@ -8,8 +8,8 @@ namespace AintBnB.Core.Models
     {
         private int _id;
         private string _street;
-        private int _number;
-        private int _zip;
+        private string _number;
+        private string _zip;
         private string _area;
         private string _city;
         private string _country;
@@ -36,7 +36,7 @@ namespace AintBnB.Core.Models
             }
         }
 
-        public int Number
+        public string Number
         {
             get { return _number; }
 
@@ -47,7 +47,7 @@ namespace AintBnB.Core.Models
             }
         }
 
-        public int Zip
+        public string Zip
         {
             get { return _zip; }
 
@@ -95,14 +95,14 @@ namespace AintBnB.Core.Models
             return ($"Address: {Street} {Number}, {Zip} {Area}, {City}, {Country}");
         }
 
-        public Address(string street, int number, int zip, string area, string city, string country)
+        public Address(string street, string number, string zip, string area, string city, string country)
         {
-            Street = street.Trim();
+            Street = street;
             Number = number;
             Zip = zip;
-            Area = area.Trim();
-            City = city.Trim();
-            Country = country.Trim();
+            Area = area;
+            City = city;
+            Country = country;
         }
 
         public Address()

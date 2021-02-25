@@ -89,6 +89,10 @@ namespace AintBnB.Views
 
                 await UserViewModel.GetAUser();
 
+                if (await AuthenticationViewModel.IdOfLoggedInUser() != UserViewModel.User.Id)
+                    ChangePasswordButton.Visibility = Visibility.Collapsed;
+                else
+                    ChangePasswordButton.Visibility = Visibility.Visible;
             }
             catch (Exception ex)
             {

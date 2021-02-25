@@ -30,12 +30,12 @@ namespace AintBnB.Repository.Imp
 
         public List<Booking> GetAll()
         {
-            return _databaseContext.Booking.Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).ToList();
+            return _databaseContext.Booking.Include(bk => bk.BookedBy).Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).Include(bk => bk.Accommodation.Owner).ToList();
         }
 
         public Booking Read(int id)
         {
-            return _databaseContext.Booking.Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).FirstOrDefault(bk => bk.Id == id);
+            return _databaseContext.Booking.Include(bk => bk.BookedBy).Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).Include(bk => bk.Accommodation.Owner).FirstOrDefault(bk => bk.Id == id);
         }
 
         public void Update(int id, Booking updatedBooking)

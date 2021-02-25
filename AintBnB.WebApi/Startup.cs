@@ -15,6 +15,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 
 namespace AintBnB.WebApi
 {
@@ -30,12 +32,21 @@ namespace AintBnB.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IUnitOfWork, UnitOfWork>();
-            services.AddSingleton<DatabaseContext, DatabaseContext>();
-            services.AddScoped<IAccommodationService, AccommodationService>();
-            services.AddScoped<IBookingService, BookingService>();
-            services.AddScoped<IDeletionService, DeletionService>();
-            services.AddScoped<IUserService, UserService>();
+            string conString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AintBnB.Database;Integrated Security=True";
+
+            services.AddDbContext<DatabaseContext>(
+                options => options.UseSqlServer(conString));
+
+            BusinessLogic.Helpers.AllCountiresAndCitiesEurope.con = new SqlConnection(conString);
+            /*No point in doing this because it's already ok
+            BusinessLogic.Helpers.AllCountiresAndCitiesEurope.AllEuropeanCities();
+            */
+
+            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddTransient<IAccommodationService, AccommodationService>();
+            services.AddTransient<IBookingService, BookingService>();
+            services.AddTransient<IDeletionService, DeletionService>();
+            services.AddTransient<IUserService, UserService>();
             services.AddControllers();
         }
 

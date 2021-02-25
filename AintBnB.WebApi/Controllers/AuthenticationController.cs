@@ -102,7 +102,7 @@ namespace AintBnB.WebApi.Controllers
             {
                 string[] words = check.Split(' ');
 
-                TryToLogin(words[0], words[1], _userService.GetAllUsers());
+                TryToLogin(words[0], words[1], _userService.GetAllUsersForLogin());
 
                 return Ok("Login ok!");
             }

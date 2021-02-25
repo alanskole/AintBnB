@@ -13,5 +13,6 @@ namespace AintBnB.BusinessLogic.Interfaces
         void UpdateUser(int id, User updatedUser);
         List<User> GetAllUsersWithTypeCustomer();
         List<User> GetAllEmployeeRequests();
+        List<User> GetAllUsersForLogin();
     }
 }
