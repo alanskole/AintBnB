@@ -20,18 +20,13 @@ namespace AintBnB.Views
 
         private async void Button_Click_CreateUser(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            bool emReqAcc = false;
-
-            emReqAcc = EmployeeReuestChecker(emReqAcc);
+            EmployeeRequestChecker();
 
             try
             {
                 await UserViewModel.CreateTheUser();
 
-                if (emReqAcc)
-                    await new MessageDialog("Created, the account must be approved by admin before it can be used!").ShowAsync();
-                else
-                    await new MessageDialog("Created, login with the user!").ShowAsync();
+                await new MessageDialog("Your account was created successfully!").ShowAsync();
 
                 Frame.Navigate(typeof(LoginPage));
             }
@@ -41,19 +36,10 @@ namespace AintBnB.Views
             }
         }
 
-        private bool EmployeeReuestChecker(bool emReqAcc)
-        {
-            return NewMethod(emReqAcc);
-        }
-
-        private bool NewMethod(bool emReqAcc)
+        private void EmployeeRequestChecker()
         {
             if (EmpReq.IsChecked == true)
-            {
                 UserViewModel.RequestToBecomeEmployee();
-                emReqAcc = true;
-            }
-            return emReqAcc;
         }
     }
 }

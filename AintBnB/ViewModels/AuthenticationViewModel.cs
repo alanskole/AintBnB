@@ -5,57 +5,28 @@ using Newtonsoft.Json;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Text;
+using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
 namespace AintBnB.ViewModels
 {
     public class AuthenticationViewModel : Observable
     {
-        private string _userName;
-        private string _password;
-        private int _ownerId;
-        private int _userId;
+        private User _user = new User();
         private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
         private string _uniquePartOfUri;
 
-        public string UserName
+        public User User
         {
-            get { return _userName; }
+            get { return _user; }
             set
             {
-                _userName = value;
-                NotifyPropertyChanged("UserName");
+                _user = value;
+                NotifyPropertyChanged("User");
             }
         }
 
-        public string Password
-        {
-            get { return _password; }
-            set
-            {
-                _password = value;
-                NotifyPropertyChanged("Password");
-            }
-        }
-
-        public int OwnerId
-        {
-            get { return _ownerId; }
-            set
-            {
-                _ownerId = value;
-                NotifyPropertyChanged("OwnerId");
-            }
-        }
-        public int UserId
-        {
-            get { return _userId; }
-            set
-            {
-                _userId = value;
-                NotifyPropertyChanged("UserId");
-            }
-        }
         public AuthenticationViewModel()
         {
             _clientProvider.ControllerPartOfUri = "api/authentication/";
@@ -66,8 +37,11 @@ namespace AintBnB.ViewModels
         {
             CheckForEmptyFields();
 
-            _uniquePartOfUri = "login/" + UserName.Trim() + " " + Password.Trim();
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            _uniquePartOfUri = "login";
+            string[] userAndPass = new string[] { User.UserName.Trim(), User.Password.Trim() };
+            string loginJson = JsonConvert.SerializeObject(userAndPass);
+            HttpResponseMessage response = await _clientProvider.client.PostAsync(
+                (_uri + _uniquePartOfUri), new StringContent(loginJson, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }
 
@@ -78,48 +52,29 @@ namespace AintBnB.ViewModels
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
-        
-
-        private static void ResponseChecker(HttpResponseMessage response)
-        {
-            if (!response.IsSuccessStatusCode)
-                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
-        }
 
         private void CheckForEmptyFields()
         {
-            if (UserName == null || Password == null || UserName.Trim().Length == 0 || Password.Trim().Length == 0)
+            if (User.UserName == null || User.Password == null || User.UserName.Trim().Length == 0 || User.Password.Trim().Length == 0)
                 throw new ArgumentException("None of the fields can be empty");
         }
 
         public async Task<int> IdOfLoggedInUser()
         {
-            User user;
-
             _uniquePartOfUri = "loggedin";
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonUser = await response.Content.ReadAsStringAsync();
-                user = JsonConvert.DeserializeObject<User>(jsonUser);
-                return user.Id;
-            }
-            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
+            string jsonUser = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<User>(jsonUser).Id;
         }
 
         public async Task<User> LoggedInUser()
         {
-            User user;
-
             _uniquePartOfUri = "loggedin";
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonUser = await response.Content.ReadAsStringAsync();
-                user = JsonConvert.DeserializeObject<User>(jsonUser);
-                return user;
-            }
-            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
+            string jsonUser = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<User>(jsonUser);
         }
 
         public async Task IsAdmin()

@@ -1,8 +1,10 @@
 ﻿using AintBnB.Helpers;
 using AintBnB.CommonMethodsAndProperties;
-using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
+using System.Text;
+using Newtonsoft.Json;
 
 namespace AintBnB.ViewModels
 {
@@ -14,7 +16,6 @@ namespace AintBnB.ViewModels
         private string _new2;
         private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
-        private string _uniquePartOfUri;
 
         public int UserId
         {
@@ -64,12 +65,13 @@ namespace AintBnB.ViewModels
 
         public async Task ChangePassword()
         {
-            _uniquePartOfUri = Old + " " + UserId.ToString() + " " + New1 + " " + New2;
+            string[] elements = new string[] { Old, UserId.ToString(), New1, New2};
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            string elementsJson = JsonConvert.SerializeObject(elements);
+            HttpResponseMessage response = await _clientProvider.client.PostAsync(
+                _uri, new StringContent(elementsJson, Encoding.UTF8, "application/json"));
 
-            if (!response.IsSuccessStatusCode)
-                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
         }
     }
 }

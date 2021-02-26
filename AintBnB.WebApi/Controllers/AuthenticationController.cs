@@ -28,7 +28,7 @@ namespace AintBnB.WebApi.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
-            }                
+            }
         }
 
         [HttpGet]
@@ -37,7 +37,7 @@ namespace AintBnB.WebApi.Controllers
         {
             if (LoggedInAs == null)
                 return NotFound("No one logged in");
-      
+
             return Ok(LoggedInAs);
         }
 
@@ -94,15 +94,13 @@ namespace AintBnB.WebApi.Controllers
         }
 
 
-        [HttpGet]
-        [Route("api/[controller]/login/{check}")]
-        public IActionResult LogIn([FromRoute] string check)
+        [HttpPost]
+        [Route("api/[controller]/login")]
+        public IActionResult LogIn([FromBody] string[] usernameAndPassword)
         {
             try
             {
-                string[] words = check.Split(' ');
-
-                TryToLogin(words[0], words[1], _userService.GetAllUsersForLogin());
+                TryToLogin(usernameAndPassword[0], usernameAndPassword[1], _userService.GetAllUsersForLogin());
 
                 return Ok("Login ok!");
             }
