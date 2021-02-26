@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System;
 using AintBnB.CommonMethodsAndProperties;
 using System.Text;
+using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
 namespace AintBnB.ViewModels
 {
@@ -73,55 +74,36 @@ namespace AintBnB.ViewModels
             string userJson = JsonConvert.SerializeObject(User);
             HttpResponseMessage response = await _clientProvider.client.PostAsync(
                 _uri, new StringContent(userJson, Encoding.UTF8, "application/json"));
-            if (!response.IsSuccessStatusCode)
-                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
         }
 
         public async Task GetAUser()
         {
             _uniquePartOfUri = User.Id.ToString();
 
-
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonUser = await response.Content.ReadAsStringAsync();
-                _user = JsonConvert.DeserializeObject<User>(jsonUser);
-                NotifyPropertyChanged("User");
-            }
-            else
-                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
+            string jsonUser = await response.Content.ReadAsStringAsync();
+            _user = JsonConvert.DeserializeObject<User>(jsonUser);
+            NotifyPropertyChanged("User");
         }
 
         public async Task<List<User>> GetAllUsers()
         {
-            List<User> _all = new List<User>();
-
-
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri));
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonUsers = await response.Content.ReadAsStringAsync();
-                _all = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
-                return _all;
-            }
-            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
+            string jsonUsers = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<User>>(jsonUsers);
         }
 
         public async Task<List<User>> GetAllCustomers()
         {
-            List<User> _all = new List<User>();
-
             _uniquePartOfUri = "allcustomers";
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonUsers = await response.Content.ReadAsStringAsync();
-                _all = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
-                return _all;
-            }
-            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
+            string jsonUsers = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<User>>(jsonUsers);
         }
 
         public async Task<List<User>> GetAllEmployeeRequests()
@@ -129,13 +111,10 @@ namespace AintBnB.ViewModels
             _uniquePartOfUri = "requests";
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonUsers = await response.Content.ReadAsStringAsync();
-                AllEmployeeRequests = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
-                return AllEmployeeRequests;
-            }
-            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
+            string jsonUsers = await response.Content.ReadAsStringAsync();
+            AllEmployeeRequests = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
+            return AllEmployeeRequests;
         }
 
         public async Task DeleteAUser()
@@ -143,8 +122,7 @@ namespace AintBnB.ViewModels
             _uniquePartOfUri = User.Id.ToString();
 
             HttpResponseMessage response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
-            if (!response.IsSuccessStatusCode)
-                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
         }
 
         public async Task UpdateAUser()
@@ -155,8 +133,7 @@ namespace AintBnB.ViewModels
 
             HttpResponseMessage response = await _clientProvider.client.PutAsync(
                 new Uri(_uri + _uniquePartOfUri), new StringContent(userJson, Encoding.UTF8, "application/json"));
-            if (!response.IsSuccessStatusCode)
-                throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
         }
     }
 }

@@ -37,7 +37,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Header="Username"
-                Text="{x:Bind AuthenticationViewModel.UserName, Mode=TwoWay}"
+                Text="{x:Bind AuthenticationViewModel.User.UserName, Mode=TwoWay}"
                 PlaceholderText="Username"
                 Name="userName"/>
 
@@ -47,7 +47,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Header="Password"
-                Password="{x:Bind AuthenticationViewModel.Password, Mode=TwoWay}"
+                Password="{x:Bind AuthenticationViewModel.User.Password, Mode=TwoWay}"
                 PlaceholderText="Password"
                 Name="password"/>
 

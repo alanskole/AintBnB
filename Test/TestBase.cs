@@ -32,10 +32,15 @@ namespace Test
         protected User userRequestToBecomeEmployee2;
         protected User userCustomer1;
         protected User userCustomer2;
+        protected Address adr = new Address("str", "1", "1111", "ar", "Fredrikstad", "Norway");
+        protected Address adr2 = new Address("anotherstr", "10A", "1414", "frstd", "Fredrikstad", "Norway");
+        protected Address adr3 = new Address("capitalstr", "42", "0531", "osl", "Oslo", "Norway");
         protected Accommodation accommodation1;
         protected Accommodation accommodation2;
+        protected Accommodation accommodation3;
         protected Booking booking1;
         protected Booking booking2;
+        protected Booking booking3;
         protected string LocalHostAddress = "https://localhost:";
         protected string LocalHostPort = "44342/";
         protected string ControllerPartOfUri;
@@ -134,12 +139,12 @@ namespace Test
                 UserType = UserTypes.Customer
             };
 
-            connection.User.Add(userAdmin);
-            connection.User.Add(userEmployee1);
-            connection.User.Add(userRequestToBecomeEmployee);
-            connection.User.Add(userRequestToBecomeEmployee2);
-            connection.User.Add(userCustomer1);
-            connection.User.Add(userCustomer2);
+            unitOfWork.UserRepository.Create(userAdmin);
+            unitOfWork.UserRepository.Create(userEmployee1);
+            unitOfWork.UserRepository.Create(userRequestToBecomeEmployee);
+            unitOfWork.UserRepository.Create(userRequestToBecomeEmployee2);
+            unitOfWork.UserRepository.Create(userCustomer1);
+            unitOfWork.UserRepository.Create(userCustomer2);
             connection.SaveChanges();
         }
 
@@ -151,10 +156,6 @@ namespace Test
             {
                 schedule.Add(DateTime.Today.AddDays(i).ToString("yyyy-MM-dd"), true);
             }
-
-            Address adr = new Address("str", "1", "1111", "ar", "Fredrikstad", "Norway");
-            
-            Address adr2 = new Address("anotherstr", "10A", "1414", "frstd", "Fredrikstad", "Norway");
 
             connection.Address.Add(adr);
             connection.Address.Add(adr2);
@@ -187,8 +188,23 @@ namespace Test
                 Picture = new List<byte[]>()
             };
 
-            connection.Accommodation.Add(accommodation1);
-            connection.Accommodation.Add(accommodation2);
+            accommodation3 = new Accommodation
+            {
+                Owner = userCustomer2,
+                Address = adr3,
+                SquareMeters = 35,
+                AmountOfBedrooms = 0,
+                KilometersFromCenter = 0.8,
+                Description = "cozy and central",
+                PricePerNight = 1400,
+                CancellationDeadlineInDays = 3,
+                Schedule = new SortedDictionary<string, bool>(schedule),
+                Picture = new List<byte[]>()
+            };
+
+            unitOfWork.AccommodationRepository.Create(accommodation1);
+            unitOfWork.AccommodationRepository.Create(accommodation2);
+            unitOfWork.AccommodationRepository.Create(accommodation3);
             connection.SaveChanges();
         }
 
@@ -212,6 +228,14 @@ namespace Test
                 dates2.Add(dt.ToString("yyyy-MM-dd"));
             }
 
+            List<string> dates3 = new List<string>();
+
+            for (int i = 0; i < 4; i++)
+            {
+                DateTime dt = DateTime.Today.AddDays(i+2);
+                dates3.Add(dt.ToString("yyyy-MM-dd"));
+            }
+
             booking1 = new Booking
             {
                 BookedBy = userCustomer2,
@@ -228,8 +252,17 @@ namespace Test
                 Price = (accommodation2.PricePerNight * dates2.Count)
             };
 
-            connection.Booking.Add(booking1);
-            connection.Booking.Add(booking2);
+            booking3 = new Booking
+            {
+                BookedBy = userCustomer1,
+                Accommodation = accommodation3,
+                Dates = dates3,
+                Price = (accommodation3.PricePerNight * dates3.Count)
+            };
+
+            unitOfWork.BookingRepository.Create(booking1);
+            unitOfWork.BookingRepository.Create(booking2);
+            unitOfWork.BookingRepository.Create(booking3);
             connection.SaveChanges();
         }
         

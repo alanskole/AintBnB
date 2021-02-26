@@ -1,11 +1,11 @@
-﻿using AintBnB.Core.Models;
-using AintBnB.Helpers;
+﻿using AintBnB.Helpers;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using AintBnB.CommonMethodsAndProperties;
+using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
 namespace AintBnB.ViewModels
 {
@@ -16,7 +16,6 @@ namespace AintBnB.ViewModels
         private string _uniquePartOfUri;
         private string _country;
         private string _city;
-
 
         public string Country
         {
@@ -44,39 +43,26 @@ namespace AintBnB.ViewModels
         {
             _clientProvider.ControllerPartOfUri = "api/europe/";
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
-
         }
 
         public async Task<List<string>> GetAllCountriesInEurope()
         {
-            List<string> _all = new List<string>();
-
             _uniquePartOfUri = "countries";
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonUsers = await response.Content.ReadAsStringAsync();
-                _all = JsonConvert.DeserializeObject<List<string>>(jsonUsers);
-                return _all;
-            }
-            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
+            string jsonUsers = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<string>>(jsonUsers);
         }
 
         public async Task<List<string>> GetAllCitiesOfACountry()
         {
-            List<string> _all = new List<string>();
-
             _uniquePartOfUri = "cities/" + Country;
 
             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            if (response.IsSuccessStatusCode)
-            {
-                string jsonUsers = await response.Content.ReadAsStringAsync();
-                _all = JsonConvert.DeserializeObject<List<string>>(jsonUsers);
-                return _all;
-            }
-            throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            ResponseChecker(response);
+            string jsonUsers = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<string>>(jsonUsers);
         }
     }
 }
