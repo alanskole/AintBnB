@@ -29,6 +29,8 @@ namespace Test.BusinessLogic
         {
             CreateDummyUsers();
 
+            Logout();
+
             Assert.AreEqual(6, userService.GetAllUsersForLogin().Count);
             Assert.AreEqual(UserTypes.Admin, userService.GetAllUsersForLogin()[0].UserType);
         }
@@ -36,6 +38,8 @@ namespace Test.BusinessLogic
         [Test]
         public void GetAllUsersForLogin_ShoudFail_WhenLoggingInWithoutAnyRegisteredUsers()
         {
+            Logout();
+
             var ex = Assert.Throws<NoneFoundInDatabaseTableException>(()
                 => userService.GetAllUsersForLogin());
 
@@ -48,7 +52,7 @@ namespace Test.BusinessLogic
             CreateDummyUsers();
 
             LoggedInAs = userAdmin;
-
+            
             var ex = Assert.Throws<AlreadyLoggedInException>(()
                 => userService.GetAllUsersForLogin());
 
@@ -56,7 +60,7 @@ namespace Test.BusinessLogic
         }
 
         [Test]
-        public void CreateUser_ShouldReturnNewlyCreatedUser()
+        public void CreateUser_ShouldReturn_NewlyCreatedUser()
         {
             User first = userService.CreateUser("admin", "aaaaaa", "adminfirstname", "adminlastname", UserTypes.Employee);
             User second = userService.CreateUser("empreq", "aaaaaa", "empreqfirstname", "empreqlastname", UserTypes.RequestToBeEmployee);
@@ -65,7 +69,7 @@ namespace Test.BusinessLogic
 
             Assert.AreEqual(1, first.Id);
             Assert.AreEqual("admin", first.UserName);
-            Assert.AreEqual(2, second.Id);
+            Assert.AreEqual(UserTypes.RequestToBeEmployee, second.UserType);
             Assert.AreEqual("empreq", second.UserName);
             Assert.AreEqual(3, third.Id);
             Assert.AreEqual("cust1", third.UserName);
@@ -74,59 +78,19 @@ namespace Test.BusinessLogic
         }
 
         [Test]
-        [TestCase(1, "<'newpassone'>", "<'newpassone'>")]
-        [TestCase(2, "aaaaaa", "aaaaaa")]
-        [TestCase(3, "aaaaaabb", "aaaaaab")]
-        public void ChangePassword_ShouldFailWhen_OldPasswordWrong_NewPasswordConfirmationFails_UnchangedNewAndOld(int id, string newPass, string newPassConfirmed)
+        public void IsUserNameFree_ShouldFail_IfUsernameAlreadyExists()
         {
             CreateDummyUsers();
 
-            LoggedInAs = unitOfWork.UserRepository.Read(id);
+            var result = typeof(UserService)
+                            .GetMethod("IsUserNameFree", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            if (id == 1)
-            {
-                var ex = Assert.Throws<PasswordChangeException>(()
-                    => userService.ChangePassword("aaaaaab", id, newPass, newPassConfirmed));
+            var ex = Assert.Throws<TargetInvocationException>(()
+                => result.Invoke(userService, new object[] { "admin" }));
 
-                Assert.AreEqual(ex.Message, "The old passwords don't match!");
-            }
-            else if (id == 2)
-            {
-                var ex = Assert.Throws<PasswordChangeException>(()
-                    => userService.ChangePassword("aaaaaa", id, newPass, newPassConfirmed));
+            Assert.AreEqual(ex.InnerException.GetType(), typeof(ParameterException));
 
-                Assert.AreEqual(ex.Message, "The new and old password must be different!");
-            }
-            else if (id == 3)
-            {
-                var ex = Assert.Throws<PasswordChangeException>(()
-                    => userService.ChangePassword("aaaaaa", id, newPass, newPassConfirmed));
-
-                Assert.AreEqual(ex.Message, "The new passwords don't match!");
-            }
-        }
-
-        [Test]
-        public void GetAllEmployeeRequests_ShouldReturn_AllEmployeeRequestsIfAdmin()
-        {
-            CreateDummyUsers();
-
-            LoggedInAs = userAdmin;
-
-            Assert.AreEqual(2, userService.GetAllEmployeeRequests().Count);
-        }
-
-        [Test]
-        public void GetAllEmployeeRequests_ShouldFail_IfNotAdmin()
-        {
-            CreateDummyUsers();
-
-            LoggedInAs = userEmployee1;
-
-            var ex = Assert.Throws<AccessException>(()
-                => userService.GetAllEmployeeRequests());
-
-            Assert.AreEqual(ex.Message, "Admin only!");
+            Assert.AreEqual(ex.InnerException.Message, "Username already taken!");
         }
 
         [Test]
@@ -138,9 +102,9 @@ namespace Test.BusinessLogic
 
             var result = typeof(UserService)
                             .GetMethod("UserTypeCheck", BindingFlags.NonPublic | BindingFlags.Instance);
-            result.Invoke(userService, new object[] { dummy });
-            result.Invoke(userService, new object[] { dummy2 });
-            result.Invoke(userService, new object[] { dummy3 });
+            result.Invoke(userService, new object[] { dummy.UserType, dummy });
+            result.Invoke(userService, new object[] { dummy2.UserType, dummy2 });
+            result.Invoke(userService, new object[] { dummy3.UserType, dummy3 });
 
             Assert.AreEqual(UserTypes.Admin, dummy.UserType);
             Assert.AreEqual(UserTypes.Admin, dummy2.UserType);
@@ -156,7 +120,7 @@ namespace Test.BusinessLogic
 
             var result = typeof(UserService)
                             .GetMethod("UserTypeCheck", BindingFlags.NonPublic | BindingFlags.Instance);
-            result.Invoke(userService, new object[] { dummy });
+            result.Invoke(userService, new object[] { dummy.UserType, dummy });
 
             Assert.AreEqual(UserTypes.Customer, dummy.UserType);
         }
@@ -170,9 +134,54 @@ namespace Test.BusinessLogic
 
             var result = typeof(UserService)
                             .GetMethod("UserTypeCheck", BindingFlags.NonPublic | BindingFlags.Instance);
-            result.Invoke(userService, new object[] { dummy });
+            result.Invoke(userService, new object[] { dummy.UserType, dummy });
 
             Assert.AreEqual(UserTypes.RequestToBeEmployee, dummy.UserType);
+        }
+
+        [Test]
+        [TestCase(1, "newfirstone", "newlastone")]
+        [TestCase(2, "newfirsttwo", "newlasttwo")]
+        [TestCase(3, "newfirstthree", "newlastthree")]
+        [TestCase(4, "newfirstfour", "newlastfour")]
+        public void UpdateUser_ShouldSucceed_WhenUsersChangeFirstAndLastName(int id, string newFirstname, string newLastname)
+        {
+            CreateDummyUsers();
+
+            LoggedInAs = unitOfWork.UserRepository.Read(id);
+
+            Assert.AreNotEqual(userService.GetUser(id).FirstName, newFirstname);
+            Assert.AreNotEqual(userService.GetUser(id).LastName, newLastname);
+
+            unitOfWork.UserRepository.Read(id).FirstName = newFirstname;
+            unitOfWork.UserRepository.Read(id).LastName = newLastname;
+
+            userService.UpdateUser(id, unitOfWork.UserRepository.Read(id));
+
+            Assert.AreEqual(userService.GetUser(id).FirstName, newFirstname);
+            Assert.AreEqual(userService.GetUser(id).LastName, newLastname);
+        }
+
+        [Test]
+        public void UpdateUser_ShouldSucceed_WhenEmployeeUpdatesCustomerAccounts()
+        {
+            CreateDummyUsers();
+
+            LoggedInAs = userEmployee1;
+
+            string newFirstname = "blahb";
+            string newLastname = "lablah";
+
+            Assert.AreNotEqual(userCustomer1.FirstName, newFirstname);
+            Assert.AreNotEqual(userCustomer1.LastName, newLastname);
+
+            userCustomer1.FirstName = newFirstname;
+            userCustomer1.LastName = newLastname;
+
+            userService.UpdateUser(userCustomer1.Id, userCustomer1);
+
+            Assert.AreEqual(userCustomer1.FirstName, newFirstname);
+            Assert.AreEqual(userCustomer1.LastName, newLastname);
         }
 
         [Test]
@@ -210,6 +219,39 @@ namespace Test.BusinessLogic
             Assert.IsTrue(UnHashPassword(newPass, LoggedInAs.Password));
         }
 
+        [Test]
+        [TestCase(1, "<'newpassone'>", "<'newpassone'>")]
+        [TestCase(2, "aaaaaa", "aaaaaa")]
+        [TestCase(3, "aaaaaabb", "aaaaaab")]
+        public void ChangePassword_ShouldFailWhen_OldPasswordWrong_NewPasswordConfirmationFails_UnchangedNewAndOld(int id, string newPass, string newPassConfirmed)
+        {
+            CreateDummyUsers();
+
+            LoggedInAs = unitOfWork.UserRepository.Read(id);
+
+            if (id == 1)
+            {
+                var ex = Assert.Throws<PasswordChangeException>(()
+                    => userService.ChangePassword("aaaaaab", id, newPass, newPassConfirmed));
+
+                Assert.AreEqual(ex.Message, "The old passwords don't match!");
+            }
+            else if (id == 2)
+            {
+                var ex = Assert.Throws<PasswordChangeException>(()
+                    => userService.ChangePassword("aaaaaa", id, newPass, newPassConfirmed));
+
+                Assert.AreEqual(ex.Message, "The new and old password must be different!");
+            }
+            else if (id == 3)
+            {
+                var ex = Assert.Throws<PasswordChangeException>(()
+                    => userService.ChangePassword("aaaaaa", id, newPass, newPassConfirmed));
+
+                Assert.AreEqual(ex.Message, "The new passwords don't match!");
+            }
+        }
+
 
         [Test]
         [TestCase(2, "newpasstwo", "aaaaaa")]
@@ -218,7 +260,7 @@ namespace Test.BusinessLogic
         {
             CreateDummyUsers();
 
-            LoggedInAs = unitOfWork.UserRepository.Read(id - 1);
+            LoggedInAs = unitOfWork.UserRepository.Read(id-1);
 
             var ex = Assert.Throws<AccessException>(()
                 => userService.ChangePassword(oldPass, id, newPass, newPass));
@@ -227,27 +269,11 @@ namespace Test.BusinessLogic
         }
 
         [Test]
-        public void IsUserNameFree_ShouldFail_IfUsernameAlreadyExists()
-        {
-            CreateDummyUsers();
-
-            var result = typeof(UserService)
-                            .GetMethod("IsUserNameFree", BindingFlags.NonPublic | BindingFlags.Instance);     
-
-            var ex = Assert.Throws<TargetInvocationException>(() 
-                => result.Invoke(userService, new object[] { "admin" }));
-
-            Assert.AreEqual(ex.InnerException.GetType(), typeof(ParameterException));
-
-            Assert.AreEqual(ex.InnerException.Message, "Username already taken!");
-        }
-
-        [Test]
         [TestCase(1)]
         [TestCase(2)]
         [TestCase(3)]
         [TestCase(4)]
-        public void GetUser_ShouldReturn_Correct_User(int id)
+        public void GetUser_ShouldReturn_CorrectUser(int id)
         {
             CreateDummyUsers();
 
@@ -259,26 +285,16 @@ namespace Test.BusinessLogic
         }
 
         [Test]
-        [TestCase(1, "newfirstone", "newlastone")]
-        [TestCase(2, "newfirsttwo", "newlasttwo")]
-        [TestCase(3, "newfirstthree", "newlastthree")]
-        [TestCase(4, "newfirstfour", "newlastfour")]
-        public void UpdateUser_ShouldSucceed(int id, string newFirstname, string newLastname)
+        public void GetUser_ShouldFail_IfCustomerTriesToGetAnotherUserAccount()
         {
             CreateDummyUsers();
 
-            LoggedInAs = unitOfWork.UserRepository.Read(id);
+            LoggedInAs = userCustomer1;
 
-            Assert.AreNotEqual(userService.GetUser(id).FirstName, newFirstname);
-            Assert.AreNotEqual(userService.GetUser(id).LastName, newLastname);
+            var exc = Assert.Throws<AccessException>(()
+                => userService.GetUser(6));
 
-            LoggedInAs.FirstName = newFirstname;
-            LoggedInAs.LastName = newLastname;
-
-            userService.UpdateUser(id, LoggedInAs);
-
-            Assert.AreEqual(userService.GetUser(id).FirstName, newFirstname);
-            Assert.AreEqual(userService.GetUser(id).LastName, newLastname);
+            Assert.AreEqual(exc.Message, "Restricted access!");
         }
 
         [Test]
@@ -290,19 +306,26 @@ namespace Test.BusinessLogic
 
             Assert.AreEqual(LoggedInAs.Id, userService.GetUser(1).Id);
 
-            LoggedInAs = unitOfWork.UserRepository.Read(2);
+            LoggedInAs = userEmployee1;
 
             var ex = Assert.Throws<AccessException>(()
                 => userService.GetUser(1));
 
             Assert.AreEqual(ex.Message, "Restricted access!");
 
-            LoggedInAs = unitOfWork.UserRepository.Read(3);
+            LoggedInAs = userRequestToBecomeEmployee;
 
-            var exc = Assert.Throws<AccessException>(()
+            ex = Assert.Throws<AccessException>(()
                 => userService.GetUser(1));
 
-            Assert.AreEqual(exc.Message, "Restricted access!");
+            Assert.AreEqual(ex.Message, "Restricted access!");
+
+            LoggedInAs = userCustomer1;
+
+            ex = Assert.Throws<AccessException>(()
+                => userService.GetUser(1));
+
+            Assert.AreEqual(ex.Message, "Restricted access!");
         }
 
         [Test]
@@ -329,19 +352,6 @@ namespace Test.BusinessLogic
         }
 
         [Test]
-        public void GetUser_ShouldFail_IfCustomerTriesToGetAnotherUserAccount()
-        {
-            CreateDummyUsers();
-
-            LoggedInAs = userCustomer1;
-
-            var exc = Assert.Throws<AccessException>(()
-                => userService.GetUser(6));
-
-            Assert.AreEqual(exc.Message, "Restricted access!");
-        }
-
-        [Test]
         public void GetAllUsers_ShouldFail_WhenCustomer()
         {
             CreateDummyUsers();
@@ -355,25 +365,26 @@ namespace Test.BusinessLogic
         }
 
         [Test]
-        public void UpdateUser_ShouldSucceed_WhenEmployeeUpdatesCustomerAccounts()
+        public void GetAllEmployeeRequests_ShouldReturn_AllEmployeeRequestsIfAdmin()
+        {
+            CreateDummyUsers();
+
+            LoggedInAs = userAdmin;
+
+            Assert.AreEqual(2, userService.GetAllEmployeeRequests().Count);
+        }
+
+        [Test]
+        public void GetAllEmployeeRequests_ShouldFail_IfNotAdmin()
         {
             CreateDummyUsers();
 
             LoggedInAs = userEmployee1;
 
-            string newFirstname = "blahb";
-            string newLastname = "lablah";
+            var ex = Assert.Throws<AccessException>(()
+                => userService.GetAllEmployeeRequests());
 
-            Assert.AreNotEqual(userCustomer1.FirstName, newFirstname);
-            Assert.AreNotEqual(userCustomer1.LastName, newLastname);
-
-            userCustomer1.FirstName = newFirstname;
-            userCustomer1.LastName = newLastname;
-
-            userService.UpdateUser(userCustomer1.Id, userCustomer1);
-
-            Assert.AreEqual(userCustomer1.FirstName, newFirstname);
-            Assert.AreEqual(userCustomer1.LastName, newLastname);
+            Assert.AreEqual(ex.Message, "Admin only!");
         }
 
         [Test]

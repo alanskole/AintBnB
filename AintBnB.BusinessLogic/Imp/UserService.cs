@@ -36,17 +36,17 @@ namespace AintBnB.BusinessLogic.Imp
 
             _unitOfWork.UserRepository.Create(user);
 
-            UserTypeCheck(user);
+            UserTypeCheck(userType, user);
 
             _unitOfWork.Commit();
             return user;
         }
 
-        private void UserTypeCheck(User user)
+        private void UserTypeCheck(UserTypes userType, User user)
         {
             if (_unitOfWork.UserRepository.GetAll().Count == 0)
                 user.UserType = UserTypes.Admin;
-            else if (user.UserType == UserTypes.RequestToBeEmployee)
+            else if (userType == UserTypes.RequestToBeEmployee)
                 user.UserType = UserTypes.RequestToBeEmployee;
             else
                 user.UserType = UserTypes.Customer;
@@ -90,22 +90,18 @@ namespace AintBnB.BusinessLogic.Imp
 
         public List<User> GetAllUsersForLogin()
         {
+            if (LoggedInAs != null)
+                throw new AlreadyLoggedInException();
+
             try
             {
-                AnyoneLoggedIn();
-                throw new AlreadyLoggedInException();
+                return AdminCanGetAllUsers();
             }
             catch (Exception)
             {
-                try
-                {
-                    return AdminCanGetAllUsers();
-                }
-                catch (Exception)
-                {
-                    throw;
-                }
+                throw;
             }
+
         }
 
         public List<User> GetAllUsers()

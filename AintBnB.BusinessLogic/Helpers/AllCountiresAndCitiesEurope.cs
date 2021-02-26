@@ -11,7 +11,7 @@ namespace AintBnB.BusinessLogic.Helpers
 {
     public static class AllCountiresAndCitiesEurope
     {
-        public static SqlConnection con;
+        public static SqlConnection con = new SqlConnection(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AintBnB.Database;Integrated Security=True");
 
         public static List<string> GetCitiesOfACountry(string countryName)
         {

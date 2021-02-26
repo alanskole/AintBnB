@@ -295,6 +295,8 @@ namespace AintBnB.BusinessLogic.Imp
 
         public void Rate(int bookingId, int rating)
         {
+            AnyoneLoggedIn();
+
             Booking booking = _unitOfWork.BookingRepository.Read(bookingId);
 
             CanRatingBeGiven(booking, booking.BookedBy, rating);
