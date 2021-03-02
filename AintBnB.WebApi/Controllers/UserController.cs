@@ -19,7 +19,7 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpPost]
         [Route("api/[controller]")]
-        public IActionResult CreateUser(User user)
+        public IActionResult CreateUser([FromBody] User user)
         {
             try
             {

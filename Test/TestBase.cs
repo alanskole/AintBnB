@@ -4,12 +4,10 @@ using AintBnB.Core.Models;
 using AintBnB.Database.DbCtx;
 using AintBnB.Repository.Imp;
 using AintBnB.Repository.Interfaces;
-using AintBnB.WebApi.Controllers;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test
@@ -22,10 +20,6 @@ namespace Test
         protected IBookingService bookingService;
         protected IDeletionService deletionService;
         protected IUserService userService;
-        protected AccommodationController accommodationController;
-        protected AuthenticationController authenticationController;
-        protected BookingController bookingController;
-        protected UserController userController;
         protected User userAdmin;
         protected User userEmployee1;
         protected User userRequestToBecomeEmployee;
@@ -41,13 +35,6 @@ namespace Test
         protected Booking booking1;
         protected Booking booking2;
         protected Booking booking3;
-        protected string LocalHostAddress = "https://localhost:";
-        protected string LocalHostPort = "44342/";
-        protected string ControllerPartOfUri;
-        protected HttpClientHandler clientHandler;
-        protected HttpClient client;
-        protected string uri;
-        protected string uniquePartOfUri;
 
         public void SetupDatabaseForTesting()
         {
@@ -69,28 +56,16 @@ namespace Test
             bookingService = new BookingService(unitOfWork);
             deletionService = new DeletionService(unitOfWork);
             userService = new UserService(unitOfWork);
-            accommodationController = new AccommodationController(accommodationService, userService, deletionService);
-            authenticationController = new AuthenticationController(userService);
-            bookingController = new BookingController(bookingService, userService, accommodationService, deletionService);
-            userController = new UserController(userService, deletionService);
-        }
-
-        public void SetupHttp(string ctrStr)
-        {
-            clientHandler = new HttpClientHandler();
-            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-            client = new HttpClient(clientHandler);
-            ControllerPartOfUri = "api/" + ctrStr + "/";
-            uri = LocalHostAddress + LocalHostPort + ControllerPartOfUri;
         }
 
         public void CreateDummyUsers()
         {
-            userAdmin = new User { 
-                UserName = "admin", 
-                Password = HashPassword("aaaaaa"), 
-                FirstName = "Ad", 
-                LastName = "Min", 
+            userAdmin = new User
+            {
+                UserName = "admin",
+                Password = HashPassword("aaaaaa"),
+                FirstName = "Ad",
+                LastName = "Min",
                 UserType = UserTypes.Admin
             };
 
@@ -156,9 +131,6 @@ namespace Test
             {
                 schedule.Add(DateTime.Today.AddDays(i).ToString("yyyy-MM-dd"), true);
             }
-
-            connection.Address.Add(adr);
-            connection.Address.Add(adr2);
 
             accommodation1 = new Accommodation
             {
@@ -232,7 +204,7 @@ namespace Test
 
             for (int i = 0; i < 4; i++)
             {
-                DateTime dt = DateTime.Today.AddDays(i+2);
+                DateTime dt = DateTime.Today.AddDays(i + 2);
                 dates3.Add(dt.ToString("yyyy-MM-dd"));
             }
 
@@ -265,7 +237,7 @@ namespace Test
             unitOfWork.BookingRepository.Create(booking3);
             connection.SaveChanges();
         }
-        
+
         public void Dispose()
         {
             connection.Database.EnsureDeleted();
