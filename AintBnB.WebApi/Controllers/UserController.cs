@@ -34,7 +34,7 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpPut]
         [Route("api/[controller]/{id}")]
-        public IActionResult UpdateUser([FromRoute] int id, User user)
+        public IActionResult UpdateUser([FromRoute] int id, [FromBody] User user)
         {
             try
             {

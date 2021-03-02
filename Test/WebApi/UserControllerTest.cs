@@ -51,12 +51,6 @@ namespace Test.WebApi
 
             Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-            var result = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
-            Assert.AreEqual(7, result.Id);
-            Assert.AreEqual(usr.UserName, result.UserName);
-            Assert.AreEqual(usr.FirstName, result.FirstName);
-            Assert.AreEqual(usr.LastName, result.LastName);
-            Assert.AreEqual(UserTypes.Customer, result.UserType);
         }
 
         [Test]
@@ -68,12 +62,28 @@ namespace Test.WebApi
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-            var result = JsonConvert.DeserializeObject<User>(await response.Content.ReadAsStringAsync());
-            Assert.AreEqual(1, result.Id);
-            Assert.AreEqual("admin", result.UserName);
-            Assert.AreEqual("Ad", result.FirstName);
-            Assert.AreEqual("Min", result.LastName);
-            Assert.AreEqual(UserTypes.Admin, result.UserType);
+        }
+
+        [Test]
+        public async Task UpdateUser_ShouldReturn_SuccessStatus()
+        {
+            LoggedInAs = _factory.userAdmin;
+
+            User usr = new User
+            {
+                FirstName = "dd",
+                LastName = "ff",
+                UserType = UserTypes.Customer
+            };
+
+            var response = await _client.PutAsync("api/user/6",
+                new StringContent(
+                    JsonConvert.SerializeObject(usr),
+                    Encoding.UTF8,
+                    "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
         [Test]
@@ -86,10 +96,56 @@ namespace Test.WebApi
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-            var result = JsonConvert.DeserializeObject<List<User>>(await response.Content.ReadAsStringAsync());
-            Assert.AreEqual(6, result.Count);
-            Assert.AreEqual(UserTypes.Admin, result[0].UserType);
-            Assert.AreEqual(UserTypes.Customer, result[5].UserType);
+        }
+
+        [Test]
+        public async Task GetAllCustomers_ShouldReturn_SuccessStatus()
+        {
+
+            LoggedInAs = _factory.userEmployee1;
+
+            var response = await _client.GetAsync("api/user/allcustomers");
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
+        public async Task GetAllRequestsToBecomeEmployee_ShouldReturn_SuccessStatus()
+        {
+
+            LoggedInAs = _factory.userAdmin;
+
+            var response = await _client.GetAsync("api/user/requests");
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
+        public async Task DeleteUser_ShouldReturn_SuccessStatus()
+        {
+            LoggedInAs = _factory.userAdmin;
+
+            var response = await _client.DeleteAsync("api/user/6");
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
+        public async Task ChangePassword_ShouldReturn_SuccessStatus()
+        {
+            LoggedInAs = _factory.userAdmin;
+
+            var response = await _client.PostAsync("api/user/change",
+                new StringContent(
+                    JsonConvert.SerializeObject(new string[] { "aaaaaa", "1", "bbbbbb", "bbbbbb" }),
+                    Encoding.UTF8,
+                    "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
     }
 }
