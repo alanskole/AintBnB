@@ -1,6 +1,4 @@
 ﻿using AintBnB.Core.Models;
-using AintBnB.Database.DbCtx;
-using Microsoft.EntityFrameworkCore;
 
 namespace AintBnB.Repository.Interfaces
 {
