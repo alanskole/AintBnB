@@ -296,7 +296,7 @@ namespace AintBnB.BusinessLogic.Imp
         {
             AnyoneLoggedIn();
 
-            Booking booking = _unitOfWork.BookingRepository.Read(bookingId);
+            Booking booking = GetBooking(bookingId);
 
             CanRatingBeGiven(booking, booking.BookedBy, rating);
 
@@ -315,20 +315,17 @@ namespace AintBnB.BusinessLogic.Imp
 
         private static void CanRatingBeGiven(Booking booking, User booker, int rating)
         {
-            if (booking == null)
-                throw new NoneFoundInDatabaseTableException("booking");
-
             if (booker.Id != LoggedInAs.Id)
                 throw new AccessException("Only the booker can leave a rating!");
-
-            if (DateTime.Today <= DateTime.Parse(booking.Dates[booking.Dates.Count - 1]))
-                throw new ParameterException("Rating", "given until after checking out");
 
             if (rating < 1 || rating > 5)
                 throw new ParameterException("Rating", "less than 1 or bigger than 5");
 
             if (booking.Rating > 0)
                 throw new ParameterException("Rating", "given twice");
+
+            if (DateTime.Today <= DateTime.Parse(booking.Dates[booking.Dates.Count - 1]))
+                throw new ParameterException("Rating", "given until after checking out");
         }
     }
 }
