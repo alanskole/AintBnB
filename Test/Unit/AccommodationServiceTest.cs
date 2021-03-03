@@ -256,7 +256,7 @@ namespace Test.Unit
 
             CreateDummyAccommodation();
 
-            var ex = Assert.Throws<LoginExcrption>(()
+            var ex = Assert.Throws<LoginException>(()
                 => accommodationService.GetAccommodation(1));
 
             Assert.AreEqual("Not logged in!", ex.Message);
@@ -303,7 +303,7 @@ namespace Test.Unit
 
             CreateDummyAccommodation();
 
-            var ex = Assert.Throws<LoginExcrption>(()
+            var ex = Assert.Throws<LoginException>(()
                 => accommodationService.GetAllAccommodations());
 
             Assert.AreEqual("Not logged in!", ex.Message);

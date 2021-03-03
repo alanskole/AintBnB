@@ -2,22 +2,18 @@
 using System;
 using AintBnB.BusinessLogic.CustomExceptions;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Net;
+using static AintBnB.BusinessLogic.Helpers.PasswordHashing;
 
 namespace AintBnB.BusinessLogic.Helpers
 {
     public static class Authentication
     {
-        public static Regex onlyLettersOneSpaceOrDash = new Regex(@"^(?=.{2,}$)([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff]+([\s-]?[A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff]+){0,})$");
-        public static Regex onlyLettersNumbersOneSpaceOrDash = new Regex(@"^(?=.{2,}$)([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff0-9]([\s-]?[A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff0-9]+)*)$");
-        public static Regex onlyNumbersFollowedByAnOptionalLetter = new Regex(@"^[1-9]+[0-9]*[A-Za-z]?$");
-        public static Regex zipCodeFormatsOfTheWorld = new Regex(@"^(?=.{2,10}$)([A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff0-9]([\s-]?[A-Za-z\u00C0-\u00D6\u00D8-\u00f6\u00f8-\u00ff0-9]+)*)$");
         public static User LoggedInAs;
         public static void AnyoneLoggedIn()
         {
             if (LoggedInAs == null)
-                throw new LoginExcrption("Not logged in!");
+                throw new LoginException("Not logged in!");
         }
 
         public static bool AdminChecker()
@@ -108,22 +104,22 @@ namespace AintBnB.BusinessLogic.Helpers
 
         public static string HashPassword(string password)
         {
-            return BCrypt.Net.BCrypt.HashPassword(WebUtility.HtmlEncode(password));
+            return HashThePassword(password, null, false);
         }
 
         public static bool UnHashPassword(string password, string correctHash)
         {
-            return BCrypt.Net.BCrypt.Verify(WebUtility.HtmlEncode(password), correctHash);
+            return VerifyThePassword(password, correctHash);
         }
 
         public static void ValidatePassword(string password)
         {
             if (password.Trim().Contains(" "))
-                throw new LoginExcrption("Cannot contain space");
+                throw new LoginException("Cannot contain space");
             if (password.Trim().Length < 6)
-                throw new LoginExcrption("Minimum 6 characters");
+                throw new LoginException("Minimum 6 characters");
             if (password.Trim().Length > 50)
-                throw new LoginExcrption("Maximum 50 characters");
+                throw new LoginException("Maximum 50 characters");
         }
 
         public static void Logout()
@@ -152,7 +148,7 @@ namespace AintBnB.BusinessLogic.Helpers
                 if (string.Equals(user.UserName, userName))
                 {
                     if (user.UserType == UserTypes.RequestToBeEmployee)
-                        throw new LoginExcrption("The request to have an employee account must be approved by admin before it can be used!");
+                        throw new LoginException("The request to have an employee account must be approved by admin before it can be used!");
 
                     if (UnHashPassword(password, user.Password))
                     {
@@ -161,7 +157,7 @@ namespace AintBnB.BusinessLogic.Helpers
                     }
                 }
             }
-            throw new LoginExcrption("Username and/or password not correct!");
+            throw new LoginException("Username and/or password not correct!");
         }
     }
 }
