@@ -108,13 +108,16 @@ namespace Test
                 };
 
                 db.Add(userAdmin);
-                db.Add(userEmployee1);
-                db.Add(userRequestToBecomeEmployee);
-                db.Add(userRequestToBecomeEmployee2);
-                db.Add(userCustomer1);
-                db.Add(userCustomer2);
                 db.SaveChanges();
-
+                db.Add(userEmployee1);
+                db.SaveChanges();
+                db.Add(userRequestToBecomeEmployee);
+                db.SaveChanges();
+                db.Add(userRequestToBecomeEmployee2);
+                db.SaveChanges();
+                db.Add(userCustomer1);
+                db.SaveChanges();
+                db.Add(userCustomer2);
                 db.SaveChanges();
 
             });

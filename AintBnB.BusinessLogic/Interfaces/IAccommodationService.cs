@@ -12,7 +12,7 @@ namespace AintBnB.BusinessLogic.Interfaces
         List<Accommodation> GetAllOwnedAccommodations(int userid);
         void UpdateAccommodation(int id, Accommodation accommodation);
         public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days);
-        List<Accommodation> FindAvailable(string country, string municipality, string startdate, int nights);
+        List<Accommodation> FindAvailable(string country, string city, string startdate, int nights);
         List<Accommodation> SortListOfAccommodations(List<Accommodation> available, string sortBy, string ascOrDesc);
     }
 }

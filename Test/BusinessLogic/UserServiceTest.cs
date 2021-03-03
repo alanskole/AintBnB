@@ -298,6 +298,19 @@ namespace Test.BusinessLogic
         }
 
         [Test]
+        public void GetUser_ShouldFail_IfNoUsersWithTheIdExists()
+        {
+            CreateDummyUsers();
+
+            LoggedInAs = userAdmin;
+
+            var ex = Assert.Throws<IdNotFoundException>(()
+                => userService.GetUser(600));
+
+            Assert.AreEqual("User with ID 600 not found!", ex.Message);
+        }
+
+        [Test]
         public void Only_Admin_Can_View_Admin_Account()
         {
             CreateDummyUsers();
