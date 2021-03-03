@@ -3,9 +3,9 @@
 namespace AintBnB.BusinessLogic.CustomExceptions
 {
     [Serializable]
-    public class LoginExcrption : Exception
+    public class LoginException : Exception
     {
-        public LoginExcrption(string cause) : base(cause)
+        public LoginException(string cause) : base(cause)
         {
         }
     }
