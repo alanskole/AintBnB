@@ -226,16 +226,18 @@ namespace AintBnB.BusinessLogic.Imp
 
         public List<Booking> GetBookingsOfOwnedAccommodation(int userid)
         {
-            AnyoneLoggedIn();
+            if (CorrectUserOrAdminOrEmployee(_unitOfWork.UserRepository.Read(userid)))
+            {
+                List<Booking> bookingsOfOwnedAccommodation = new List<Booking>();
 
-            List<Booking> bookingsOfOwnedAccommodation = new List<Booking>();
+                FindAllBookingsOfOwnedAccommodation(userid, bookingsOfOwnedAccommodation);
 
-            FindAllBookingsOfOwnedAccommodation(userid, bookingsOfOwnedAccommodation);
+                if (bookingsOfOwnedAccommodation.Count == 0)
+                    throw new NoneFoundInDatabaseTableException(userid, "bookings of owned accommodations");
 
-            if (bookingsOfOwnedAccommodation.Count == 0)
-                throw new NoneFoundInDatabaseTableException(userid, "bookings of owned accommodations");
-
-            return bookingsOfOwnedAccommodation;
+                return bookingsOfOwnedAccommodation;
+            }
+            throw new AccessException();
         }
 
         private void FindAllBookingsOfOwnedAccommodation(int userid, List<Booking> bookingsOfOwnedAccommodation)

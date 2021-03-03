@@ -54,14 +54,41 @@ namespace Test.Integration
         }
 
         [Test]
+        public async Task CreateUser_ShouldReturn_BadRequestIfError()
+        {
+            User usr = new User
+            {
+            };
+            var response = await _client.PostAsync("api/user",
+                new StringContent(
+                    JsonConvert.SerializeObject(usr),
+                    Encoding.UTF8,
+                    "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
         public async Task GetUser_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
-            
+
             var response = await _client.GetAsync("api/user/1");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
+        public async Task GetUser_ShouldReturn_NotFoundIfError()
+        {
+            LoggedInAs = _factory.userAdmin;
+
+            var response = await _client.GetAsync("api/user/10000");
+
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
         [Test]
@@ -87,6 +114,25 @@ namespace Test.Integration
         }
 
         [Test]
+        public async Task UpdateUser_ShouldReturn_BadRequestIfError()
+        {
+            LoggedInAs = _factory.userAdmin;
+
+            User usr = new User
+            {
+            };
+
+            var response = await _client.PutAsync("api/user/6",
+                new StringContent(
+                    JsonConvert.SerializeObject(usr),
+                    Encoding.UTF8,
+                    "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
         public async Task GetAllUser_ShouldReturn_SuccessStatus()
         {
 
@@ -96,6 +142,18 @@ namespace Test.Integration
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
+        public async Task GetAllUser_ShouldReturn_NotFoundIfError()
+        {
+
+            LoggedInAs = _factory.userCustomer1;
+
+            var response = await _client.GetAsync("api/user");
+
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
         [Test]
@@ -111,6 +169,18 @@ namespace Test.Integration
         }
 
         [Test]
+        public async Task GetAllCustomers_ShouldReturn_NotFoundIfError()
+        {
+
+            LoggedInAs = _factory.userCustomer1;
+
+            var response = await _client.GetAsync("api/user/allcustomers");
+
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
         public async Task GetAllRequestsToBecomeEmployee_ShouldReturn_SuccessStatus()
         {
 
@@ -123,6 +193,17 @@ namespace Test.Integration
         }
 
         [Test]
+        public async Task GetAllRequestsToBecomeEmployee_ShouldReturn_NotFoundIfError()
+        {
+            LoggedInAs = _factory.userEmployee1;
+
+            var response = await _client.GetAsync("api/user/requests");
+
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
         public async Task DeleteUser_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -130,6 +211,17 @@ namespace Test.Integration
             var response = await _client.DeleteAsync("api/user/6");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
+        public async Task DeleteUser_ShouldReturn_BadRequestIfError()
+        {
+            LoggedInAs = _factory.userAdmin;
+
+            var response = await _client.DeleteAsync("api/user/600");
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
@@ -145,6 +237,21 @@ namespace Test.Integration
                     "application/json"));
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [Test]
+        public async Task ChangePassword_ShouldReturn_BadRequestIfError()
+        {
+            LoggedInAs = _factory.userAdmin;
+
+            var response = await _client.PostAsync("api/user/change",
+                new StringContent(
+                    JsonConvert.SerializeObject(new string[] { "aaaaaaaaaaaaaa", "1", "bbbbbb", "bbbbbb" }),
+                    Encoding.UTF8,
+                    "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
     }
