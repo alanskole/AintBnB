@@ -85,7 +85,7 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{id}/bookingsownaccommodation")]
-        public IActionResult GetBookingOnOwnedAccommodations([FromRoute] int id)
+        public IActionResult GetBookingsOnOwnedAccommodations([FromRoute] int id)
         {
             try
             {
