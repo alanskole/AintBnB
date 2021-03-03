@@ -23,15 +23,14 @@ namespace AintBnB.BusinessLogic.Imp
 
         public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, List<byte[]> picture, int daysToCreateScheduleFor)
         {
+            if (daysToCreateScheduleFor < 1)
+                throw new ParameterException("Days to create the schedule for", "less than one");
+
             if (CheckIfUserIsAllowedToPerformAction(owner))
             {
                 Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight, cancellationDeadlineInDays);
 
                 accommodation.Picture = picture;
-
-                if (daysToCreateScheduleFor < 1)
-                    daysToCreateScheduleFor = 1;
-
 
                 ValidateAccommodation(accommodation);
 
@@ -55,13 +54,13 @@ namespace AintBnB.BusinessLogic.Imp
             if (accommodation.Owner.Id == 0)
                 throw new ParameterException("Id", "zero");
             if (!onlyLettersNumbersOneSpaceOrDash.IsMatch(accommodation.Address.Street))
-                throw new ParameterException("Street", "empty");
+                throw new ParameterException("Street", "any other than letters or numbers with a space or dash betwwen them");
             if (!onlyNumbersFollowedByAnOptionalLetter.IsMatch(accommodation.Address.Number))
-                throw new ParameterException("Number", "zero");
+                throw new ParameterException("Number", "any other than numbers, where the first number is larger than zero, followed by one optional letter");
             if (!zipCodeFormatsOfTheWorld.IsMatch(accommodation.Address.Zip))
-                throw new ParameterException("Zip", "empty");
+                throw new ParameterException("Zip", "any other than numbers, letters, space or dash between the numbers and letters");
             if (!onlyLettersNumbersOneSpaceOrDash.IsMatch(accommodation.Address.Area))
-                throw new ParameterException("Area", "empty");
+                throw new ParameterException("Area", "any other than letters or numbers with a space or dash betwwen them");
             IsCountryAndCityCorrect(accommodation.Address.Country, accommodation.Address.City);
             if (accommodation.SquareMeters == 0)
                 throw new ParameterException("SquareMeters", "zero");
@@ -71,6 +70,25 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new ParameterException("PricePerNight", "zero");
             if (accommodation.CancellationDeadlineInDays < 1)
                 throw new ParameterException("Cancellation deadline", "less than one day");
+        }
+
+        private void CreateScheduleForXAmountOfDays(Accommodation accommodation, int days)
+        {
+            DateTime todaysDate = DateTime.Today;
+            SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
+            AddDaysToDateAndAddToSchedule(days, todaysDate, dateAndStatus);
+            accommodation.Schedule = dateAndStatus;
+        }
+
+        private void AddDaysToDateAndAddToSchedule(int days, DateTime date, SortedDictionary<string, bool> dateAndStatus)
+        {
+            DateTime newDate;
+
+            for (int i = 0; i < days; i++)
+            {
+                newDate = date.AddDays(i);
+                dateAndStatus.Add(DateFormatterCustomDate(newDate), true);
+            }
         }
 
         public Accommodation GetAccommodation(int id)
@@ -87,6 +105,8 @@ namespace AintBnB.BusinessLogic.Imp
 
         public List<Accommodation> GetAllAccommodations()
         {
+            AnyoneLoggedIn();
+
             List<Accommodation> all = _unitOfWork.AccommodationRepository.GetAll();
 
             if (all.Count == 0)
@@ -97,6 +117,8 @@ namespace AintBnB.BusinessLogic.Imp
 
         public List<Accommodation> GetAllOwnedAccommodations(int userid)
         {
+            AnyoneLoggedIn();
+
             List<Accommodation> all = new List<Accommodation>();
 
             FindAllAccommodationsOfAUser(all, userid);
@@ -118,7 +140,8 @@ namespace AintBnB.BusinessLogic.Imp
 
         public void UpdateAccommodation(int id, Accommodation accommodation)
         {
-            if (CorrectUserOrAdminOrEmployee(_unitOfWork.AccommodationRepository.Read(id).Owner))
+            User owner = _unitOfWork.AccommodationRepository.Read(id).Owner;
+            if (CorrectUserOrAdminOrEmployee(owner))
             {
                 GetAccommodation(id);
 
@@ -132,7 +155,7 @@ namespace AintBnB.BusinessLogic.Imp
                 _unitOfWork.Commit();
             }
             else
-                throw new AccessException($"Must be performed by a customer with ID {accommodation.Owner.Id}, or by admin or an employee on behalf of a customer with ID {accommodation.Owner.Id}!");
+                throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
         }
 
         private static void ValidateUpdatedFields(int squareMeters, string description, int pricePerNight, int cancellationDeadlineInDays)
@@ -149,15 +172,18 @@ namespace AintBnB.BusinessLogic.Imp
 
         public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days)
         {
-            User owner = _unitOfWork.AccommodationRepository.Read(id).Owner;
+            if (days < 1)
+                throw new ParameterException("Days", "less than one");
+
+            User owner = GetAccommodation(id).Owner;
 
             if (CorrectUserOrAdminOrEmployee(owner))
             {
                 SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
 
-                DateTime fromDate = DateTime.Parse(_unitOfWork.AccommodationRepository.Read(id).Schedule.Keys.Last()).AddDays(1);
+                DateTime fromDate = DateTime.Parse(GetAccommodation(id).Schedule.Keys.Last()).AddDays(1);
 
-                addDaysToDate(days, fromDate, dateAndStatus);
+                AddDaysToDateAndAddToSchedule(days, fromDate, dateAndStatus);
 
                 MergeTwoSortedDictionaries(_unitOfWork.AccommodationRepository.Read(id).Schedule, dateAndStatus);
 
@@ -174,25 +200,6 @@ namespace AintBnB.BusinessLogic.Imp
             foreach (var values in dateAndStatus)
             {
                 dateAndStatusOriginal.Add(values.Key, values.Value);
-            }
-        }
-
-        private void CreateScheduleForXAmountOfDays(Accommodation accommodation, int days)
-        {
-            DateTime todaysDate = DateTime.Today;
-            SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
-            addDaysToDate(days, todaysDate, dateAndStatus);
-            accommodation.Schedule = dateAndStatus;
-        }
-
-        private void addDaysToDate(int days, DateTime date, SortedDictionary<string, bool> dateAndStatus)
-        {
-            DateTime newDate;
-
-            for (int i = 0; i < days; i++)
-            {
-                newDate = date.AddDays(i);
-                dateAndStatus.Add(DateFormatterCustomDate(newDate), true);
             }
         }
 
