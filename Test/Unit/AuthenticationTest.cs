@@ -362,6 +362,32 @@ namespace Test.Unit
             Assert.AreEqual("Not logged in!", ex.Message);
         }
 
+        [Test]
+        public void HashPassword_ShouldReturn_ADifferentStringThanTheOneInTheMethodParameter()
+        {
+            string pass = "a";
+
+            Assert.AreNotEqual(pass, HashPassword(pass));
+        }
+
+        [Test]
+        public void HashPassword_ShouldReturn_TrueIfUnhashedPasswordMatchesTheHashedPassword()
+        {
+            string pass = "a";
+            string hashed = HashPassword(pass);
+
+            Assert.True(UnHashPassword(pass, hashed));
+        }
+
+        [Test]
+        public void HashPassword_ShouldReturn_FalseIfUnhashedPasswordDoesNotMatchesTheHashedPassword()
+        {
+            string pass = "a";
+            string hashed = HashPassword(pass);
+            string wrong = pass + "a";
+
+            Assert.False(UnHashPassword(wrong, hashed));
+        }
 
 
         [Test]

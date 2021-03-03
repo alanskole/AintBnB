@@ -42,9 +42,8 @@ namespace AintBnB.BusinessLogic.Helpers
             var hashOfpasswordToCheck = HashThePassword(passwordToCheck, salt, true);
 
             if (String.Compare(passwordAndHash[0], hashOfpasswordToCheck) == 0)
-            {
                 return true;
-            }
+            
             return false;
         }
     }
