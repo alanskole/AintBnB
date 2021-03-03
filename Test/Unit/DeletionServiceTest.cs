@@ -29,6 +29,8 @@ namespace Test.Unit
         [Test]
         public void DeleteUser_ShouldFail_IfTheUserHasABookingOfTheirAccommodationThatCannotBeDeletedBecauseOfCancellationDeadlineExpired()
         {
+            LoggedInAs = null;
+
             Assert.True(userService.GetAllUsersForLogin().Contains(userCustomer1));
 
             LoggedInAs = booking1.BookedBy;
@@ -42,6 +44,8 @@ namespace Test.Unit
         [Test]
         public void DeleteUser_ShouldFail_IfTheUserHasABookingThatCannotBeDeletedBecauseOfCancellationDeadlineExpired()
         {
+            LoggedInAs = null;
+
             Assert.True(userService.GetAllUsersForLogin().Contains(userCustomer1));
 
             LoggedInAs = booking2.BookedBy;
@@ -55,6 +59,8 @@ namespace Test.Unit
         [Test]
         public void DeleteUser_ShouldSucceed_IfNoCancellationDeadlineExpiredOnBookingsOrAccommodations()
         {
+            LoggedInAs = null;
+
             Assert.True(userService.GetAllUsersForLogin().Contains(userCustomer1));
 
             LoggedInAs = booking2.BookedBy;
