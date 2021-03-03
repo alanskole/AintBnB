@@ -530,33 +530,43 @@ namespace Test.Unit
         }
 
         [Test]
-        public void Rate_ShouldFail_WhenTryingToBookBeforeTheCheckoutDateHasPassed()
+        public void CanRatingBeGiven_ShouldFail_WhenTryingToBookBeforeTheCheckoutDateHasPassed()
         {
             CreateDummyBooking();
 
             LoggedInAs = booking1.BookedBy;
 
-            var ex = Assert.Throws<ParameterException>(()
-                => bookingService.Rate(booking1.Id, 4));
+            var result = typeof(BookingService)
+                            .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            Assert.AreEqual("Rating cannot be given until after checking out!", ex.Message);
+            var ex = Assert.Throws<TargetInvocationException>(()
+                => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 3 }));
+
+            Assert.AreEqual(ex.InnerException.GetType(), typeof(ParameterException));
+
+            Assert.AreEqual("Rating cannot be given until after checking out!", ex.InnerException.Message);
         }
 
         [Test]
-        public void Rate_ShouldFail_WhenRatingGivenBySomeoneElseThanTheBooker()
+        public void CanRatingBeGiven_ShouldFail_WhenRatingGivenBySomeoneElseThanTheBooker()
         {
             CreateDummyBooking();
 
             LoggedInAs = userAdmin;
 
-            var ex = Assert.Throws<AccessException>(()
-                => bookingService.Rate(booking1.Id, 4));
+            var result = typeof(BookingService)
+                            .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            Assert.AreEqual("Only the booker can leave a rating!", ex.Message);
+            var ex = Assert.Throws<TargetInvocationException>(()
+                => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 3 }));
+
+            Assert.AreEqual(ex.InnerException.GetType(), typeof(AccessException));
+
+            Assert.AreEqual("Only the booker can leave a rating!", ex.InnerException.Message);
         }
 
         [Test]
-        public void Rate_ShouldFail_WhenBookingHasAlreadyBeenRated()
+        public void CanRatingBeGiven_ShouldFail_WhenBookingHasAlreadyBeenRated()
         {
             CreateDummyBooking();
 
@@ -564,28 +574,41 @@ namespace Test.Unit
 
             booking1.Rating = 2;
 
-            var ex = Assert.Throws<ParameterException>(()
-                => bookingService.Rate(booking1.Id, 4));
+            var result = typeof(BookingService)
+                            .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            Assert.AreEqual("Rating cannot be given twice!", ex.Message);
+            var ex = Assert.Throws<TargetInvocationException>(()
+                => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 3 }));
+
+            Assert.AreEqual(ex.InnerException.GetType(), typeof(ParameterException));
+
+            Assert.AreEqual("Rating cannot be given twice!", ex.InnerException.Message);
         }
 
         [Test]
-        public void Rate_ShouldFail_IfRatingIsLessThanOneOrHigherThanFive()
+        public void CanRatingBeGiven_ShouldFail_IfRatingIsLessThanOneOrHigherThanFive()
         {
             CreateDummyBooking();
 
             LoggedInAs = booking1.BookedBy;
 
-            var ex = Assert.Throws<ParameterException>(()
-                => bookingService.Rate(booking1.Id, 0));
+            var result = typeof(BookingService)
+                            .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            Assert.AreEqual("Rating cannot be less than 1 or bigger than 5!", ex.Message);
+            var ex = Assert.Throws<TargetInvocationException>(()
+                => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 0 }));
 
-            ex = Assert.Throws<ParameterException>(()
-                => bookingService.Rate(booking1.Id, 6));
+            Assert.AreEqual(ex.InnerException.GetType(), typeof(ParameterException));
 
-            Assert.AreEqual("Rating cannot be less than 1 or bigger than 5!", ex.Message);
+            Assert.AreEqual("Rating cannot be less than 1 or bigger than 5!", ex.InnerException.Message);
+
+            result = typeof(BookingService)
+                            .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            ex = Assert.Throws<TargetInvocationException>(()
+                => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 6 }));
+
+            Assert.AreEqual("Rating cannot be less than 1 or bigger than 5!", ex.InnerException.Message);
         }
     }
 }

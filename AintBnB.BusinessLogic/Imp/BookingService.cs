@@ -313,7 +313,7 @@ namespace AintBnB.BusinessLogic.Imp
             _unitOfWork.Commit();
         }
 
-        private static void CanRatingBeGiven(Booking booking, User booker, int rating)
+        private void CanRatingBeGiven(Booking booking, User booker, int rating)
         {
             if (booker.Id != LoggedInAs.Id)
                 throw new AccessException("Only the booker can leave a rating!");
