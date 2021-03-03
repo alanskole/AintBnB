@@ -115,10 +115,15 @@ namespace Test
             };
 
             unitOfWork.UserRepository.Create(userAdmin);
+            connection.SaveChanges();
             unitOfWork.UserRepository.Create(userEmployee1);
+            connection.SaveChanges();
             unitOfWork.UserRepository.Create(userRequestToBecomeEmployee);
+            connection.SaveChanges();
             unitOfWork.UserRepository.Create(userRequestToBecomeEmployee2);
+            connection.SaveChanges();
             unitOfWork.UserRepository.Create(userCustomer1);
+            connection.SaveChanges();
             unitOfWork.UserRepository.Create(userCustomer2);
             connection.SaveChanges();
         }
@@ -175,7 +180,9 @@ namespace Test
             };
 
             unitOfWork.AccommodationRepository.Create(accommodation1);
+            connection.SaveChanges();
             unitOfWork.AccommodationRepository.Create(accommodation2);
+            connection.SaveChanges();
             unitOfWork.AccommodationRepository.Create(accommodation3);
             connection.SaveChanges();
         }
@@ -189,14 +196,16 @@ namespace Test
             for (int i = 0; i < 5; i++)
             {
                 DateTime dt = bkdt.AddDays(i);
+                accommodation1.Schedule[dt.ToString("yyyy-MM-dd")] = false;
                 dates1.Add(dt.ToString("yyyy-MM-dd"));
             }
 
             List<string> dates2 = new List<string>();
 
-            for (int i = 5; i < 15; i++)
+            for (int i = 3; i < 15; i++)
             {
                 DateTime dt = bkdt.AddDays(i);
+                accommodation2.Schedule[dt.ToString("yyyy-MM-dd")] = false;
                 dates2.Add(dt.ToString("yyyy-MM-dd"));
             }
 
@@ -205,6 +214,7 @@ namespace Test
             for (int i = 0; i < 4; i++)
             {
                 DateTime dt = DateTime.Today.AddDays(i + 2);
+                accommodation3.Schedule[dt.ToString("yyyy-MM-dd")] = false;
                 dates3.Add(dt.ToString("yyyy-MM-dd"));
             }
 
@@ -233,7 +243,9 @@ namespace Test
             };
 
             unitOfWork.BookingRepository.Create(booking1);
+            connection.SaveChanges();
             unitOfWork.BookingRepository.Create(booking2);
+            connection.SaveChanges();
             unitOfWork.BookingRepository.Create(booking3);
             connection.SaveChanges();
         }
