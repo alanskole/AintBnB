@@ -5,14 +5,14 @@ using AintBnB.BusinessLogic.Imp;
 using System.Reflection;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
-namespace Test.BusinessLogic
+namespace Test.Unit
 {
     [TestFixture]
     public class UserServiceTest : TestBase
     {
 
         [SetUp]
-        public void Setup()
+        public void SetUp()
         {
             SetupDatabaseForTesting();
             SetupTestClasses();

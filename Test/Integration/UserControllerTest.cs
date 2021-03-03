@@ -11,7 +11,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
-namespace Test.WebApi
+namespace Test.Integration
 {
     [TestFixture]
     public class UserControllerTest
@@ -20,14 +20,14 @@ namespace Test.WebApi
         private HttpClient _client;
 
         [SetUp]
-        public void ClassInit()
+        public void SetUp()
         {
             _factory = new CustomWebApplicationFactory();
             _client = _factory.CreateClient();
         }
 
         [TearDown]
-        public void ClassCleanup()
+        public void TearDown()
         {
             _factory.DisposeDb();
         }
