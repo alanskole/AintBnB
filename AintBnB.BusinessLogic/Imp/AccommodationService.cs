@@ -1,6 +1,7 @@
 ﻿using AintBnB.Core.Models;
 using static AintBnB.BusinessLogic.Helpers.DateHelper;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.BusinessLogic.Helpers.Regexp;
 using static AintBnB.BusinessLogic.Helpers.AllCountiresAndCitiesEurope;
 using System;
 using System.Collections.Generic;
