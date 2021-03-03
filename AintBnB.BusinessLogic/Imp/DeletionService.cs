@@ -27,7 +27,12 @@ namespace AintBnB.BusinessLogic.Imp
                 DeleteUsersBookings(id);
                 _unitOfWork.UserRepository.Delete(id);
                 _unitOfWork.Commit();
+                
+                if (!AdminChecker())
+                    Logout();
             }
+            else if (_unitOfWork.UserRepository.Read(id).UserType == UserTypes.Employee)
+                throw new AccessException("Employees cannot delete any accounts, even if it's their own accounts!");
             else
                 throw new AccessException($"Administrator or user with ID {id} only!");
         }
@@ -64,7 +69,7 @@ namespace AintBnB.BusinessLogic.Imp
                     }
                     catch (Exception)
                     {
-                        throw new CancelBookingException("user", id, booking.Accommodation.CancellationDeadlineInDays);
+                        throw new CancelBookingException("user", booking.Id, booking.Accommodation.CancellationDeadlineInDays);
                     }
                 }
             }
@@ -91,11 +96,11 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new AccessException($"Administrator, employee or user with ID {accommodation.Owner.Id} only!");
         }
 
-        private void DeleteAccommodationBookings(int id)
+        private void DeleteAccommodationBookings(int accommodationId)
         {
             foreach (Booking booking in _unitOfWork.BookingRepository.GetAll())
             {
-                if (booking.Accommodation == _unitOfWork.AccommodationRepository.Read(id))
+                if (booking.Accommodation == _unitOfWork.AccommodationRepository.Read(accommodationId))
                 {
                     try
                     {
