@@ -32,7 +32,7 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new AccessException($"Administrator or user with ID {id} only!");
         }
 
-        private static void CheckIfUserCanBeDeleted(User user)
+        private void CheckIfUserCanBeDeleted(User user)
         {
             if (user == null)
                 throw new IdNotFoundException("User", user.Id);
