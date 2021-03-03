@@ -528,5 +528,64 @@ namespace Test.Unit
 
             Assert.AreEqual($"User with Id {userCustomer1.Id} doesn't have any bookings!", ex.Message);
         }
+
+        [Test]
+        public void Rate_ShouldFail_WhenTryingToBookBeforeTheCheckoutDateHasPassed()
+        {
+            CreateDummyBooking();
+
+            LoggedInAs = booking1.BookedBy;
+
+            var ex = Assert.Throws<ParameterException>(()
+                => bookingService.Rate(booking1.Id, 4));
+
+            Assert.AreEqual("Rating cannot be given until after checking out!", ex.Message);
+        }
+
+        [Test]
+        public void Rate_ShouldFail_WhenRatingGivenBySomeoneElseThanTheBooker()
+        {
+            CreateDummyBooking();
+
+            LoggedInAs = userAdmin;
+
+            var ex = Assert.Throws<AccessException>(()
+                => bookingService.Rate(booking1.Id, 4));
+
+            Assert.AreEqual("Only the booker can leave a rating!", ex.Message);
+        }
+
+        [Test]
+        public void Rate_ShouldFail_WhenBookingHasAlreadyBeenRated()
+        {
+            CreateDummyBooking();
+
+            LoggedInAs = booking1.BookedBy;
+
+            booking1.Rating = 2;
+
+            var ex = Assert.Throws<ParameterException>(()
+                => bookingService.Rate(booking1.Id, 4));
+
+            Assert.AreEqual("Rating cannot be given twice!", ex.Message);
+        }
+
+        [Test]
+        public void Rate_ShouldFail_IfRatingIsLessThanOneOrHigherThanFive()
+        {
+            CreateDummyBooking();
+
+            LoggedInAs = booking1.BookedBy;
+
+            var ex = Assert.Throws<ParameterException>(()
+                => bookingService.Rate(booking1.Id, 0));
+
+            Assert.AreEqual("Rating cannot be less than 1 or bigger than 5!", ex.Message);
+
+            ex = Assert.Throws<ParameterException>(()
+                => bookingService.Rate(booking1.Id, 6));
+
+            Assert.AreEqual("Rating cannot be less than 1 or bigger than 5!", ex.Message);
+        }
     }
 }
