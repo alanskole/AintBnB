@@ -18,95 +18,12 @@ namespace AintBnB.BusinessLogic.Imp
         public BookingService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-
-        }
-
-        public Booking GetBooking(int id)
-        {
-            if (CorrectUserOrOwnerOrAdminOrEmployee(_unitOfWork.BookingRepository.Read(id).Accommodation.Owner.Id, _unitOfWork.BookingRepository.Read(id).BookedBy))
-            {
-                Booking booking = _unitOfWork.BookingRepository.Read(id);
-
-                if (booking == null)
-                    throw new IdNotFoundException("Booking", id);
-
-                return booking;
-            }
-            throw new AccessException();
-        }
-
-        public List<Booking> GetBookingsOfOwnedAccommodation(int userid)
-        {
-            AnyoneLoggedIn();
-
-            List<Booking> bookingsOfOwnedAccommodation = new List<Booking>();
-
-            FindAllBookingsOfOwnedAccommodation(userid, bookingsOfOwnedAccommodation);
-
-            if (bookingsOfOwnedAccommodation.Count == 0)
-                throw new NoneFoundInDatabaseTableException(userid, "bookings of owned accommodations");
-
-            return bookingsOfOwnedAccommodation;
-        }
-
-        private void FindAllBookingsOfOwnedAccommodation(int userid, List<Booking> bookingsOfOwnedAccommodation)
-        {
-            foreach (var booking in _unitOfWork.BookingRepository.GetAll())
-            {
-                if (booking.Accommodation.Owner.Id == userid)
-                    bookingsOfOwnedAccommodation.Add(booking);
-            }
-        }
-
-        public List<Booking> GetAllBookings()
-        {
-            if (HasElevatedRights())
-            {
-                return GetAllInSystem();
-            }
-            else
-            {
-                return GetOnlyOnesOwnedByUser();
-            }
-        }
-
-        private List<Booking> GetAllInSystem()
-        {
-            List<Booking> all = _unitOfWork.BookingRepository.GetAll();
-
-            if (all.Count == 0)
-                throw new NoneFoundInDatabaseTableException("bookings");
-
-            return all;
-        }
-
-        private List<Booking> GetOnlyOnesOwnedByUser()
-        {
-            List<Booking> bookingsOfLoggedInUser = new List<Booking>();
-
-            FindAllBookingsOfLoggedInUser(bookingsOfLoggedInUser);
-
-            if (bookingsOfLoggedInUser.Count == 0)
-                throw new NoneFoundInDatabaseTableException(LoggedInAs.Id, "bookings");
-
-            return bookingsOfLoggedInUser;
-        }
-
-        private void FindAllBookingsOfLoggedInUser(List<Booking> bookingsOfLoggedInUser)
-        {
-            foreach (var booking in _unitOfWork.BookingRepository.GetAll())
-            {
-                if (booking.BookedBy.Id == LoggedInAs.Id)
-                {
-                    bookingsOfLoggedInUser.Add(booking);
-                }
-            }
         }
 
         public Booking Book(string startDate, User booker, int nights, Accommodation accommodation)
         {
             if (booker.Id == accommodation.Owner.Id)
-                throw new ParameterException("Accommodation", "be booked by the owner");
+                throw new ParameterException("Accommodation", "booked by the owner");
 
             if (nights < 1)
                 throw new ParameterException("Nights", "less than one");
@@ -290,6 +207,88 @@ namespace AintBnB.BusinessLogic.Imp
             {
                 if (!newDates.Contains(date))
                     datesToRemove.Add(date);
+            }
+        }
+
+        public Booking GetBooking(int id)
+        {
+            Booking booking = _unitOfWork.BookingRepository.Read(id);
+
+            if (booking == null)
+                throw new IdNotFoundException("Booking", id);
+
+            if (CorrectUserOrOwnerOrAdminOrEmployee(_unitOfWork.BookingRepository.Read(id).Accommodation.Owner.Id, _unitOfWork.BookingRepository.Read(id).BookedBy))
+            {
+                return booking;
+            }
+            throw new AccessException();
+        }
+
+        public List<Booking> GetBookingsOfOwnedAccommodation(int userid)
+        {
+            AnyoneLoggedIn();
+
+            List<Booking> bookingsOfOwnedAccommodation = new List<Booking>();
+
+            FindAllBookingsOfOwnedAccommodation(userid, bookingsOfOwnedAccommodation);
+
+            if (bookingsOfOwnedAccommodation.Count == 0)
+                throw new NoneFoundInDatabaseTableException(userid, "bookings of owned accommodations");
+
+            return bookingsOfOwnedAccommodation;
+        }
+
+        private void FindAllBookingsOfOwnedAccommodation(int userid, List<Booking> bookingsOfOwnedAccommodation)
+        {
+            foreach (var booking in _unitOfWork.BookingRepository.GetAll())
+            {
+                if (booking.Accommodation.Owner.Id == userid)
+                    bookingsOfOwnedAccommodation.Add(booking);
+            }
+        }
+
+        public List<Booking> GetAllBookings()
+        {
+            if (HasElevatedRights())
+            {
+                return GetAllInSystem();
+            }
+            else
+            {
+                return GetOnlyOnesOwnedByUser();
+            }
+        }
+
+        private List<Booking> GetAllInSystem()
+        {
+            List<Booking> all = _unitOfWork.BookingRepository.GetAll();
+
+            if (all.Count == 0)
+                throw new NoneFoundInDatabaseTableException("bookings");
+
+            return all;
+        }
+
+        private List<Booking> GetOnlyOnesOwnedByUser()
+        {
+            List<Booking> bookingsOfLoggedInUser = new List<Booking>();
+
+            FindAllBookingsOfLoggedInUser(bookingsOfLoggedInUser);
+
+            if (bookingsOfLoggedInUser.Count == 0)
+                throw new NoneFoundInDatabaseTableException(LoggedInAs.Id, "bookings");
+
+            return bookingsOfLoggedInUser;
+        }
+
+        private void FindAllBookingsOfLoggedInUser(List<Booking> bookingsOfLoggedInUser)
+        {
+            foreach (var booking in _unitOfWork.BookingRepository.GetAll())
+            {
+                if (booking.BookedBy.Id == LoggedInAs.Id)
+                {
+                    bookingsOfLoggedInUser.Add(booking);
+                }
             }
         }
 

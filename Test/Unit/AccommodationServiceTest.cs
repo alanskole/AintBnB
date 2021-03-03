@@ -8,13 +8,13 @@ using static AintBnB.BusinessLogic.Helpers.Authentication;
 using System;
 using System.Linq;
 
-namespace Test.BusinessLogic
+namespace Test.Unit
 {
     [TestFixture]
     public class AccommodationServiceTest : TestBase
     {
         [SetUp]
-        public void Setup()
+        public void SetUp()
         {
             SetupDatabaseForTesting();
             SetupTestClasses();
