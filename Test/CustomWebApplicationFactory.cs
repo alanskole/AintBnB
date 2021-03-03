@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
+using System.Collections.Generic;
+using System;
 
 namespace Test
 {
@@ -26,7 +28,7 @@ namespace Test
         public Accommodation accommodation3;
         public Booking booking1;
         public Booking booking2;
-        protected Booking booking3;
+        public Booking booking3;
         private DatabaseContext db;
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -120,6 +122,128 @@ namespace Test
                 db.Add(userCustomer2);
                 db.SaveChanges();
 
+                SortedDictionary<string, bool> schedule = new SortedDictionary<string, bool>();
+
+                for (int i = 0; i < 100; i++)
+                {
+                    schedule.Add(DateTime.Today.AddDays(i).ToString("yyyy-MM-dd"), true);
+                }
+
+                db.Add(adr);
+                db.SaveChanges(); 
+                db.Add(adr2);
+                db.SaveChanges(); 
+                db.Add(adr3);
+                db.SaveChanges();
+
+                accommodation1 = new Accommodation
+                {
+                    Owner = userCustomer1,
+                    Address = adr,
+                    SquareMeters = 50,
+                    AmountOfBedrooms = 1,
+                    KilometersFromCenter = 1.2,
+                    Description = "blah blaaaaah",
+                    PricePerNight = 500,
+                    CancellationDeadlineInDays = 1,
+                    Schedule = schedule,
+                    Picture = new List<byte[]>()
+                };
+
+                accommodation2 = new Accommodation
+                {
+                    Owner = userCustomer2,
+                    Address = adr2,
+                    SquareMeters = 75,
+                    AmountOfBedrooms = 3,
+                    KilometersFromCenter = 10.1,
+                    Description = "cool stuff",
+                    PricePerNight = 900,
+                    CancellationDeadlineInDays = 1,
+                    Schedule = new SortedDictionary<string, bool>(schedule),
+                    Picture = new List<byte[]>()
+                };
+
+                accommodation3 = new Accommodation
+                {
+                    Owner = userCustomer2,
+                    Address = adr3,
+                    SquareMeters = 35,
+                    AmountOfBedrooms = 0,
+                    KilometersFromCenter = 0.8,
+                    Description = "cozy and central",
+                    PricePerNight = 1400,
+                    CancellationDeadlineInDays = 1,
+                    Schedule = new SortedDictionary<string, bool>(schedule),
+                    Picture = new List<byte[]>()
+                };
+
+                db.Add(accommodation1);
+                db.SaveChanges();
+                db.Add(accommodation2);
+                db.SaveChanges();
+                db.Add(accommodation3);
+                db.SaveChanges();
+
+                DateTime bkdt = DateTime.Today.AddDays(2);
+
+                List<string> dates1 = new List<string>();
+
+                for (int i = 0; i < 5; i++)
+                {
+                    DateTime dt = bkdt.AddDays(i);
+                    accommodation1.Schedule[dt.ToString("yyyy-MM-dd")] = false;
+                    dates1.Add(dt.ToString("yyyy-MM-dd"));
+                }
+
+                List<string> dates2 = new List<string>();
+
+                for (int i = 3; i < 15; i++)
+                {
+                    DateTime dt = bkdt.AddDays(i);
+                    accommodation2.Schedule[dt.ToString("yyyy-MM-dd")] = false;
+                    dates2.Add(dt.ToString("yyyy-MM-dd"));
+                }
+
+                List<string> dates3 = new List<string>();
+
+                for (int i = 0; i < 4; i++)
+                {
+                    DateTime dt = DateTime.Today.AddDays(i + 2);
+                    accommodation3.Schedule[dt.ToString("yyyy-MM-dd")] = false;
+                    dates3.Add(dt.ToString("yyyy-MM-dd"));
+                }
+
+                booking1 = new Booking
+                {
+                    BookedBy = userCustomer2,
+                    Accommodation = accommodation1,
+                    Dates = dates1,
+                    Price = (accommodation1.PricePerNight * dates1.Count)
+                };
+
+                booking2 = new Booking
+                {
+                    BookedBy = userCustomer1,
+                    Accommodation = accommodation2,
+                    Dates = dates2,
+                    Price = (accommodation2.PricePerNight * dates2.Count)
+                };
+
+                booking3 = new Booking
+                {
+                    BookedBy = userCustomer1,
+                    Accommodation = accommodation3,
+                    Dates = dates3,
+                    Price = (accommodation3.PricePerNight * dates3.Count)
+                };
+
+                db.Add(booking1);
+                db.SaveChanges();
+                db.Add(booking2);
+                db.SaveChanges();
+                db.Add(booking3);
+                db.SaveChanges();
             });
         }
 

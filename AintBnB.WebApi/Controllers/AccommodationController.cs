@@ -23,7 +23,7 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpPost]
         [Route("api/[controller]/{days}/{userId}")]
-        public IActionResult CreateAccommodation([FromRoute] int days, [FromRoute] int userId, Accommodation accommodation)
+        public IActionResult CreateAccommodation([FromRoute] int days, [FromRoute] int userId, [FromBody] Accommodation accommodation)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace AintBnB.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Couldn't expand the schedule for the accommodation with id {id}. {ex.Message}");
+                return NotFound($"Couldn't expand the schedule for the accommodation with id {id}. {ex.Message}");
             }
         }
 

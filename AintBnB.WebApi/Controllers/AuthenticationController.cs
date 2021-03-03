@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using AintBnB.BusinessLogic.CustomExceptions;
 using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Core.Models;
 
 namespace AintBnB.WebApi.Controllers
 {
@@ -45,10 +46,20 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]/{id}")]
         public IActionResult DoesUserHaveCorrectRights([FromRoute] int id)
         {
-            if (CorrectUserOrAdminOrEmployee(_userService.GetUser(id)))
+            User user;
+            try
+            {
+                user = _userService.GetUser(id);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            if (CorrectUserOrAdminOrEmployee(user))
                 return Ok("User can access");
             else
-                return BadRequest(new AccessException());
+                return BadRequest("Restricted access!");
         }
 
         [HttpGet]
@@ -106,7 +117,7 @@ namespace AintBnB.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
         }
     }
