@@ -37,9 +37,10 @@ namespace AintBnB.WebApi
             services.AddDbContext<DatabaseContext>(
                 options => options.UseSqlServer(conString));
 
-            /*BusinessLogic.Helpers.AllCountiresAndCitiesEurope.con = new SqlConnection(conString);
-            No point in doing this because it's already ok
-            BusinessLogic.Helpers.AllCountiresAndCitiesEurope.AllEuropeanCities();*/
+            
+            //No point in doing this because it's already ok
+            /*BusinessLogic.Helpers.AllCountiresAndCities.con = new SqlConnection(conString);
+            BusinessLogic.Helpers.AllCountiresAndCities.AllEuropeanCities();*/
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IAccommodationService, AccommodationService>();
