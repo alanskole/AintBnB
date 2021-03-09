@@ -68,15 +68,6 @@ namespace AintBnB.ViewModels
             return JsonConvert.DeserializeObject<User>(jsonUser).Id;
         }
 
-        public async Task<User> LoggedInUser()
-        {
-            _uniquePartOfUri = "loggedin";
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
-            string jsonUser = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<User>(jsonUser);
-        }
-
         public async Task IsAdmin()
         {
             _uniquePartOfUri = "admin";
