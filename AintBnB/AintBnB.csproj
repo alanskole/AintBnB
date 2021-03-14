@@ -147,10 +147,10 @@
     <Compile Include="ViewModels\AccommodationViewModel.cs" />
     <Compile Include="ViewModels\AuthenticationViewModel.cs" />
     <Compile Include="ViewModels\BookingViewModel.cs" />
-    <Compile Include="ViewModels\EuropeViewModel.cs" />
     <Compile Include="ViewModels\PasswordChangerViewModel.cs" />
     <Compile Include="ViewModels\ShellViewModel.cs" />
     <Compile Include="ViewModels\UserViewModel.cs" />
+    <Compile Include="ViewModels\WorldViewModel.cs" />
     <Compile Include="Views\AccommodationInfoPage.xaml.cs">
       <DependentUpon>AccommodationInfoPage.xaml</DependentUpon>
     </Compile>
