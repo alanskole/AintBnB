@@ -40,7 +40,7 @@ namespace AintBnB.WebApi
             
             //No point in doing this because it's already ok
             /*BusinessLogic.Helpers.AllCountiresAndCities.con = new SqlConnection(conString);
-            BusinessLogic.Helpers.AllCountiresAndCities.AllEuropeanCities();*/
+            BusinessLogic.Helpers.AllCountiresAndCities.AllCitiesAndCountries();*/
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IAccommodationService, AccommodationService>();
