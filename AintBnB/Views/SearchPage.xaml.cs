@@ -14,7 +14,7 @@ namespace AintBnB.Views
     {
         public AccommodationViewModel AccommodationViewModel { get; } = new AccommodationViewModel();
         public UserViewModel UserViewModel { get; } = new UserViewModel();
-        public EuropeViewModel EuropeViewModel { get; } = new EuropeViewModel();
+        public WorldViewModel WorldViewModel { get; } = new WorldViewModel();
         public BookingViewModel BookingViewModel { get; } = new BookingViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
         private bool _skipSelectionChanged;
@@ -29,7 +29,7 @@ namespace AintBnB.Views
             {
                 await AuthenticationViewModel.IsAnyoneLoggedIn();
 
-                ComboBoxCountries.ItemsSource = await EuropeViewModel.GetAllCountriesInEurope();
+                ComboBoxCountries.ItemsSource = await WorldViewModel.GetAllCountriesInTheWorld();
 
             }
             catch (Exception ex)
@@ -74,16 +74,16 @@ namespace AintBnB.Views
         {
             ComboBoxCities.SelectedIndex = -1;
 
-            EuropeViewModel.Country = ComboBoxCountries.SelectedValue.ToString();
+            WorldViewModel.Country = ComboBoxCountries.SelectedValue.ToString();
 
-            ComboBoxCities.ItemsSource = await EuropeViewModel.GetAllCitiesOfACountry();
+            ComboBoxCities.ItemsSource = await WorldViewModel.GetAllCitiesOfACountry();
 
         }
 
         private void ComboBoxCities_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ComboBoxCities.SelectedIndex != -1)
-                EuropeViewModel.City = ComboBoxCities.SelectedValue.ToString();
+                WorldViewModel.City = ComboBoxCities.SelectedValue.ToString();
         }
 
         private async void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -159,9 +159,9 @@ namespace AintBnB.Views
 
         private async void Button_Click_Search(object sender, RoutedEventArgs e)
         {
-            AccommodationViewModel.Accommodation.Address.Country = EuropeViewModel.Country;
+            AccommodationViewModel.Accommodation.Address.Country = WorldViewModel.Country;
 
-            AccommodationViewModel.Accommodation.Address.City = EuropeViewModel.City;
+            AccommodationViewModel.Accommodation.Address.City = WorldViewModel.City;
 
             await FillListView();
         }

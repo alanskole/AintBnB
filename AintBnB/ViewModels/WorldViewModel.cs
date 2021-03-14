@@ -9,7 +9,7 @@ using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
 namespace AintBnB.ViewModels
 {
-    public class EuropeViewModel : Observable
+    public class WorldViewModel : Observable
     {
         private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
@@ -39,13 +39,13 @@ namespace AintBnB.ViewModels
             }
         }
 
-        public EuropeViewModel()
+        public WorldViewModel()
         {
-            _clientProvider.ControllerPartOfUri = "api/europe/";
+            _clientProvider.ControllerPartOfUri = "api/world/";
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task<List<string>> GetAllCountriesInEurope()
+        public async Task<List<string>> GetAllCountriesInTheWorld()
         {
             _uniquePartOfUri = "countries";
 

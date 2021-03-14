@@ -13,7 +13,7 @@ namespace AintBnB.Views
     {
         public AccommodationViewModel AccommodationViewModel { get; } = new AccommodationViewModel();
         public UserViewModel UserViewModel { get; } = new UserViewModel();
-        public EuropeViewModel EuropeViewModel { get; } = new EuropeViewModel();
+        public WorldViewModel WorldViewModel { get; } = new WorldViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
 
         public CreateAccommodationPage()
@@ -27,7 +27,7 @@ namespace AintBnB.Views
 
             await FindUserType();
 
-            ComboBoxCountries.ItemsSource = await EuropeViewModel.GetAllCountriesInEurope();
+            ComboBoxCountries.ItemsSource = await WorldViewModel.GetAllCountriesInTheWorld();
         }
 
         private async Task CheckIfAnyoneIsLoggedIn()
@@ -77,9 +77,9 @@ namespace AintBnB.Views
         {
             ComboBoxCities.SelectedIndex = -1;
 
-            EuropeViewModel.Country = ComboBoxCountries.SelectedValue.ToString();
+            WorldViewModel.Country = ComboBoxCountries.SelectedValue.ToString();
 
-            ComboBoxCities.ItemsSource = await EuropeViewModel.GetAllCitiesOfACountry();
+            ComboBoxCities.ItemsSource = await WorldViewModel.GetAllCitiesOfACountry();
 
             AccommodationViewModel.Accommodation.Address.Country = ComboBoxCountries.SelectedValue.ToString();
         }
