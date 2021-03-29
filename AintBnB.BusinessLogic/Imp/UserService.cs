@@ -21,7 +21,6 @@ namespace AintBnB.BusinessLogic.Imp
         public User CreateUser(string userName, string password, string firstName, string lastName, UserTypes userType)
         {
             userName = userName.Trim();
-            password = password.Trim();
             firstName = firstName.Trim();
             lastName = lastName.Trim();
 
