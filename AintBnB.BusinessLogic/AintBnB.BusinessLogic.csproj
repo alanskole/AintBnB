@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AintBnB.Core\AintBnB.Core.csproj" />
+    <ProjectReference Include="..\Repository\AintBnB.Repository.csproj" />
   </ItemGroup>
 	
 </Project>

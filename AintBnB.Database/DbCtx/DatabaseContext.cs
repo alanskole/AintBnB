@@ -13,17 +13,8 @@ namespace AintBnB.Database.DbCtx
         public DbSet<Address> Address { get; set; }
         public DbSet<Booking> Booking { get; set; }
         public DbSet<User> User { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options)
         {
-            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder
-            {
-                DataSource = "(localdb)\\MSSQLLocalDB",
-                InitialCatalog = "AintBnB.Database",
-                IntegratedSecurity = true
-            };
-
-            optionsBuilder.UseSqlServer(builder.ConnectionString.ToString());
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,6 +36,13 @@ namespace AintBnB.Database.DbCtx
                 .HasConversion(
                     v => JsonConvert.SerializeObject(v),
                     v => JsonConvert.DeserializeObject<SortedDictionary<string, bool>>(v));
+
+            modelBuilder.Entity<Accommodation>()
+                .Property(b => b.Picture)
+                .HasConversion(
+                    v => JsonConvert.SerializeObject(v),
+                    v => JsonConvert.DeserializeObject<List<byte[]>>(v));
+
 
             modelBuilder.Entity<Accommodation>()
                 .HasOne(b => b.Owner)
