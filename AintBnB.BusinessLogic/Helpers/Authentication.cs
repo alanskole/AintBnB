@@ -1,4 +1,4 @@
-﻿using AintBnB.Core.Models;
+using AintBnB.Core.Models;
 using System;
 using AintBnB.BusinessLogic.CustomExceptions;
 using System.Collections.Generic;
@@ -114,12 +114,12 @@ namespace AintBnB.BusinessLogic.Helpers
 
         public static void ValidatePassword(string password)
         {
-            if (password.Trim().Contains(" "))
-                throw new LoginException("Cannot contain space");
-            if (password.Trim().Length < 6)
-                throw new LoginException("Minimum 6 characters");
-            if (password.Trim().Length > 50)
-                throw new LoginException("Maximum 50 characters");
+            if (password.Contains(" "))
+                throw new PasswordException("can't contain spaces");
+            if (password.Length < 6)
+                throw new PasswordException("must contain minimum 6 characters");
+            if (password.Length > 50)
+                throw new PasswordException("must contain maximum 50 characters");
         }
 
         public static void Logout()
