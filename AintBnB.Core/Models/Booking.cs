@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace AintBnB.Core.Models
 {
-    public class Booking : INotifyPropertyChanged
+    public class Booking
     {
         private int _id;
         private User _bookedBy;
@@ -20,7 +18,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _id = value;
-                NotifyPropertyChanged("Id");
             }
         }
 
@@ -30,7 +27,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _bookedBy = value;
-                NotifyPropertyChanged("BookedBy");
             }
         }
 
@@ -40,7 +36,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _accommodation = value;
-                NotifyPropertyChanged("Accommodation");
             }
         }
 
@@ -50,7 +45,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _dates = value;
-                NotifyPropertyChanged("Dates");
             }
         }
 
@@ -60,7 +54,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _price = value;
-                NotifyPropertyChanged("Price");
             }
         }
 
@@ -70,7 +63,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _rating = value;
-                NotifyPropertyChanged("Rating");
             }
         }
 
@@ -90,13 +82,6 @@ namespace AintBnB.Core.Models
         public Booking()
         {
 
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
