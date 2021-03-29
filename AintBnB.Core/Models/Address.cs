@@ -1,10 +1,8 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 
 namespace AintBnB.Core.Models
 {
-    public class Address : INotifyPropertyChanged
+    public class Address
     {
         private int _id;
         private string _street;
@@ -21,7 +19,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _id = value;
-                NotifyPropertyChanged("Id");
             }
         }
 
@@ -32,7 +29,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _street = value;
-                NotifyPropertyChanged("Street");
             }
         }
 
@@ -43,7 +39,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _number = value;
-                NotifyPropertyChanged("Number");
             }
         }
 
@@ -54,7 +49,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _zip = value;
-                NotifyPropertyChanged("Zip");
             }
         }
 
@@ -65,7 +59,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _area = value;
-                NotifyPropertyChanged("Area");
             }
         }
 
@@ -76,7 +69,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _city = value;
-                NotifyPropertyChanged("City");
             }
         }
 
@@ -86,7 +78,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _country = value;
-                NotifyPropertyChanged("Country");
             }
         }
 
@@ -108,13 +99,6 @@ namespace AintBnB.Core.Models
         public Address()
         {
 
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

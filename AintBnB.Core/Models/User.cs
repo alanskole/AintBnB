@@ -1,11 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Net;
-using System.Runtime.CompilerServices;
 
 namespace AintBnB.Core.Models
 {
-    public class User : INotifyPropertyChanged
+    public class User
     {
         private int _id;
         private string _userName;
@@ -20,7 +18,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _id = value;
-                NotifyPropertyChanged("Id");
             }
         }
         public string UserName
@@ -29,7 +26,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _userName = WebUtility.HtmlEncode(value);
-                NotifyPropertyChanged("UserName");
             }
         }
 
@@ -39,7 +35,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _password = value;
-                NotifyPropertyChanged("Password");
             }
         }
 
@@ -49,7 +44,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _firstName = value;
-                NotifyPropertyChanged("FirstName");
             }
         }
 
@@ -59,7 +53,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _lastName = value;
-                NotifyPropertyChanged("LastName");
             }
         }
 
@@ -69,7 +62,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _userType = value;
-                NotifyPropertyChanged("UserType");
             }
         }
 
@@ -88,13 +80,6 @@ namespace AintBnB.Core.Models
 
         public User()
         {
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
