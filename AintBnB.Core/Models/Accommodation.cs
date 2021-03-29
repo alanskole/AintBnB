@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Net;
-using System.Runtime.CompilerServices;
 
 namespace AintBnB.Core.Models
 {
-    public class Accommodation : INotifyPropertyChanged
+    public class Accommodation
     {
         private int _id;
         private User _owner;
@@ -28,7 +26,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _id = value;
-                NotifyPropertyChanged("Id");
             }
         }
 
@@ -38,7 +35,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _owner = value;
-                NotifyPropertyChanged("Owner");
             }
         }
 
@@ -49,7 +45,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _address = value;
-                NotifyPropertyChanged("Address");
             }
         }
 
@@ -59,7 +54,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _squareMeters = value;
-                NotifyPropertyChanged("SquareMeters");
             }
         }
 
@@ -69,7 +63,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _amountOfBedrooms = value;
-                NotifyPropertyChanged("AmountOfBedrooms");
             }
         }
 
@@ -79,7 +72,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _kilometersFromCenter = Math.Floor(value * 10) / 10;
-                NotifyPropertyChanged("KilometersFromCenter");
             }
         }
 
@@ -89,7 +81,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _description = WebUtility.HtmlEncode(value);
-                NotifyPropertyChanged("Description");
             }
         }
 
@@ -99,7 +90,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _pricePerNight = value;
-                NotifyPropertyChanged("PricePerNight");
             }
         }
 
@@ -109,7 +99,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _cancellationDeadlineInDays = value;
-                NotifyPropertyChanged("CancellationDeadlineInDays");
             }
         }
 
@@ -119,7 +108,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _schedule = value;
-                NotifyPropertyChanged("Schedule");
             }
         }
 
@@ -129,7 +117,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _picture = value;
-                NotifyPropertyChanged("Picture");
             }
         }
 
@@ -139,7 +126,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _averageRating = Math.Floor(value * 10) / 10;
-                NotifyPropertyChanged("AverageRating");
             }
         }
 
@@ -149,7 +135,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _amountOfRatings = value;
-                NotifyPropertyChanged("AmountOfRatings");
             }
         }
 
@@ -168,6 +153,11 @@ namespace AintBnB.Core.Models
                 $"\nDescription: {Description}");
         }
 
+        public Accommodation()
+        {
+
+        }
+
         public Accommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays)
         {
             Owner = owner;
@@ -178,18 +168,6 @@ namespace AintBnB.Core.Models
             Description = description;
             PricePerNight = pricePerNight;
             CancellationDeadlineInDays = cancellationDeadlineInDays;
-        }
-
-        public Accommodation()
-        {
-
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
