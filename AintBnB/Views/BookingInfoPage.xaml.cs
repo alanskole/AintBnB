@@ -43,7 +43,7 @@ namespace AintBnB.Views
 
         private async Task FillComboboxWithAllBookings()
         {
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
             foreach (var booking in await BookingViewModel.GetAllBookings())
                 ids.Add(booking.Id);
@@ -55,7 +55,7 @@ namespace AintBnB.Views
         {
             contentDialog.Visibility = Visibility.Visible;
 
-            ContentDialogResult result = await contentDialog.ShowAsync();
+            var result = await contentDialog.ShowAsync();
 
             if (result == ContentDialogResult.Primary)
             {
@@ -89,7 +89,7 @@ namespace AintBnB.Views
 
         private async void Button_Click_Rate(object sender, RoutedEventArgs e)
         {
-            int rating = (int)ComboBoxRating.SelectedItem;
+            var rating = (int)ComboBoxRating.SelectedItem;
 
             var res = await DialogeMessageAsync($"Ratings cannot be changed, are you sure you want to rate it {rating}?", "Rate");
 

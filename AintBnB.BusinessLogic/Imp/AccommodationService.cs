@@ -28,7 +28,7 @@ namespace AintBnB.BusinessLogic.Imp
 
             if (CheckIfUserIsAllowedToPerformAction(owner))
             {
-                Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight, cancellationDeadlineInDays);
+                var accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight, cancellationDeadlineInDays);
 
                 accommodation.Picture = picture;
 
@@ -74,8 +74,8 @@ namespace AintBnB.BusinessLogic.Imp
 
         private void CreateScheduleForXAmountOfDays(Accommodation accommodation, int days)
         {
-            DateTime todaysDate = DateTime.Today;
-            SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
+            var todaysDate = DateTime.Today;
+            var dateAndStatus = new SortedDictionary<string, bool>();
             AddDaysToDateAndAddToSchedule(days, todaysDate, dateAndStatus);
             accommodation.Schedule = dateAndStatus;
         }
@@ -95,7 +95,7 @@ namespace AintBnB.BusinessLogic.Imp
         {
             AnyoneLoggedIn();
 
-            Accommodation acc = _unitOfWork.AccommodationRepository.Read(id);
+            var acc = _unitOfWork.AccommodationRepository.Read(id);
 
             if (acc == null)
                 throw new IdNotFoundException("Accommodation", id);
@@ -107,7 +107,7 @@ namespace AintBnB.BusinessLogic.Imp
         {
             AnyoneLoggedIn();
 
-            List<Accommodation> all = _unitOfWork.AccommodationRepository.GetAll();
+            var all = _unitOfWork.AccommodationRepository.GetAll();
 
             if (all.Count == 0)
                 throw new NoneFoundInDatabaseTableException("accommodations");
@@ -119,7 +119,7 @@ namespace AintBnB.BusinessLogic.Imp
         {
             AnyoneLoggedIn();
 
-            List<Accommodation> all = new List<Accommodation>();
+            var all = new List<Accommodation>();
 
             FindAllAccommodationsOfAUser(all, userid);
 
@@ -140,7 +140,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         public void UpdateAccommodation(int id, Accommodation accommodation)
         {
-            User owner = _unitOfWork.AccommodationRepository.Read(id).Owner;
+            var owner = _unitOfWork.AccommodationRepository.Read(id).Owner;
             if (CorrectUserOrAdminOrEmployee(owner))
             {
                 GetAccommodation(id);
@@ -175,13 +175,13 @@ namespace AintBnB.BusinessLogic.Imp
             if (days < 1)
                 throw new ParameterException("Days", "less than one");
 
-            User owner = GetAccommodation(id).Owner;
+            var owner = GetAccommodation(id).Owner;
 
             if (CorrectUserOrAdminOrEmployee(owner))
             {
-                SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
+                var dateAndStatus = new SortedDictionary<string, bool>();
 
-                DateTime fromDate = DateTime.Parse(GetAccommodation(id).Schedule.Keys.Last()).AddDays(1);
+                var fromDate = DateTime.Parse(GetAccommodation(id).Schedule.Keys.Last()).AddDays(1);
 
                 AddDaysToDateAndAddToSchedule(days, fromDate, dateAndStatus);
 
@@ -207,7 +207,7 @@ namespace AintBnB.BusinessLogic.Imp
         {
             AnyoneLoggedIn();
 
-            List<Accommodation> available = new List<Accommodation>();
+            var available = new List<Accommodation>();
 
             SearchInCountryAndCity(country, city, startdate, nights, available);
 
@@ -219,7 +219,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         private void SearchInCountryAndCity(string country, string city, string startdate, int nights, List<Accommodation> available)
         {
-            foreach (Accommodation accommodation in _unitOfWork.AccommodationRepository.GetAll())
+            foreach (var accommodation in _unitOfWork.AccommodationRepository.GetAll())
             {
                 if (string.Equals(accommodation.Address.Country, country, StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(accommodation.Address.City, city, StringComparison.OrdinalIgnoreCase))

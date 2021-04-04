@@ -22,7 +22,7 @@ namespace AintBnB.Views
         {
             await CheckIfAnyoneIsLoggedIn();
 
-            bool normalUserLoggedIn = false;
+            var normalUserLoggedIn = false;
 
             try
             {

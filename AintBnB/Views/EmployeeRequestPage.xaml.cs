@@ -47,7 +47,7 @@ namespace AintBnB.Views
 
             contentDialog.Visibility = Visibility.Visible;
 
-            ContentDialogResult result = await contentDialog.ShowAsync();
+            var result = await contentDialog.ShowAsync();
 
             _skipSelectionChanged = true;
             listView.SelectedItem = null;

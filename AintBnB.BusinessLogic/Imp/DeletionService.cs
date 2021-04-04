@@ -48,7 +48,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         private void DeleteUsersAccommodations(int id)
         {
-            foreach (Accommodation accommodation in _unitOfWork.AccommodationRepository.GetAll())
+            foreach (var accommodation in _unitOfWork.AccommodationRepository.GetAll())
             {
                 if (accommodation.Owner == _unitOfWork.UserRepository.Read(id))
                 {
@@ -59,7 +59,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         private void DeleteUsersBookings(int id)
         {
-            foreach (Booking booking in _unitOfWork.BookingRepository.GetAll())
+            foreach (var booking in _unitOfWork.BookingRepository.GetAll())
             {
                 if (booking.BookedBy == _unitOfWork.UserRepository.Read(id))
                 {
@@ -77,7 +77,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         public void DeleteAccommodation(int id)
         {
-            Accommodation accommodation = _unitOfWork.AccommodationRepository.Read(id);
+            var accommodation = _unitOfWork.AccommodationRepository.Read(id);
 
             CanAccommodationBeDeleted(accommodation);
 
@@ -98,7 +98,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         private void DeleteAccommodationBookings(int accommodationId)
         {
-            foreach (Booking booking in _unitOfWork.BookingRepository.GetAll())
+            foreach (var booking in _unitOfWork.BookingRepository.GetAll())
             {
                 if (booking.Accommodation == _unitOfWork.AccommodationRepository.Read(accommodationId))
                 {
@@ -116,7 +116,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         public void DeleteBooking(int id)
         {
-            Booking booking = _unitOfWork.BookingRepository.Read(id);
+            var booking = _unitOfWork.BookingRepository.Read(id);
 
             if (booking == null)
                 throw new IdNotFoundException("Booking", id);
@@ -129,7 +129,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         private void DeadLineExpiration(int id, int deadlineInDays)
         {
-            string firstDateBooked = _unitOfWork.BookingRepository.Read(id).Dates[0];
+            var firstDateBooked = _unitOfWork.BookingRepository.Read(id).Dates[0];
 
             if (CancelationDeadlineCheck(firstDateBooked, deadlineInDays))
             {
@@ -143,7 +143,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         private void ResetAvailableStatusAfterDeletingBooking(int id)
         {
-            Booking booking = _unitOfWork.BookingRepository.Read(id);
+            var booking = _unitOfWork.BookingRepository.Read(id);
             ResetDatesToAvailable(booking.Dates, booking.Accommodation.Schedule);
             _unitOfWork.AccommodationRepository.Update(booking.Accommodation.Id, booking.Accommodation);
         }

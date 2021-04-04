@@ -3,7 +3,6 @@ using AintBnB.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
@@ -49,9 +48,9 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = "countries";
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonUsers = await response.Content.ReadAsStringAsync();
+            var jsonUsers = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<string>>(jsonUsers);
         }
 
@@ -59,9 +58,9 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = "cities/" + Country;
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonUsers = await response.Content.ReadAsStringAsync();
+            var jsonUsers = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<string>>(jsonUsers);
         }
     }

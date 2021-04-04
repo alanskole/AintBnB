@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Popups;
@@ -38,20 +37,20 @@ namespace AintBnB.CommonMethodsAndProperties
         {
             var date = datePicker.Date;
 
-            DateTime dt = date.Value.DateTime;
+            var dt = date.Value.DateTime;
 
             return dt.ToString("yyyy-MM-dd");
         }
 
         public static async Task PhotoUpload(List<byte[]> picture)
         {
-            FileOpenPicker picker = new FileOpenPicker();
+            var picker = new FileOpenPicker();
             picker.FileTypeFilter.Add(".bmp");
             picker.FileTypeFilter.Add(".png");
             picker.FileTypeFilter.Add(".jpg");
             picker.FileTypeFilter.Add(".jpeg");
 
-            StorageFile file = await picker.PickSingleFileAsync();
+            var file = await picker.PickSingleFileAsync();
             if (file != null)
             {
                 using (var inputStream = await file.OpenSequentialReadAsync())
@@ -66,16 +65,16 @@ namespace AintBnB.CommonMethodsAndProperties
 
         public static async Task ConvertBytesToBitmapImageList(List<byte[]> originalBytes, List<BitmapImage> convertedToBitmapImage)
         {
-            using (InMemoryRandomAccessStream stream = new InMemoryRandomAccessStream())
+            using (var stream = new InMemoryRandomAccessStream())
             {
-                using (DataWriter writer = new DataWriter(stream.GetOutputStreamAt(0)))
+                using (var writer = new DataWriter(stream.GetOutputStreamAt(0)))
                 {
                     foreach (var item in originalBytes)
                     {
                         writer.WriteBytes(item);
                         await writer.StoreAsync();
 
-                        BitmapImage image = new BitmapImage();
+                        var image = new BitmapImage();
                         await image.SetSourceAsync(stream);
                         convertedToBitmapImage.Add(image);
                     }

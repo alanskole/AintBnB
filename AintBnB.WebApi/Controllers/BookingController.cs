@@ -1,5 +1,4 @@
 ﻿using AintBnB.BusinessLogic.Interfaces;
-using AintBnB.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 
@@ -27,9 +26,9 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                User booker = _userService.GetUser(bookerId);
-                Accommodation accommodation = _accommodationService.GetAccommodation(accommodationId);
-                Booking booking = _bookingService.Book(startDate, booker, nights, accommodation);
+                var booker = _userService.GetUser(bookerId);
+                var accommodation = _accommodationService.GetAccommodation(accommodationId);
+                var booking = _bookingService.Book(startDate, booker, nights, accommodation);
                 return Ok(booking);
             }
             catch (Exception ex)
@@ -44,7 +43,7 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                Booking booking = _bookingService.GetBooking(bookingId);
+                var booking = _bookingService.GetBooking(bookingId);
                 _bookingService.UpdateBooking(newStartDate, nights, bookingId);
                 return Ok(booking);
             }

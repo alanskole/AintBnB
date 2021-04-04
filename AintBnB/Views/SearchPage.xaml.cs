@@ -57,7 +57,7 @@ namespace AintBnB.Views
         {
             ComboBoxUsers.Visibility = Visibility.Visible;
 
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
             foreach (var user in await UserViewModel.GetAllCustomers())
                 ids.Add(user.Id);
@@ -95,7 +95,7 @@ namespace AintBnB.Views
                 return;
             }
 
-            List<BitmapImage> bmimg = new List<BitmapImage>();
+            var bmimg = new List<BitmapImage>();
 
             int index = listView.SelectedIndex;
 
@@ -105,7 +105,7 @@ namespace AintBnB.Views
 
             contentDialog.Visibility = Visibility.Visible;
 
-            ContentDialogResult result = await contentDialog.ShowAsync();
+            var result = await contentDialog.ShowAsync();
 
             _skipSelectionChanged = true;
             listView.SelectedItem = null;

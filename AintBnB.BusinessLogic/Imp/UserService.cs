@@ -28,7 +28,7 @@ namespace AintBnB.BusinessLogic.Imp
             ValidateUser(userName, firstName, lastName);
             ValidatePassword(password);
 
-            User user = new User();
+            var user = new User();
             user.Password = HashPassword(password);
             user.UserName = userName;
             user.FirstName = firstName;
@@ -64,7 +64,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         private void IsUserNameFree(string userName)
         {
-            foreach (User user in _unitOfWork.UserRepository.GetAll())
+            foreach (var user in _unitOfWork.UserRepository.GetAll())
             {
                 if (string.Equals(user.UserName, userName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -75,7 +75,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         public User GetUser(int id)
         {
-            User user = _unitOfWork.UserRepository.Read(id);
+            var user = _unitOfWork.UserRepository.Read(id);
 
             if (user == null)
                 throw new IdNotFoundException("User", id);
@@ -109,7 +109,7 @@ namespace AintBnB.BusinessLogic.Imp
             if (AdminChecker())
                 return AdminCanGetAllUsers();
 
-            List<User> allCustomersPlusLoggedinEmployee = GetAllUsersWithTypeCustomer();
+            var allCustomersPlusLoggedinEmployee = GetAllUsersWithTypeCustomer();
 
             allCustomersPlusLoggedinEmployee.Insert(0, LoggedInAs);
 
@@ -118,7 +118,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         private List<User> AdminCanGetAllUsers()
         {
-            List<User> all = _unitOfWork.UserRepository.GetAll();
+            var all = _unitOfWork.UserRepository.GetAll();
             IsListEmpty(all);
             return all;
         }
@@ -128,7 +128,7 @@ namespace AintBnB.BusinessLogic.Imp
             if (!HasElevatedRights())
                 throw new AccessException();
 
-            List<User> all = new List<User>();
+            var all = new List<User>();
 
             foreach (var user in _unitOfWork.UserRepository.GetAll())
             {
@@ -146,7 +146,7 @@ namespace AintBnB.BusinessLogic.Imp
             if (!AdminChecker())
                 throw new AccessException("Admin only!");
 
-            List<User> all = new List<User>();
+            var all = new List<User>();
 
             foreach (var user in _unitOfWork.UserRepository.GetAll())
             {
@@ -168,7 +168,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         public void UpdateUser(int id, User updatedUser)
         {
-            User old = GetUser(id);
+            var old = GetUser(id);
 
             if (CorrectUserOrAdminOrEmployee(old))
             {
@@ -194,7 +194,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         public void ChangePassword(string old, int userId, string new1, string new2)
         {
-            User user = _unitOfWork.UserRepository.Read(userId);
+            var user = _unitOfWork.UserRepository.Read(userId);
 
             if (LoggedInAs.Id == user.Id)
             {

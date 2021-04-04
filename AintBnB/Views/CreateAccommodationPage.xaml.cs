@@ -60,7 +60,7 @@ namespace AintBnB.Views
         {
             ComboBoxUsers.Visibility = Visibility.Visible;
 
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
             foreach (var user in await UserViewModel.GetAllCustomers())
                 ids.Add(user.Id);

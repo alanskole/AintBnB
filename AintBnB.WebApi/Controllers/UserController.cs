@@ -23,7 +23,7 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                User newUser = _userService.CreateUser(user.UserName, user.Password, user.FirstName, user.LastName, user.UserType);
+                var newUser = _userService.CreateUser(user.UserName, user.Password, user.FirstName, user.LastName, user.UserType);
                 return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + newUser.Id, newUser);
             }
             catch (Exception ex)

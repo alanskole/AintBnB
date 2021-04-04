@@ -4,7 +4,6 @@ using AintBnB.Helpers;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
@@ -81,9 +80,9 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = StartDate + "/" + Booking.BookedBy.Id + "/" + Nights + "/" + Booking.Accommodation.Id;
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonBooking = await response.Content.ReadAsStringAsync();
+            var jsonBooking = await response.Content.ReadAsStringAsync();
             Booking = JsonConvert.DeserializeObject<Booking>(jsonBooking);
             NotifyPropertyChanged("Booking");
         }
@@ -92,9 +91,9 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = StartDate + "/" + Nights + "/" + Booking.Id;
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonBooking = await response.Content.ReadAsStringAsync();
+            var jsonBooking = await response.Content.ReadAsStringAsync();
             Booking = JsonConvert.DeserializeObject<Booking>(jsonBooking);
             NotifyPropertyChanged("Booking");
         }
@@ -103,7 +102,7 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = "rate/" + Booking.Id + "/" + Booking.Rating;
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
@@ -111,18 +110,18 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = Booking.Id.ToString();
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonBooking = await response.Content.ReadAsStringAsync();
+            var jsonBooking = await response.Content.ReadAsStringAsync();
             Booking = JsonConvert.DeserializeObject<Booking>(jsonBooking);
             NotifyPropertyChanged("Booking");
         }
 
         public async Task<List<Booking>> GetAllBookings()
         {
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri));
             ResponseChecker(response);
-            string jsonBookings = await response.Content.ReadAsStringAsync();
+            var jsonBookings = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<Booking>>(jsonBookings);
         }
 
@@ -130,9 +129,9 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = UserId + "/" + "bookingsownaccommodation";
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonBookings = await response.Content.ReadAsStringAsync();
+            var jsonBookings = await response.Content.ReadAsStringAsync();
             AllBookingsOfOwnedAccommodations = JsonConvert.DeserializeObject<List<Booking>>(jsonBookings);
             return AllBookingsOfOwnedAccommodations;
         }
@@ -141,7 +140,7 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = Booking.Id.ToString();
 
-            HttpResponseMessage response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
     }

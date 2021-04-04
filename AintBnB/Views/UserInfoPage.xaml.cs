@@ -33,7 +33,7 @@ namespace AintBnB.Views
         {
             try
             {
-                int userid = await AuthenticationViewModel.IdOfLoggedInUser();
+                var userid = await AuthenticationViewModel.IdOfLoggedInUser();
                 await FindUserType(userid);
             }
             catch (Exception ex)
@@ -62,7 +62,7 @@ namespace AintBnB.Views
 
         private async Task FillComboBoxWithUserIds()
         {
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
             foreach (var user in await UserViewModel.GetAllUsers())
                 ids.Add(user.Id);
@@ -179,7 +179,7 @@ namespace AintBnB.Views
         {
             contentDialog.Visibility = Visibility.Visible;
 
-            ContentDialogResult result = await contentDialog.ShowAsync();
+            var result = await contentDialog.ShowAsync();
 
             if (result == ContentDialogResult.Primary)
             {
@@ -212,7 +212,7 @@ namespace AintBnB.Views
                 return;
 
 
-            bool wasDeleted = false;
+            var wasDeleted = false;
 
             try
             {

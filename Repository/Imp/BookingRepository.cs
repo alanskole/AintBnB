@@ -37,7 +37,7 @@ namespace AintBnB.Repository.Imp
 
         public void Update(int id, Booking updatedBooking)
         {
-            Booking oldBooking = Read(id);
+            var oldBooking = Read(id);
             oldBooking.Dates = updatedBooking.Dates;
             oldBooking.Price = updatedBooking.Price;
             oldBooking.Rating = updatedBooking.Rating;

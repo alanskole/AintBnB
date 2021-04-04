@@ -124,8 +124,8 @@ namespace AintBnB.ViewModels
         public async Task CreateAccommodation()
         {
             _uniquePartOfUri = DaysSchedule.ToString() + "/" + UserId.ToString();
-            string accJson = JsonConvert.SerializeObject(Accommodation);
-            HttpResponseMessage response = await _clientProvider.client.PostAsync(
+            var accJson = JsonConvert.SerializeObject(Accommodation);
+            var response = await _clientProvider.client.PostAsync(
                 new Uri(_uri + _uniquePartOfUri), new StringContent(accJson, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }
@@ -134,9 +134,9 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = Accommodation.Id.ToString();
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonAcc = await response.Content.ReadAsStringAsync();
+            var jsonAcc = await response.Content.ReadAsStringAsync();
             _accommodation = JsonConvert.DeserializeObject<Accommodation>(jsonAcc);
             NotifyPropertyChanged("Accommodation");
 
@@ -145,10 +145,10 @@ namespace AintBnB.ViewModels
         public async Task<List<Accommodation>> GetAllAccommodations()
         {
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri));
             ResponseChecker(response);
-            string jsonAccList = await response.Content.ReadAsStringAsync();
-            List<Accommodation> all = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAccList);
+            var jsonAccList = await response.Content.ReadAsStringAsync();
+            var all = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAccList);
             return all;
         }
 
@@ -157,10 +157,10 @@ namespace AintBnB.ViewModels
             _uniquePartOfUri = UserId.ToString() + "/allaccommodations";
 
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonAccList = await response.Content.ReadAsStringAsync();
-            List<Accommodation> all = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAccList);
+            var jsonAccList = await response.Content.ReadAsStringAsync();
+            var all = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAccList);
             return all;
         }
 
@@ -168,9 +168,9 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = _accommodation.Address.Country + "/" + _accommodation.Address.City + "/" + FromDate + "/" + Nights.ToString();
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonAcc = await response.Content.ReadAsStringAsync();
+            var jsonAcc = await response.Content.ReadAsStringAsync();
             AvailableAccommodations = JsonConvert.DeserializeObject<List<Accommodation>>(jsonAcc);
             return AvailableAccommodations;
         }
@@ -179,8 +179,8 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = "sort/" + SortBy + "/" + AscOrDesc;
 
-            string availableJson = JsonConvert.SerializeObject(AvailableAccommodations);
-            HttpResponseMessage response = await _clientProvider.client.PostAsync(
+            var availableJson = JsonConvert.SerializeObject(AvailableAccommodations);
+            var response = await _clientProvider.client.PostAsync(
                 new Uri(_uri + _uniquePartOfUri), new StringContent(availableJson, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
             AvailableAccommodations = JsonConvert.DeserializeObject<List<Accommodation>>(await response.Content.ReadAsStringAsync());
@@ -189,7 +189,7 @@ namespace AintBnB.ViewModels
         public async Task DeleteAccommodation()
         {
             _uniquePartOfUri = Accommodation.Id.ToString();
-            HttpResponseMessage response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
@@ -197,9 +197,9 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = Accommodation.Id.ToString();
 
-            string accJson = JsonConvert.SerializeObject(Accommodation);
+            var accJson = JsonConvert.SerializeObject(Accommodation);
 
-            HttpResponseMessage response = await _clientProvider.client.PutAsync(
+            var response = await _clientProvider.client.PutAsync(
                 new Uri(_uri + _uniquePartOfUri), new StringContent(accJson, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }
@@ -208,7 +208,7 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = Accommodation.Id.ToString() + "/" + ExpandScheduleByDays.ToString();
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
     }

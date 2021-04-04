@@ -52,7 +52,7 @@ namespace AintBnB.Views
 
         private async Task FillComboboxWithIdsOfAllTheCustomers()
         {
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
             foreach (var user in await UserViewModel.GetAllCustomers())
                 ids.Add(user.Id);

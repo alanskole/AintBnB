@@ -27,8 +27,8 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                User owner = _userService.GetUser(userId);
-                Accommodation newAccommodation = _accommodationService.CreateAccommodation(owner, accommodation.Address, accommodation.SquareMeters, accommodation.AmountOfBedrooms, accommodation.KilometersFromCenter, accommodation.Description, accommodation.PricePerNight, accommodation.CancellationDeadlineInDays, accommodation.Picture, days);
+                var owner = _userService.GetUser(userId);
+                var newAccommodation = _accommodationService.CreateAccommodation(owner, accommodation.Address, accommodation.SquareMeters, accommodation.AmountOfBedrooms, accommodation.KilometersFromCenter, accommodation.Description, accommodation.PricePerNight, accommodation.CancellationDeadlineInDays, accommodation.Picture, days);
                 return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + accommodation.Id, accommodation);
             }
             catch (Exception ex)

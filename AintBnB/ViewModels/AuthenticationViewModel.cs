@@ -38,9 +38,9 @@ namespace AintBnB.ViewModels
             CheckForEmptyFields();
 
             _uniquePartOfUri = "login";
-            string[] userAndPass = new string[] { User.UserName.Trim(), User.Password.Trim() };
-            string loginJson = JsonConvert.SerializeObject(userAndPass);
-            HttpResponseMessage response = await _clientProvider.client.PostAsync(
+            var userAndPass = new string[] { User.UserName.Trim(), User.Password.Trim() };
+            var loginJson = JsonConvert.SerializeObject(userAndPass);
+            var response = await _clientProvider.client.PostAsync(
                 (_uri + _uniquePartOfUri), new StringContent(loginJson, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }
@@ -49,7 +49,7 @@ namespace AintBnB.ViewModels
         public async Task IsAnyoneLoggedIn()
         {
             _uniquePartOfUri = "anyoneloggedin";
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
@@ -62,9 +62,9 @@ namespace AintBnB.ViewModels
         public async Task<int> IdOfLoggedInUser()
         {
             _uniquePartOfUri = "loggedin";
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonUser = await response.Content.ReadAsStringAsync();
+            var jsonUser = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<User>(jsonUser).Id;
         }
 
@@ -72,7 +72,7 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = "admin";
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
@@ -80,7 +80,7 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = "employee";
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
@@ -88,14 +88,14 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = "elevatedrights";
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
         public async Task LogoutFromApp()
         {
             _uniquePartOfUri = "logout";
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
     }

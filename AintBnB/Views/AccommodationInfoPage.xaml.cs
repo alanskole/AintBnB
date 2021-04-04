@@ -40,13 +40,13 @@ namespace AintBnB.Views
                 await new MessageDialog(ex.Message).ShowAsync();
             }
 
-            bool normalUserLoggedIn = false;
+            var normalUserLoggedIn = false;
             await FindUserTypeOfLoggedInUser(normalUserLoggedIn);
         }
 
         private async Task FindUserTypeOfLoggedInUser(bool normalUserLoggedIn)
         {
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
             try
             {
@@ -177,7 +177,7 @@ namespace AintBnB.Views
 
         private async void GetPhotos()
         {
-            List<BitmapImage> bmimg = new List<BitmapImage>();
+            var bmimg = new List<BitmapImage>();
 
             await ConvertBytesToBitmapImageList(AccommodationViewModel.Accommodation.Picture, bmimg);
 
@@ -193,7 +193,7 @@ namespace AintBnB.Views
                 return;
             }
 
-            BitmapImage img = (BitmapImage)listViewPicture.SelectedItem;
+            var img = (BitmapImage)listViewPicture.SelectedItem;
 
             var contentDialog = new ContentDialog
             {
@@ -206,7 +206,7 @@ namespace AintBnB.Views
                 CloseButtonText = "Cancel",
             };
 
-            ContentDialogResult result = await contentDialog.ShowAsync();
+            var result = await contentDialog.ShowAsync();
 
             if (result == ContentDialogResult.Primary)
             {
@@ -224,7 +224,7 @@ namespace AintBnB.Views
             if ((int)res.Id == 1)
                 return;
 
-            int index = listViewPicture.SelectedIndex;
+            var index = listViewPicture.SelectedIndex;
 
             AccommodationViewModel.Accommodation.Picture.Remove(AccommodationViewModel.Accommodation.Picture[index]);
 
@@ -235,7 +235,7 @@ namespace AintBnB.Views
 
         private async void Button_Click_Upload(object sender, RoutedEventArgs e)
         {
-            int sizeBeforeUploading = AccommodationViewModel.Accommodation.Picture.Count;
+            var sizeBeforeUploading = AccommodationViewModel.Accommodation.Picture.Count;
 
             await PhotoUpload(AccommodationViewModel.Accommodation.Picture);
 
@@ -248,7 +248,7 @@ namespace AintBnB.Views
 
         private void Refresh()
         {
-            AccommodationInfoPage infoPage = new AccommodationInfoPage();
+            var infoPage = new AccommodationInfoPage();
             Content = infoPage;
             infoPage.ComboBoxAccommodations.SelectedIndex = ComboBoxAccommodations.Items.IndexOf(AccommodationViewModel.Accommodation.Id);
         }
