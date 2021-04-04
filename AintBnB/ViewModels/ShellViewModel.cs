@@ -1,17 +1,14 @@
-﻿using System;
+﻿using AintBnB.Helpers;
+using AintBnB.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
-
-using AintBnB.Helpers;
-using AintBnB.Services;
-
 using Windows.System;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
-
 using WinUI = Microsoft.UI.Xaml.Controls;
 
 namespace AintBnB.ViewModels

@@ -1,11 +1,11 @@
-﻿using AintBnB.Core.Models;
+﻿using AintBnB.CommonMethodsAndProperties;
+using AintBnB.Core.Models;
 using AintBnB.Helpers;
-using AintBnB.CommonMethodsAndProperties;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Text;
+using System.Threading.Tasks;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
 namespace AintBnB.ViewModels
@@ -88,7 +88,7 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = "elevatedrights";
 
-             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 

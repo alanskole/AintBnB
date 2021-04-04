@@ -1,7 +1,7 @@
-﻿using AintBnB.Core.Models;
-using NUnit.Framework;
-using AintBnB.BusinessLogic.CustomExceptions;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
 using AintBnB.BusinessLogic.Imp;
+using AintBnB.Core.Models;
+using NUnit.Framework;
 using System.Reflection;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
@@ -52,7 +52,7 @@ namespace Test.Unit
             CreateDummyUsers();
 
             LoggedInAs = userAdmin;
-            
+
             var ex = Assert.Throws<AlreadyLoggedInException>(()
                 => userService.GetAllUsersForLogin());
 
@@ -260,7 +260,7 @@ namespace Test.Unit
         {
             CreateDummyUsers();
 
-            LoggedInAs = unitOfWork.UserRepository.Read(id-1);
+            LoggedInAs = unitOfWork.UserRepository.Read(id - 1);
 
             var ex = Assert.Throws<AccessException>(()
                 => userService.ChangePassword(oldPass, id, newPass, newPass));

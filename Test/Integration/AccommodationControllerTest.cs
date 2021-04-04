@@ -1,15 +1,12 @@
-﻿using System;
+﻿using AintBnB.Core.Models;
+using Newtonsoft.Json;
+using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using AintBnB.Core.Models;
-using AintBnB.WebApi;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
-using NUnit.Framework;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test.Integration
@@ -116,7 +113,7 @@ namespace Test.Integration
             string startDate = _factory.accommodation1.Schedule.Keys.Last() + "/";
 
 
-            var response = await _client.GetAsync("api/accommodation/" + country+city+startDate+"2");
+            var response = await _client.GetAsync("api/accommodation/" + country + city + startDate + "2");
 
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());

@@ -1,5 +1,5 @@
-﻿using AintBnB.Core.Models;
-using AintBnB.BusinessLogic.Interfaces;
+﻿using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
 

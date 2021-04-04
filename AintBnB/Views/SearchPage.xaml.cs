@@ -1,12 +1,12 @@
-﻿using System;
+﻿using AintBnB.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using AintBnB.ViewModels;
-using Windows.UI.Popups;
 using Windows.UI.Xaml.Media.Imaging;
-using System.Collections.Generic;
 using static AintBnB.CommonMethodsAndProperties.CommonViewMethods;
-using System.Threading.Tasks;
 
 namespace AintBnB.Views
 {

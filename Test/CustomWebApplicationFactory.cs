@@ -4,11 +4,11 @@ using AintBnB.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test
 {
@@ -130,9 +130,9 @@ namespace Test
                 }
 
                 db.Add(adr);
-                db.SaveChanges(); 
+                db.SaveChanges();
                 db.Add(adr2);
-                db.SaveChanges(); 
+                db.SaveChanges();
                 db.Add(adr3);
                 db.SaveChanges();
 

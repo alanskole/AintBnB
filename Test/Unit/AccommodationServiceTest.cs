@@ -1,12 +1,12 @@
-﻿using AintBnB.Core.Models;
-using NUnit.Framework;
-using AintBnB.BusinessLogic.CustomExceptions;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
 using AintBnB.BusinessLogic.Imp;
-using System.Reflection;
-using System.Collections.Generic;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
+using AintBnB.Core.Models;
+using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test.Unit
 {
@@ -233,7 +233,7 @@ namespace Test.Unit
 
             Assert.AreEqual(td.ToString("yyyy-MM-dd"), dateAndStatus.Keys.First());
 
-            Assert.AreEqual(td.AddDays(daysToAddToSchedule-1).ToString("yyyy-MM-dd"), dateAndStatus.Keys.Last());
+            Assert.AreEqual(td.AddDays(daysToAddToSchedule - 1).ToString("yyyy-MM-dd"), dateAndStatus.Keys.Last());
         }
 
         [Test]

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Repository
+﻿namespace Repository
 {
     class Program
     {

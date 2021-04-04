@@ -401,7 +401,7 @@ namespace Test.Unit
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
 
-            Assert.DoesNotThrow(() 
+            Assert.DoesNotThrow(()
                 => result.Invoke(null, new object[] { userCustomer1.UserName, "aaaaaa", userService.GetAllUsersForLogin() }));
         }
 

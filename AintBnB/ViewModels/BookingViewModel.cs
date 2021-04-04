@@ -1,11 +1,11 @@
-﻿using AintBnB.Core.Models;
+﻿using AintBnB.CommonMethodsAndProperties;
+using AintBnB.Core.Models;
 using AintBnB.Helpers;
 using Newtonsoft.Json;
-using System.Net.Http;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System;
-using AintBnB.CommonMethodsAndProperties;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
 namespace AintBnB.ViewModels

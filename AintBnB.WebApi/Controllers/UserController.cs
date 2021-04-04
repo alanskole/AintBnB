@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
-using AintBnB.BusinessLogic.Interfaces;
+﻿using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Core.Models;
+using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace AintBnB.WebApi.Controllers
 {

@@ -1,10 +1,9 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.Database.DbCtx;
+using AintBnB.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using Microsoft.EntityFrameworkCore;
-using AintBnB.Repository.Interfaces;
 
 namespace AintBnB.Repository.Imp
 {

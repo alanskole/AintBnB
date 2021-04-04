@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AintBnB.Database
+﻿namespace AintBnB.Database
 {
     class Program
     {

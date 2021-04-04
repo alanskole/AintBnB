@@ -43,7 +43,7 @@ namespace AintBnB.BusinessLogic.Helpers
 
             if (String.Compare(passwordAndHash[0], hashOfpasswordToCheck) == 0)
                 return true;
-            
+
             return false;
         }
     }

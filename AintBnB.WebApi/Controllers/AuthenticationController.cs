@@ -1,9 +1,8 @@
-﻿using static AintBnB.BusinessLogic.Helpers.Authentication;
+﻿using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using AintBnB.BusinessLogic.CustomExceptions;
-using AintBnB.BusinessLogic.Interfaces;
-using AintBnB.Core.Models;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace AintBnB.WebApi.Controllers
 {

@@ -1,15 +1,14 @@
-﻿using AintBnB.Core.Models;
-using static AintBnB.BusinessLogic.Helpers.DateHelper;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
-using static AintBnB.BusinessLogic.Helpers.Regexp;
-using static AintBnB.BusinessLogic.Helpers.AllCountiresAndCities;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Core.Models;
+using AintBnB.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AintBnB.BusinessLogic.CustomExceptions;
-using AintBnB.BusinessLogic.Interfaces;
-using AintBnB.Repository.Interfaces;
-using System.Text.RegularExpressions;
+using static AintBnB.BusinessLogic.Helpers.AllCountiresAndCities;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.BusinessLogic.Helpers.DateHelper;
+using static AintBnB.BusinessLogic.Helpers.Regexp;
 
 namespace AintBnB.BusinessLogic.Imp
 {

@@ -1,11 +1,11 @@
-﻿using AintBnB.Core.Models;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Core.Models;
+using AintBnB.Repository.Interfaces;
 using System;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BusinessLogic.Helpers.DateHelper;
 using static AintBnB.BusinessLogic.Helpers.UpdateCancelledDatesInSchedule;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
-using AintBnB.BusinessLogic.CustomExceptions;
-using AintBnB.Repository.Interfaces;
-using AintBnB.BusinessLogic.Interfaces;
 
 namespace AintBnB.BusinessLogic.Imp
 {
@@ -27,7 +27,7 @@ namespace AintBnB.BusinessLogic.Imp
                 DeleteUsersBookings(id);
                 _unitOfWork.UserRepository.Delete(id);
                 _unitOfWork.Commit();
-                
+
                 if (!AdminChecker())
                     Logout();
             }

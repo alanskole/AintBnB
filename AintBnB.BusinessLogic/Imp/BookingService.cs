@@ -1,13 +1,13 @@
-﻿using AintBnB.Core.Models;
-using static AintBnB.BusinessLogic.Helpers.DateHelper;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
-using static AintBnB.BusinessLogic.Helpers.UpdateCancelledDatesInSchedule;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Core.Models;
+using AintBnB.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
-using AintBnB.BusinessLogic.CustomExceptions;
-using AintBnB.BusinessLogic.Interfaces;
 using System.Linq;
-using AintBnB.Repository.Interfaces;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.BusinessLogic.Helpers.DateHelper;
+using static AintBnB.BusinessLogic.Helpers.UpdateCancelledDatesInSchedule;
 
 namespace AintBnB.BusinessLogic.Imp
 {
@@ -117,7 +117,7 @@ namespace AintBnB.BusinessLogic.Imp
                 originalBooking.Dates = datesOriginal.ToList();
 
                 originalBooking.Price = originalBooking.Dates.Count * originalBooking.Accommodation.PricePerNight;
-                
+
                 SetStatusToUnavailable(originalBooking.Accommodation, originalBooking.Dates);
             }
             else

@@ -17,7 +17,7 @@ namespace AintBnB.BusinessLogic.Helpers
 
         public static bool AreDatesWithinRangeOfSchedule(SortedDictionary<string, bool> schedule, string fromDate, int nights)
         {
-            string lastDate = DateFormatterCustomDate(DateTime.Parse(fromDate).AddDays(nights-1));
+            string lastDate = DateFormatterCustomDate(DateTime.Parse(fromDate).AddDays(nights - 1));
 
             if (StartDateIsInThePast(fromDate) || !schedule.ContainsKey(fromDate) || !schedule.ContainsKey(lastDate))
                 return false;

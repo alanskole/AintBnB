@@ -1,11 +1,11 @@
-﻿using AintBnB.Core.Models;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Core.Models;
+using AintBnB.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
-using AintBnB.BusinessLogic.CustomExceptions;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BusinessLogic.Helpers.Regexp;
-using AintBnB.BusinessLogic.Interfaces;
-using AintBnB.Repository.Interfaces;
 
 namespace AintBnB.BusinessLogic.Imp
 {

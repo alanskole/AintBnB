@@ -1,7 +1,6 @@
-﻿using AintBnB.Core.Models;
-using NUnit.Framework;
-using AintBnB.BusinessLogic.CustomExceptions;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
 using AintBnB.BusinessLogic.Imp;
+using NUnit.Framework;
 using System.Reflection;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
@@ -255,7 +254,7 @@ namespace Test.Unit
             var result = typeof(DeletionService)
                 .GetMethod("DeadLineExpiration", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            Assert.DoesNotThrow(() => result.Invoke(deletionService, new object[] { booking2.Id,  booking2.Accommodation.CancellationDeadlineInDays }));
+            Assert.DoesNotThrow(() => result.Invoke(deletionService, new object[] { booking2.Id, booking2.Accommodation.CancellationDeadlineInDays }));
         }
 
         [Test]
