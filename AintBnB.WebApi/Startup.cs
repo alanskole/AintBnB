@@ -5,6 +5,7 @@ using AintBnB.Repository.Imp;
 using AintBnB.Repository.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,9 +31,9 @@ namespace AintBnB.WebApi
                 options => options.UseSqlServer(conString));
 
 
-            //No point in doing this because it's already ok
-            /*BusinessLogic.Helpers.AllCountiresAndCities.con = new SqlConnection(conString);
-            BusinessLogic.Helpers.AllCountiresAndCities.AllCitiesAndCountries();*/
+            //Adds all the countries and cities of the world to a sql database table if the table isn't already filled
+            BusinessLogic.Helpers.AllCountiresAndCities.con = new SqlConnection(conString);
+            BusinessLogic.Helpers.AllCountiresAndCities.AllCitiesAndCountries();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IAccommodationService, AccommodationService>();
