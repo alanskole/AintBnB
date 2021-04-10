@@ -44,7 +44,7 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task<List<string>> GetAllCountriesInTheWorld()
+        public async Task<List<string>> GetAllCountriesInTheWorldAsync()
         {
             _uniquePartOfUri = "countries";
 
@@ -54,7 +54,7 @@ namespace AintBnB.ViewModels
             return JsonConvert.DeserializeObject<List<string>>(jsonUsers);
         }
 
-        public async Task<List<string>> GetAllCitiesOfACountry()
+        public async Task<List<string>> GetAllCitiesOfACountryAsync()
         {
             _uniquePartOfUri = "cities/" + Country;
 

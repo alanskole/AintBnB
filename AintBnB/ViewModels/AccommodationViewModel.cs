@@ -121,7 +121,7 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task CreateAccommodation()
+        public async Task CreateAccommodationAsync()
         {
             _uniquePartOfUri = DaysSchedule.ToString() + "/" + UserId.ToString();
             var accJson = JsonConvert.SerializeObject(Accommodation);
@@ -130,7 +130,7 @@ namespace AintBnB.ViewModels
             ResponseChecker(response);
         }
 
-        public async Task GetAccommodation()
+        public async Task GetAccommodationAsync()
         {
             _uniquePartOfUri = Accommodation.Id.ToString();
 
@@ -142,7 +142,7 @@ namespace AintBnB.ViewModels
 
         }
 
-        public async Task<List<Accommodation>> GetAllAccommodations()
+        public async Task<List<Accommodation>> GetAllAccommodationsAsync()
         {
 
             var response = await _clientProvider.client.GetAsync(new Uri(_uri));
@@ -152,7 +152,7 @@ namespace AintBnB.ViewModels
             return all;
         }
 
-        public async Task<List<Accommodation>> GetAllAccommodationsOfAUser()
+        public async Task<List<Accommodation>> GetAllAccommodationsOfAUserAsync()
         {
             _uniquePartOfUri = UserId.ToString() + "/allaccommodations";
 
@@ -164,7 +164,7 @@ namespace AintBnB.ViewModels
             return all;
         }
 
-        public async Task<List<Accommodation>> GetAvailable()
+        public async Task<List<Accommodation>> GetAvailableAsync()
         {
             _uniquePartOfUri = _accommodation.Address.Country + "/" + _accommodation.Address.City + "/" + FromDate + "/" + Nights.ToString();
 
@@ -175,7 +175,7 @@ namespace AintBnB.ViewModels
             return AvailableAccommodations;
         }
 
-        public async Task SortAvailableList()
+        public async Task SortAvailableListAsync()
         {
             _uniquePartOfUri = "sort/" + SortBy + "/" + AscOrDesc;
 

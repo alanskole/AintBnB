@@ -76,7 +76,7 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task BookAccommodation()
+        public async Task BookAccommodationAsync()
         {
             _uniquePartOfUri = StartDate + "/" + Booking.BookedBy.Id + "/" + Nights + "/" + Booking.Accommodation.Id;
 
@@ -87,7 +87,7 @@ namespace AintBnB.ViewModels
             NotifyPropertyChanged("Booking");
         }
 
-        public async Task UpdateBooking()
+        public async Task UpdateBookingAsync()
         {
             _uniquePartOfUri = StartDate + "/" + Nights + "/" + Booking.Id;
 
@@ -98,7 +98,7 @@ namespace AintBnB.ViewModels
             NotifyPropertyChanged("Booking");
         }
 
-        public async Task Rate()
+        public async Task RateAsync()
         {
             _uniquePartOfUri = "rate/" + Booking.Id + "/" + Booking.Rating;
 
@@ -106,7 +106,7 @@ namespace AintBnB.ViewModels
             ResponseChecker(response);
         }
 
-        public async Task GetABooking()
+        public async Task GetABookingAsync()
         {
             _uniquePartOfUri = Booking.Id.ToString();
 
@@ -117,7 +117,7 @@ namespace AintBnB.ViewModels
             NotifyPropertyChanged("Booking");
         }
 
-        public async Task<List<Booking>> GetAllBookings()
+        public async Task<List<Booking>> GetAllBookingsAsync()
         {
             var response = await _clientProvider.client.GetAsync(new Uri(_uri));
             ResponseChecker(response);
@@ -125,7 +125,7 @@ namespace AintBnB.ViewModels
             return JsonConvert.DeserializeObject<List<Booking>>(jsonBookings);
         }
 
-        public async Task<List<Booking>> GetAllBookingsOfOwnedAccommodations()
+        public async Task<List<Booking>> GetAllBookingsOfOwnedAccommodationsAsync()
         {
             _uniquePartOfUri = UserId + "/" + "bookingsownaccommodation";
 
@@ -136,7 +136,7 @@ namespace AintBnB.ViewModels
             return AllBookingsOfOwnedAccommodations;
         }
 
-        public async Task DeleteABooking()
+        public async Task DeleteABookingAsync()
         {
             _uniquePartOfUri = Booking.Id.ToString();
 

@@ -20,19 +20,19 @@ namespace AintBnB.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await CheckIfAnyoneIsLoggedIn();
+            await CheckIfAnyoneIsLoggedInAsync();
 
             var normalUserLoggedIn = false;
 
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdmin();
+                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
 
-                listView.ItemsSource = await AccommodationViewMode.GetAllAccommodations();
+                listView.ItemsSource = await AccommodationViewMode.GetAllAccommodationsAsync();
             }
             catch (Exception)
             {
-                AccommodationViewMode.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+                AccommodationViewMode.UserId = await AuthenticationViewModel.IdOfLoggedInUserAsync();
                 normalUserLoggedIn = true;
             }
             finally
@@ -41,7 +41,7 @@ namespace AintBnB.Views
                 {
                     try
                     {
-                        listView.ItemsSource = await AccommodationViewMode.GetAllAccommodationsOfAUser();
+                        listView.ItemsSource = await AccommodationViewMode.GetAllAccommodationsOfAUserAsync();
                     }
                     catch (Exception ex)
                     {
@@ -51,11 +51,11 @@ namespace AintBnB.Views
             }
         }
 
-        private async Task CheckIfAnyoneIsLoggedIn()
+        private async Task CheckIfAnyoneIsLoggedInAsync()
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedIn();
+                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
             }
             catch (Exception ex)
             {

@@ -33,7 +33,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedIn();
+                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
             }
             catch (Exception ex)
             {
@@ -50,9 +50,9 @@ namespace AintBnB.Views
 
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdmin();
+                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
 
-                foreach (var acc in await AccommodationViewModel.GetAllAccommodations())
+                foreach (var acc in await AccommodationViewModel.GetAllAccommodationsAsync())
                     ids.Add(acc.Id);
             }
             catch (Exception)
@@ -69,11 +69,11 @@ namespace AintBnB.Views
         {
             if (normalUserLoggedIn)
             {
-                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUserAsync();
 
                 try
                 {
-                    foreach (var acc in await AccommodationViewModel.GetAllAccommodationsOfAUser())
+                    foreach (var acc in await AccommodationViewModel.GetAllAccommodationsOfAUserAsync())
                         ids.Add(acc.Id);
                 }
                 catch (Exception ex)
@@ -91,7 +91,7 @@ namespace AintBnB.Views
             {
                 AccommodationViewModel.Accommodation.Id = int.Parse(ComboBoxAccommodations.SelectedValue.ToString());
 
-                await AccommodationViewModel.GetAccommodation();
+                await AccommodationViewModel.GetAccommodationAsync();
             }
             catch (Exception ex)
             {

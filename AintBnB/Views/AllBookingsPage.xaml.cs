@@ -20,7 +20,7 @@ namespace AintBnB.Views
         {
             try
             {
-                listView.ItemsSource = await BookingViewModel.GetAllBookings();
+                listView.ItemsSource = await BookingViewModel.GetAllBookingsAsync();
             }
             catch (Exception ex)
             {

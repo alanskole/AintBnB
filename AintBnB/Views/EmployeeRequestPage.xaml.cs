@@ -24,9 +24,9 @@ namespace AintBnB.Views
         {
             try
             {
-                await AuthenticationViewModel.IsAdmin();
+                await AuthenticationViewModel.IsAdminAsync();
 
-                listView.ItemsSource = await UserViewModel.GetAllEmployeeRequests();
+                listView.ItemsSource = await UserViewModel.GetAllEmployeeRequestsAsync();
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace AintBnB.Views
                 if ((int)res.Id == 1)
                     return;
 
-                await Approve();
+                await ApproveAsync();
             }
 
             if (result == ContentDialogResult.Secondary)
@@ -70,17 +70,17 @@ namespace AintBnB.Views
                 if ((int)res.Id == 1)
                     return;
 
-                await Delete();
+                await DeleteAsync();
             }
         }
 
-        private async Task Approve()
+        private async Task ApproveAsync()
         {
             try
             {
-                await UserViewModel.GetAUser();
+                await UserViewModel.GetAUserAsync();
 
-                await UserViewModel.MakeEmployee();
+                await UserViewModel.MakeEmployeeAsync();
 
                 await new MessageDialog("Successfully approved employee request!").ShowAsync();
 
@@ -92,11 +92,11 @@ namespace AintBnB.Views
             }
         }
 
-        private async Task Delete()
+        private async Task DeleteAsync()
         {
             try
             {
-                await UserViewModel.DeleteAUser();
+                await UserViewModel.DeleteAUserAsync();
 
                 await new MessageDialog("Account deleted!").ShowAsync();
 

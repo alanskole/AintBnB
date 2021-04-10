@@ -55,10 +55,10 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task MakeEmployee()
+        public async Task MakeEmployeeAsync()
         {
             User.UserType = UserTypes.Employee;
-            await UpdateAUser();
+            await UpdateAUserAsync();
         }
 
         public void RequestToBecomeEmployee()
@@ -66,7 +66,7 @@ namespace AintBnB.ViewModels
             User.UserType = UserTypes.RequestToBeEmployee;
         }
 
-        public async Task CreateTheUser()
+        public async Task CreateTheUserAsync()
         {
             if (User.Password != PasswordConfirm)
                 throw new Exception("The passwords don't match!");
@@ -77,7 +77,7 @@ namespace AintBnB.ViewModels
             ResponseChecker(response);
         }
 
-        public async Task GetAUser()
+        public async Task GetAUserAsync()
         {
             _uniquePartOfUri = User.Id.ToString();
 
@@ -88,7 +88,7 @@ namespace AintBnB.ViewModels
             NotifyPropertyChanged("User");
         }
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<User>> GetAllUsersAsync()
         {
             var response = await _clientProvider.client.GetAsync(new Uri(_uri));
             ResponseChecker(response);
@@ -96,7 +96,7 @@ namespace AintBnB.ViewModels
             return JsonConvert.DeserializeObject<List<User>>(jsonUsers);
         }
 
-        public async Task<List<User>> GetAllCustomers()
+        public async Task<List<User>> GetAllCustomersAsync()
         {
             _uniquePartOfUri = "allcustomers";
 
@@ -106,7 +106,7 @@ namespace AintBnB.ViewModels
             return JsonConvert.DeserializeObject<List<User>>(jsonUsers);
         }
 
-        public async Task<List<User>> GetAllEmployeeRequests()
+        public async Task<List<User>> GetAllEmployeeRequestsAsync()
         {
             _uniquePartOfUri = "requests";
 
@@ -117,7 +117,7 @@ namespace AintBnB.ViewModels
             return AllEmployeeRequests;
         }
 
-        public async Task DeleteAUser()
+        public async Task DeleteAUserAsync()
         {
             _uniquePartOfUri = User.Id.ToString();
 
@@ -125,7 +125,7 @@ namespace AintBnB.ViewModels
             ResponseChecker(response);
         }
 
-        public async Task UpdateAUser()
+        public async Task UpdateAUserAsync()
         {
             _uniquePartOfUri = User.Id.ToString();
 

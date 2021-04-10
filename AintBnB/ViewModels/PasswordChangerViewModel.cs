@@ -63,7 +63,7 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task ChangePassword()
+        public async Task ChangePasswordAsync()
         {
             var elements = new string[] { Old, UserId.ToString(), New1, New2 };
 

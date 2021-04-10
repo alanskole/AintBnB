@@ -19,7 +19,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AuthenticationViewModel.Login();
+                await AuthenticationViewModel.LoginAsync();
                 Frame.Navigate(typeof(SearchPage));
             }
             catch (Exception ex)
@@ -37,7 +37,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedIn();
+                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
             }
             catch (Exception)
             {

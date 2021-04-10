@@ -33,7 +33,7 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task Login()
+        public async Task LoginAsync()
         {
             CheckForEmptyFields();
 
@@ -46,7 +46,7 @@ namespace AintBnB.ViewModels
         }
 
 
-        public async Task IsAnyoneLoggedIn()
+        public async Task IsAnyoneLoggedInAsync()
         {
             _uniquePartOfUri = "anyoneloggedin";
             var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
@@ -59,7 +59,7 @@ namespace AintBnB.ViewModels
                 throw new ArgumentException("None of the fields can be empty");
         }
 
-        public async Task<int> IdOfLoggedInUser()
+        public async Task<int> IdOfLoggedInUserAsync()
         {
             _uniquePartOfUri = "loggedin";
             var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
@@ -68,7 +68,7 @@ namespace AintBnB.ViewModels
             return JsonConvert.DeserializeObject<User>(jsonUser).Id;
         }
 
-        public async Task IsAdmin()
+        public async Task IsAdminAsync()
         {
             _uniquePartOfUri = "admin";
 
@@ -76,15 +76,7 @@ namespace AintBnB.ViewModels
             ResponseChecker(response);
         }
 
-        public async Task IsEmployee()
-        {
-            _uniquePartOfUri = "employee";
-
-            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
-        }
-
-        public async Task IsEmployeeOrAdmin()
+        public async Task IsEmployeeOrAdminAsync()
         {
             _uniquePartOfUri = "elevatedrights";
 
@@ -92,7 +84,7 @@ namespace AintBnB.ViewModels
             ResponseChecker(response);
         }
 
-        public async Task LogoutFromApp()
+        public async Task LogoutFromAppAsync()
         {
             _uniquePartOfUri = "logout";
             var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
