@@ -2,6 +2,7 @@
 using AintBnB.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace AintBnB.WebApi.Controllers
@@ -43,12 +44,12 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{id}")]
-        public IActionResult DoesUserHaveCorrectRights([FromRoute] int id)
+        public async Task<IActionResult> DoesUserHaveCorrectRightsAsync([FromRoute] int id)
         {
             User user;
             try
             {
-                user = _userService.GetUser(id);
+                user = await _userService.GetUserAsync(id);
             }
             catch (Exception ex)
             {
@@ -106,11 +107,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpPost]
         [Route("api/[controller]/login")]
-        public IActionResult LogIn([FromBody] string[] usernameAndPassword)
+        public async Task<IActionResult> LogInAsync([FromBody] string[] usernameAndPassword)
         {
             try
             {
-                TryToLogin(usernameAndPassword[0], usernameAndPassword[1], _userService.GetAllUsersForLogin());
+                TryToLogin(usernameAndPassword[0], usernameAndPassword[1], await _userService.GetAllUsersForLoginAsync());
 
                 return Ok("Login ok!");
             }

@@ -2,6 +2,8 @@
 using AintBnB.BusinessLogic.Imp;
 using NUnit.Framework;
 using System.Reflection;
+using System.Threading.Tasks;
+
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test.Unit
@@ -10,79 +12,91 @@ namespace Test.Unit
     public class DeletionServiceTest : TestBase
     {
         [SetUp]
-        public void SetUp()
+        public async Task SetUp()
         {
-            SetupDatabaseForTesting();
+            await SetupDatabaseForTesting();
             SetupTestClasses();
-            CreateDummyUsers();
-            CreateDummyAccommodation();
-            CreateDummyBooking();
+            await CreateDummyUsers();
+            await CreateDummyAccommodation();
+            await CreateDummyBooking();
         }
 
         [TearDown]
-        public void TearDown()
+        public async Task TearDown()
         {
-            Dispose();
+            await DisposeAsync();
         }
 
         [Test]
-        public void DeleteUser_ShouldFail_IfTheUserHasABookingOfTheirAccommodationThatCannotBeDeletedBecauseOfCancellationDeadlineExpired()
+        public async Task DeleteUser_ShouldFail_IfTheUserHasABookingOfTheirAccommodationThatCannotBeDeletedBecauseOfCancellationDeadlineExpired()
         {
             LoggedInAs = null;
 
-            Assert.True(userService.GetAllUsersForLogin().Contains(userCustomer1));
+            var all = await userService.GetAllUsersForLoginAsync();
+
+            Assert.True(all.Contains(userCustomer1));
 
             LoggedInAs = booking1.BookedBy;
 
-            var ex = Assert.Throws<CancelBookingException>(()
-                => deletionService.DeleteUser(booking1.BookedBy.Id));
+            var ex = Assert.ThrowsAsync<CancelBookingException>(async ()
+                => await deletionService.DeleteUserAsync(booking1.BookedBy.Id));
 
-            Assert.AreEqual($"The accommodation cannot be deleted because it has a booking with ID {booking3.Id} with a start date less than {booking3.Accommodation.CancellationDeadlineInDays} days away! Delete when no bookings are less than {booking3.Accommodation.CancellationDeadlineInDays} days away.", ex.Message);
+            Assert.AreEqual($"The accommodation cannot be deleted because it has a booking with ID {booking3.Id} with a start date less than {booking3.Accommodation.CancellationDeadlineInDays} days away! DeleteAsync when no bookings are less than {booking3.Accommodation.CancellationDeadlineInDays} days away.", ex.Message);
         }
 
         [Test]
-        public void DeleteUser_ShouldFail_IfTheUserHasABookingThatCannotBeDeletedBecauseOfCancellationDeadlineExpired()
+        public async Task DeleteUser_ShouldFail_IfTheUserHasABookingThatCannotBeDeletedBecauseOfCancellationDeadlineExpired()
         {
             LoggedInAs = null;
 
-            Assert.True(userService.GetAllUsersForLogin().Contains(userCustomer1));
+            var all = await userService.GetAllUsersForLoginAsync();
+
+            Assert.True(all.Contains(userCustomer1));
 
             LoggedInAs = booking2.BookedBy;
 
-            var ex = Assert.Throws<CancelBookingException>(()
-                => deletionService.DeleteUser(booking2.BookedBy.Id));
+            var ex = Assert.ThrowsAsync<CancelBookingException>(async()
+                => await deletionService.DeleteUserAsync(booking2.BookedBy.Id));
 
-            Assert.AreEqual($"The user cannot be deleted because it has a booking with ID {booking3.Id} with a start date less than {booking3.Accommodation.CancellationDeadlineInDays} days away! Delete when no bookings are less than {booking3.Accommodation.CancellationDeadlineInDays} days away.", ex.Message);
+            Assert.AreEqual($"The user cannot be deleted because it has a booking with ID {booking3.Id} with a start date less than {booking3.Accommodation.CancellationDeadlineInDays} days away! DeleteAsync when no bookings are less than {booking3.Accommodation.CancellationDeadlineInDays} days away.", ex.Message);
         }
 
         [Test]
-        public void DeleteUser_ShouldSucceed_IfNoCancellationDeadlineExpiredOnBookingsOrAccommodations()
+        public async Task DeleteUser_ShouldSucceed_IfNoCancellationDeadlineExpiredOnBookingsOrAccommodations()
         {
             LoggedInAs = null;
 
-            Assert.True(userService.GetAllUsersForLogin().Contains(userCustomer1));
+            var all = await userService.GetAllUsersForLoginAsync();
+
+            Assert.True(all.Contains(userCustomer1));
 
             LoggedInAs = booking2.BookedBy;
 
             booking3.Accommodation.CancellationDeadlineInDays = 1;
 
-            deletionService.DeleteUser(booking2.BookedBy.Id);
+            await deletionService.DeleteUserAsync(booking2.BookedBy.Id);
 
-            Assert.False(userService.GetAllUsersForLogin().Contains(userCustomer1));
+            all = await userService.GetAllUsersForLoginAsync();
+
+            Assert.False(all.Contains(userCustomer1));
         }
 
         [Test]
-        public void DeleteUser_ShouldSucceed_IfAdminDeletesACustomer()
+        public async Task DeleteUser_ShouldSucceed_IfAdminDeletesACustomer()
         {
             LoggedInAs = userAdmin;
 
-            Assert.True(userService.GetAllUsers().Contains(userCustomer1));
+            var all = await userService.GetAllUsersAsync();
+
+            Assert.True(all.Contains(userCustomer1));
 
             booking3.Accommodation.CancellationDeadlineInDays = 1;
 
-            deletionService.DeleteUser(booking2.BookedBy.Id);
+            await deletionService.DeleteUserAsync(booking2.BookedBy.Id);
 
-            Assert.False(userService.GetAllUsers().Contains(userCustomer1));
+            all = await userService.GetAllUsersAsync();
+            
+            Assert.False(all.Contains(userCustomer1));
         }
 
         [Test]
@@ -90,8 +104,8 @@ namespace Test.Unit
         {
             LoggedInAs = userEmployee1;
 
-            var ex = Assert.Throws<AccessException>(()
-                => deletionService.DeleteUser(userEmployee1.Id));
+            var ex = Assert.ThrowsAsync<AccessException>(async()
+                => await deletionService.DeleteUserAsync(userEmployee1.Id));
 
             Assert.AreEqual("Employees cannot delete any accounts, even if it's their own accounts!", ex.Message);
         }
@@ -101,8 +115,8 @@ namespace Test.Unit
         {
             LoggedInAs = userCustomer1;
 
-            var ex = Assert.Throws<AccessException>(()
-                => deletionService.DeleteUser(userCustomer2.Id));
+            var ex = Assert.ThrowsAsync<AccessException>(async()
+                => await deletionService.DeleteUserAsync(userCustomer2.Id));
 
             Assert.AreEqual($"Administrator or user with ID {userCustomer2.Id} only!", ex.Message);
         }
@@ -124,66 +138,82 @@ namespace Test.Unit
         }
 
         [Test]
-        public void DeleteUsersAccommodations_ShouldSucceed_AndDeleteAllAccommodationsOfTheDeletedUserIfNotBlockedByCancellationDeadline()
+        public async Task DeleteUsersAccommodations_ShouldSucceed_AndDeleteAllAccommodationsOfTheDeletedUserIfNotBlockedByCancellationDeadline()
         {
             LoggedInAs = userAdmin;
 
-            Assert.True(accommodationService.GetAllAccommodations().Contains(accommodation1));
+            var all = await accommodationService.GetAllAccommodationsAsync();
+
+            Assert.True(all.Contains(accommodation1));
 
             booking3.Accommodation.CancellationDeadlineInDays = 1;
 
             var result = typeof(DeletionService)
-                .GetMethod("DeleteUsersAccommodations", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("DeleteUsersAccommodationsAsync", BindingFlags.NonPublic | BindingFlags.Instance);
 
             result.Invoke(deletionService, new object[] { booking3.BookedBy.Id });
 
-            Assert.False(accommodationService.GetAllAccommodations().Contains(accommodation1));
+            all = await accommodationService.GetAllAccommodationsAsync();
+
+            Assert.False(all.Contains(accommodation1));
         }
 
         [Test]
-        public void DeleteUsersBookings_ShouldSucceed_AndDeleteAllBookingsOfTheDeletedUserIfNotBlockedByCancellationDeadline()
+        public async Task DeleteUsersBookings_ShouldSucceed_AndDeleteAllBookingsOfTheDeletedUserIfNotBlockedByCancellationDeadline()
         {
             LoggedInAs = userAdmin;
 
-            Assert.True(bookingService.GetAllBookings().Contains(booking2));
-            Assert.True(bookingService.GetAllBookings().Contains(booking3));
+            var all = await bookingService.GetAllBookingsAsync();
+
+            Assert.True(all.Contains(booking2));
+            Assert.True(all.Contains(booking3));
 
             booking3.Accommodation.CancellationDeadlineInDays = 1;
 
             var result = typeof(DeletionService)
-                .GetMethod("DeleteUsersBookings", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("DeleteUsersBookingsAsync", BindingFlags.NonPublic | BindingFlags.Instance);
 
             result.Invoke(deletionService, new object[] { booking3.BookedBy.Id });
 
-            Assert.False(bookingService.GetAllBookings().Contains(booking2));
-            Assert.False(bookingService.GetAllBookings().Contains(booking3));
+            all = await bookingService.GetAllBookingsAsync();
+
+            Assert.False(all.Contains(booking2));
+            Assert.False(all.Contains(booking3));
         }
 
         [Test]
-        public void DeleteAccommodation_ShouldSucceed_IfNotBlockedByCancellationDeadlineExpiration()
+        public async Task DeleteAccommodation_ShouldSucceed_IfNotBlockedByCancellationDeadlineExpiration()
         {
             LoggedInAs = accommodation2.Owner;
 
-            Assert.True(accommodationService.GetAllAccommodations().Contains(accommodation2));
+            var all = await accommodationService.GetAllAccommodationsAsync();
 
-            deletionService.DeleteAccommodation(accommodation2.Id);
+            Assert.True(all.Contains(accommodation2));
 
-            Assert.False(accommodationService.GetAllAccommodations().Contains(accommodation2));
+            await deletionService.DeleteAccommodationAsync(accommodation2.Id);
+
+            all = await accommodationService.GetAllAccommodationsAsync();
+
+            Assert.False(all.Contains(accommodation2));
         }
 
         [Test]
-        public void DeleteAccommodationBookings_ShouldSucceed_IfNotBlockedByCancellationDeadlineExpiration()
+        public async Task DeleteAccommodationBookings_ShouldSucceed_IfNotBlockedByCancellationDeadlineExpiration()
         {
             LoggedInAs = accommodation2.Owner;
 
-            Assert.True(bookingService.GetBookingsOfOwnedAccommodation(accommodation2.Owner.Id).Contains(booking2));
+            var all = await bookingService.GetBookingsOfOwnedAccommodationAsync(accommodation2.Owner.Id);
+
+            Assert.True(all.Contains(booking2));
 
             var result = typeof(DeletionService)
-                .GetMethod("DeleteAccommodationBookings", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("DeleteAccommodationBookingsAsync", BindingFlags.NonPublic | BindingFlags.Instance);
 
             result.Invoke(deletionService, new object[] { accommodation2.Id });
 
-            Assert.False(bookingService.GetBookingsOfOwnedAccommodation(accommodation2.Owner.Id).Contains(booking2));
+            all = await bookingService.GetBookingsOfOwnedAccommodationAsync(accommodation2.Owner.Id);
+
+            Assert.False(all.Contains(booking2));
         }
 
 
@@ -237,22 +267,26 @@ namespace Test.Unit
         }
 
         [Test]
-        public void DeleteBooking_ShouldSucceed_IfNotBlockedByCancellationDeadlineExpiration()
+        public async Task DeleteBooking_ShouldSucceed_IfNotBlockedByCancellationDeadlineExpiration()
         {
             LoggedInAs = booking2.BookedBy;
 
-            Assert.True(bookingService.GetAllBookings().Contains(booking2));
+            var all = await bookingService.GetAllBookingsAsync();
 
-            deletionService.DeleteBooking(booking2.Id);
+            Assert.True(all.Contains(booking2));
 
-            Assert.False(bookingService.GetAllBookings().Contains(booking2));
+            await deletionService.DeleteBookingAsync(booking2.Id);
+
+            all = await bookingService.GetAllBookingsAsync();
+
+            Assert.False(all.Contains(booking2));
         }
 
         [Test]
         public void DeadLineExpiration_ShouldSucceed_IfCancellationDeadlineHasNotExpired()
         {
             var result = typeof(DeletionService)
-                .GetMethod("DeadLineExpiration", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("DeadLineExpirationAsync", BindingFlags.NonPublic | BindingFlags.Instance);
 
             Assert.DoesNotThrow(() => result.Invoke(deletionService, new object[] { booking2.Id, booking2.Accommodation.CancellationDeadlineInDays }));
         }
@@ -261,14 +295,12 @@ namespace Test.Unit
         public void DeadLineExpiration_ShouldFail_IfCancellationDeadlineHasNotExpired()
         {
             var result = typeof(DeletionService)
-                .GetMethod("DeadLineExpiration", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("DeadLineExpirationAsync", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            var ex = Assert.Throws<TargetInvocationException>(()
-                            => result.Invoke(deletionService, new object[] { booking3.Id, booking3.Accommodation.CancellationDeadlineInDays }));
+            var ex = Assert.ThrowsAsync<CancelBookingException>(async()
+                => await (Task)result.Invoke(deletionService, new object[] { booking3.Id, booking3.Accommodation.CancellationDeadlineInDays }));
 
-            Assert.AreEqual(ex.InnerException.GetType(), typeof(CancelBookingException));
-
-            Assert.AreEqual($"Cannot change the booking with ID {booking3.Id} because the start date of the booking is less than {booking3.Accommodation.CancellationDeadlineInDays} days away!", ex.InnerException.Message);
+            Assert.AreEqual($"Cannot change the booking with ID {booking3.Id} because the start date of the booking is less than {booking3.Accommodation.CancellationDeadlineInDays} days away!", ex.Message);
         }
 
         [Test]
@@ -290,7 +322,7 @@ namespace Test.Unit
             Assert.False(booking2.Accommodation.Schedule[booking2.Dates[11]]);
 
             var result = typeof(DeletionService)
-                .GetMethod("ResetAvailableStatusAfterDeletingBooking", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("ResetAvailableStatusAfterDeletingBookingAsync", BindingFlags.NonPublic | BindingFlags.Instance);
             result.Invoke(deletionService, new object[] { booking2.Id });
 
             Assert.True(booking2.Accommodation.Schedule[booking2.Dates[0]]);

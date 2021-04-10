@@ -5,6 +5,7 @@ using AintBnB.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BusinessLogic.Helpers.DateHelper;
 using static AintBnB.BusinessLogic.Helpers.UpdateCancelledDatesInSchedule;
@@ -20,7 +21,7 @@ namespace AintBnB.BusinessLogic.Imp
             _unitOfWork = unitOfWork;
         }
 
-        public Booking Book(string startDate, User booker, int nights, Accommodation accommodation)
+        public async Task<Booking> BookAsync(string startDate, User booker, int nights, Accommodation accommodation)
         {
             if (booker.Id == accommodation.Owner.Id)
                 throw new ParameterException("Accommodation", "booked by the owner");
@@ -30,11 +31,11 @@ namespace AintBnB.BusinessLogic.Imp
 
             var booking = BookIfAvailableAndUserHasPermission(startDate, booker, nights, accommodation);
 
-            _unitOfWork.BookingRepository.Create(booking);
+            await _unitOfWork.BookingRepository.CreateAsync(booking);
 
-            _unitOfWork.AccommodationRepository.Update(accommodation.Id, accommodation);
+            await _unitOfWork.AccommodationRepository.UpdateAsync(accommodation.Id, accommodation);
 
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync();
 
             return booking;
         }
@@ -81,9 +82,9 @@ namespace AintBnB.BusinessLogic.Imp
                 accommodation.Schedule[datesBooked[i]] = false;
         }
 
-        public void UpdateBooking(string newStartDate, int nights, int bookingId)
+        public async Task UpdateBookingAsync(string newStartDate, int nights, int bookingId)
         {
-            var originalBooking = _unitOfWork.BookingRepository.Read(bookingId);
+            var originalBooking = await _unitOfWork.BookingRepository.ReadAsync(bookingId);
 
             CanBookingBeUpdated(newStartDate, nights, originalBooking);
 
@@ -126,11 +127,11 @@ namespace AintBnB.BusinessLogic.Imp
                 originalBooking = BookIfAvailableAndUserHasPermission(newStartDate, originalBooking.BookedBy, nights, originalBooking.Accommodation);
                 ResetDatesToAvailable(oldDates, originalBooking.Accommodation.Schedule);
             }
-            _unitOfWork.BookingRepository.Update(bookingId, originalBooking);
+            await _unitOfWork.BookingRepository.UpdateAsync(bookingId, originalBooking);
 
-            _unitOfWork.AccommodationRepository.Update(originalBooking.Accommodation.Id, originalBooking.Accommodation);
+            await _unitOfWork.AccommodationRepository.UpdateAsync(originalBooking.Accommodation.Id, originalBooking.Accommodation);
 
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync();
         }
 
         private static void CanBookingBeUpdated(string newStartDate, int nights, Booking originalBooking)
@@ -210,27 +211,26 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
-        public Booking GetBooking(int id)
+        public async Task<Booking> GetBookingAsync(int id)
         {
-            var booking = _unitOfWork.BookingRepository.Read(id);
+            var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
 
             if (booking == null)
                 throw new IdNotFoundException("Booking", id);
 
-            if (CorrectUserOrOwnerOrAdminOrEmployee(_unitOfWork.BookingRepository.Read(id).Accommodation.Owner.Id, _unitOfWork.BookingRepository.Read(id).BookedBy))
-            {
+            if (CorrectUserOrOwnerOrAdminOrEmployee(booking.Accommodation.Owner.Id, booking.BookedBy))
                 return booking;
-            }
+            
             throw new AccessException();
         }
 
-        public List<Booking> GetBookingsOfOwnedAccommodation(int userid)
+        public async Task<List<Booking>> GetBookingsOfOwnedAccommodationAsync(int userid)
         {
-            if (CorrectUserOrAdminOrEmployee(_unitOfWork.UserRepository.Read(userid)))
+            if (CorrectUserOrAdminOrEmployee(await _unitOfWork.UserRepository.ReadAsync(userid)))
             {
                 var bookingsOfOwnedAccommodation = new List<Booking>();
 
-                FindAllBookingsOfOwnedAccommodation(userid, bookingsOfOwnedAccommodation);
+                await FindAllBookingsOfOwnedAccommodationAsync(userid, bookingsOfOwnedAccommodation);
 
                 if (bookingsOfOwnedAccommodation.Count == 0)
                     throw new NoneFoundInDatabaseTableException(userid, "bookings of owned accommodations");
@@ -240,30 +240,30 @@ namespace AintBnB.BusinessLogic.Imp
             throw new AccessException();
         }
 
-        private void FindAllBookingsOfOwnedAccommodation(int userid, List<Booking> bookingsOfOwnedAccommodation)
+        private async Task FindAllBookingsOfOwnedAccommodationAsync(int userid, List<Booking> bookingsOfOwnedAccommodation)
         {
-            foreach (var booking in _unitOfWork.BookingRepository.GetAll())
+            foreach (var booking in await _unitOfWork.BookingRepository.GetAllAsync())
             {
                 if (booking.Accommodation.Owner.Id == userid)
                     bookingsOfOwnedAccommodation.Add(booking);
             }
         }
 
-        public List<Booking> GetAllBookings()
+        public async Task<List<Booking>> GetAllBookingsAsync()
         {
             if (HasElevatedRights())
             {
-                return GetAllInSystem();
+                return await GetAllInSystemAsync();
             }
             else
             {
-                return GetOnlyOnesOwnedByUser();
+                return await GetOnlyOnesOwnedByUserAsync();
             }
         }
 
-        private List<Booking> GetAllInSystem()
+        private async Task<List<Booking>> GetAllInSystemAsync()
         {
-            var all = _unitOfWork.BookingRepository.GetAll();
+            var all = await _unitOfWork.BookingRepository.GetAllAsync();
 
             if (all.Count == 0)
                 throw new NoneFoundInDatabaseTableException("bookings");
@@ -271,11 +271,11 @@ namespace AintBnB.BusinessLogic.Imp
             return all;
         }
 
-        private List<Booking> GetOnlyOnesOwnedByUser()
+        private async Task<List<Booking>> GetOnlyOnesOwnedByUserAsync()
         {
             var bookingsOfLoggedInUser = new List<Booking>();
 
-            FindAllBookingsOfLoggedInUser(bookingsOfLoggedInUser);
+            await FindAllBookingsOfLoggedInUserAsync(bookingsOfLoggedInUser);
 
             if (bookingsOfLoggedInUser.Count == 0)
                 throw new NoneFoundInDatabaseTableException(LoggedInAs.Id, "bookings");
@@ -283,9 +283,9 @@ namespace AintBnB.BusinessLogic.Imp
             return bookingsOfLoggedInUser;
         }
 
-        private void FindAllBookingsOfLoggedInUser(List<Booking> bookingsOfLoggedInUser)
+        private async Task FindAllBookingsOfLoggedInUserAsync(List<Booking> bookingsOfLoggedInUser)
         {
-            foreach (var booking in _unitOfWork.BookingRepository.GetAll())
+            foreach (var booking in await _unitOfWork.BookingRepository.GetAllAsync())
             {
                 if (booking.BookedBy.Id == LoggedInAs.Id)
                 {
@@ -294,11 +294,11 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
-        public void Rate(int bookingId, int rating)
+        public async Task RateAsync(int bookingId, int rating)
         {
             AnyoneLoggedIn();
 
-            var booking = GetBooking(bookingId);
+            var booking = await GetBookingAsync(bookingId);
 
             CanRatingBeGiven(booking, booking.BookedBy, rating);
 
@@ -312,7 +312,7 @@ namespace AintBnB.BusinessLogic.Imp
             accommodation.AverageRating = (currentRating + rating) / (amountOfRatings + 1);
             accommodation.AmountOfRatings += 1;
 
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync();
         }
 
         private void CanRatingBeGiven(Booking booking, User booker, int rating)

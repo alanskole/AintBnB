@@ -33,7 +33,7 @@ namespace AintBnB.WebApi
 
             //Adds all the countries and cities of the world to a sql database table if the table isn't already filled
             BusinessLogic.Helpers.AllCountiresAndCities.con = new SqlConnection(conString);
-            BusinessLogic.Helpers.AllCountiresAndCities.AllCitiesAndCountries();
+            BusinessLogic.Helpers.AllCountiresAndCities.AllCitiesAndCountriesAsync();
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IAccommodationService, AccommodationService>();

@@ -3,6 +3,7 @@ using AintBnB.Database.DbCtx;
 using AintBnB.Repository.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace AintBnB.Repository.Imp
 {
@@ -14,29 +15,29 @@ namespace AintBnB.Repository.Imp
         {
             _databaseContext = databaseContext;
         }
-        public void Create(User user)
+        public async Task CreateAsync(User user)
         {
-            _databaseContext.User.Add(user);
+            await _databaseContext.User.AddAsync(user);
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            _databaseContext.User.Remove(Read(id));
+            _databaseContext.User.Remove(await ReadAsync(id));
         }
 
-        public List<User> GetAll()
+        public async Task<List<User>> GetAllAsync()
         {
             return _databaseContext.User.ToList();
         }
 
-        public User Read(int id)
+        public async Task<User> ReadAsync(int id)
         {
-            return _databaseContext.User.Find(id);
+            return await _databaseContext.User.FindAsync(id);
         }
 
-        public void Update(int id, User updatedUser)
+        public async Task UpdateAsync(int id, User updatedUser)
         {
-            var user = _databaseContext.User.Find(id);
+            var user = await ReadAsync(id);
             user.UserName = updatedUser.UserName;
             user.Password = updatedUser.Password;
             user.FirstName = updatedUser.FirstName;

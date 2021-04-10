@@ -2,6 +2,7 @@
 using AintBnB.Core.Models;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 
 namespace AintBnB.WebApi.Controllers
 {
@@ -19,11 +20,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpPost]
         [Route("api/[controller]")]
-        public IActionResult CreateUser([FromBody] User user)
+        public async Task<IActionResult> CreateUserAsync([FromBody] User user)
         {
             try
             {
-                var newUser = _userService.CreateUser(user.UserName, user.Password, user.FirstName, user.LastName, user.UserType);
+                var newUser = await _userService.CreateUserAsync(user.UserName, user.Password, user.FirstName, user.LastName, user.UserType);
                 return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + newUser.Id, newUser);
             }
             catch (Exception ex)
@@ -34,11 +35,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpPut]
         [Route("api/[controller]/{id}")]
-        public IActionResult UpdateUser([FromRoute] int id, [FromBody] User user)
+        public async Task<IActionResult> UpdateUserAsync([FromRoute] int id, [FromBody] User user)
         {
             try
             {
-                _userService.UpdateUser(id, user);
+                await _userService.UpdateUserAsync(id, user);
                 return Ok(user);
             }
             catch (Exception ex)
@@ -49,11 +50,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpPost]
         [Route("api/[controller]/change")]
-        public IActionResult ChangePassword([FromBody] string[] elements)
+        public async Task<IActionResult> ChangePasswordAsync([FromBody] string[] elements)
         {
             try
             {
-                _userService.ChangePassword(elements[0], Int32.Parse(elements[1]), elements[2], elements[3]);
+                await _userService.ChangePasswordAsync(elements[0], Int32.Parse(elements[1]), elements[2], elements[3]);
 
                 return Ok("Password change ok!");
             }
@@ -65,11 +66,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]")]
-        public IActionResult GetAllUsers()
+        public async Task<IActionResult> GetAllUsersAsync()
         {
             try
             {
-                return Ok(_userService.GetAllUsers());
+                return Ok(await _userService.GetAllUsersAsync());
             }
             catch (Exception ex)
             {
@@ -79,11 +80,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/allcustomers")]
-        public IActionResult GetAllCustomers()
+        public async Task<IActionResult> GetAllCustomersAsync()
         {
             try
             {
-                return Ok(_userService.GetAllUsersWithTypeCustomer());
+                return Ok(await _userService.GetAllUsersWithTypeCustomerAsync());
             }
             catch (Exception ex)
             {
@@ -93,11 +94,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/requests")]
-        public IActionResult GetAllEmployeeRequests()
+        public async Task<IActionResult> GetAllEmployeeRequestsAsync()
         {
             try
             {
-                return Ok(_userService.GetAllEmployeeRequests());
+                return Ok(await _userService.GetAllEmployeeRequestsAsync());
             }
             catch (Exception ex)
             {
@@ -107,11 +108,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{id}")]
-        public IActionResult GetUser([FromRoute] int id)
+        public async Task<IActionResult> GetUserAsync([FromRoute] int id)
         {
             try
             {
-                return Ok(_userService.GetUser(id));
+                return Ok(await _userService.GetUserAsync(id));
             }
             catch (Exception ex)
             {
@@ -121,11 +122,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpDelete]
         [Route("api/[controller]/{id}")]
-        public IActionResult DeleteUser([FromRoute] int id)
+        public async Task<IActionResult> DeleteUserAsync([FromRoute] int id)
         {
             try
             {
-                _deletionService.DeleteUser(id);
+                await _deletionService.DeleteUserAsync(id);
                 return Ok("Deletion ok");
             }
             catch (Exception ex)

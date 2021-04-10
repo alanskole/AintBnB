@@ -4,6 +4,7 @@ using AintBnB.Core.Models;
 using AintBnB.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BusinessLogic.Helpers.Regexp;
 
@@ -18,13 +19,13 @@ namespace AintBnB.BusinessLogic.Imp
             _unitOfWork = unitOfWork;
         }
 
-        public User CreateUser(string userName, string password, string firstName, string lastName, UserTypes userType)
+        public async Task<User> CreateUserAsync(string userName, string password, string firstName, string lastName, UserTypes userType)
         {
             userName = userName.Trim();
             firstName = firstName.Trim();
             lastName = lastName.Trim();
 
-            IsUserNameFree(userName);
+            await IsUserNameFreeAsync(userName);
             ValidateUser(userName, firstName, lastName);
             ValidatePassword(password);
 
@@ -34,17 +35,19 @@ namespace AintBnB.BusinessLogic.Imp
             user.FirstName = firstName;
             user.LastName = lastName;
 
-            _unitOfWork.UserRepository.Create(user);
+            await _unitOfWork.UserRepository.CreateAsync(user);
 
-            UserTypeCheck(userType, user);
+            await UserTypeCheckAsync(userType, user);
 
-            _unitOfWork.Commit();
+            await _unitOfWork.CommitAsync();
             return user;
         }
 
-        private void UserTypeCheck(UserTypes userType, User user)
+        private async Task UserTypeCheckAsync(UserTypes userType, User user)
         {
-            if (_unitOfWork.UserRepository.GetAll().Count == 0)
+            var all = await _unitOfWork.UserRepository.GetAllAsync();
+
+            if (all.Count == 0)
                 user.UserType = UserTypes.Admin;
             else if (userType == UserTypes.RequestToBeEmployee)
                 user.UserType = UserTypes.RequestToBeEmployee;
@@ -62,9 +65,9 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new ParameterException("LastName", "containing any other than letters and one space or dash between names");
         }
 
-        private void IsUserNameFree(string userName)
+        private async Task IsUserNameFreeAsync(string userName)
         {
-            foreach (var user in _unitOfWork.UserRepository.GetAll())
+            foreach (var user in await _unitOfWork.UserRepository.GetAllAsync())
             {
                 if (string.Equals(user.UserName, userName, StringComparison.OrdinalIgnoreCase))
                 {
@@ -73,9 +76,9 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
-        public User GetUser(int id)
+        public async Task<User> GetUserAsync(int id)
         {
-            var user = _unitOfWork.UserRepository.Read(id);
+            var user = await _unitOfWork.UserRepository.ReadAsync(id);
 
             if (user == null)
                 throw new IdNotFoundException("User", id);
@@ -88,14 +91,14 @@ namespace AintBnB.BusinessLogic.Imp
         }
 
 
-        public List<User> GetAllUsersForLogin()
+        public async Task<List<User>> GetAllUsersForLoginAsync()
         {
             if (LoggedInAs != null)
                 throw new AlreadyLoggedInException();
 
             try
             {
-                return AdminCanGetAllUsers();
+                return await AdminCanGetAllUsersAsync();
             }
             catch (Exception)
             {
@@ -104,33 +107,33 @@ namespace AintBnB.BusinessLogic.Imp
 
         }
 
-        public List<User> GetAllUsers()
+        public async Task<List<User>> GetAllUsersAsync()
         {
             if (AdminChecker())
-                return AdminCanGetAllUsers();
+                return await AdminCanGetAllUsersAsync();
 
-            var allCustomersPlusLoggedinEmployee = GetAllUsersWithTypeCustomer();
+            var allCustomersPlusLoggedinEmployee = await GetAllUsersWithTypeCustomerAsync();
 
             allCustomersPlusLoggedinEmployee.Insert(0, LoggedInAs);
 
             return allCustomersPlusLoggedinEmployee;
         }
 
-        private List<User> AdminCanGetAllUsers()
+        private async Task<List<User>> AdminCanGetAllUsersAsync()
         {
-            var all = _unitOfWork.UserRepository.GetAll();
+            var all = await _unitOfWork.UserRepository.GetAllAsync();
             IsListEmpty(all);
             return all;
         }
 
-        public List<User> GetAllUsersWithTypeCustomer()
+        public async Task<List<User>> GetAllUsersWithTypeCustomerAsync()
         {
             if (!HasElevatedRights())
                 throw new AccessException();
 
             var all = new List<User>();
 
-            foreach (var user in _unitOfWork.UserRepository.GetAll())
+            foreach (var user in await _unitOfWork.UserRepository.GetAllAsync())
             {
                 if (user.UserType == UserTypes.Customer)
                     all.Add(user);
@@ -140,7 +143,7 @@ namespace AintBnB.BusinessLogic.Imp
             return all;
         }
 
-        public List<User> GetAllEmployeeRequests()
+        public async Task<List<User>> GetAllEmployeeRequestsAsync()
         {
 
             if (!AdminChecker())
@@ -148,7 +151,7 @@ namespace AintBnB.BusinessLogic.Imp
 
             var all = new List<User>();
 
-            foreach (var user in _unitOfWork.UserRepository.GetAll())
+            foreach (var user in await _unitOfWork.UserRepository.GetAllAsync())
             {
                 if (user.UserType == UserTypes.RequestToBeEmployee)
                     all.Add(user);
@@ -166,9 +169,9 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new NoneFoundInDatabaseTableException("users");
         }
 
-        public void UpdateUser(int id, User updatedUser)
+        public async Task UpdateUserAsync(int id, User updatedUser)
         {
-            var old = GetUser(id);
+            var old = await GetUserAsync(id);
 
             if (CorrectUserOrAdminOrEmployee(old))
             {
@@ -179,8 +182,8 @@ namespace AintBnB.BusinessLogic.Imp
 
                 updatedUser.UserName = old.UserName;
 
-                _unitOfWork.UserRepository.Update(id, updatedUser);
-                _unitOfWork.Commit();
+                await _unitOfWork.UserRepository.UpdateAsync(id, updatedUser);
+                await _unitOfWork.CommitAsync();
             }
             else
                 throw new AccessException();
@@ -192,9 +195,9 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new AccessException("Only admin can change usertype!");
         }
 
-        public void ChangePassword(string old, int userId, string new1, string new2)
+        public async Task ChangePasswordAsync(string old, int userId, string new1, string new2)
         {
-            var user = _unitOfWork.UserRepository.Read(userId);
+            var user = await _unitOfWork.UserRepository.ReadAsync(userId);
 
             if (LoggedInAs.Id == user.Id)
             {
@@ -211,7 +214,7 @@ namespace AintBnB.BusinessLogic.Imp
                 if (UnHashPassword(old, hashedOriginalPassword))
                 {
                     user.Password = HashPassword(new1);
-                    _unitOfWork.Commit();
+                    await _unitOfWork.CommitAsync();
                 }
                 else
                     throw new PasswordChangeException("old");

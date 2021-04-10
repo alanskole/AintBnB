@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
+
 using static AintBnB.BusinessLogic.Helpers.AllCountiresAndCities;
 
 namespace AintBnB.WebApi.Controllers
@@ -8,11 +10,11 @@ namespace AintBnB.WebApi.Controllers
     {
         [HttpGet]
         [Route("api/[controller]/countries")]
-        public IActionResult GetAllCountriesInTheWorld()
+        public async Task<IActionResult> GetAllCountriesInTheWorldAsync()
         {
             try
             {
-                return Ok(GetAllTheCountries());
+                return Ok(await GetAllTheCountriesAsync());
             }
             catch (Exception ex)
             {
@@ -22,11 +24,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/cities/{country}")]
-        public IActionResult GetAllCitiesOfAllTheCountries([FromRoute] string country)
+        public async Task<IActionResult> GetAllCitiesOfAllTheCountriesAsync([FromRoute] string country)
         {
             try
             {
-                return Ok(GetCitiesOfACountry(country));
+                return Ok(await GetCitiesOfACountryAsync(country));
             }
             catch (Exception ex)
             {

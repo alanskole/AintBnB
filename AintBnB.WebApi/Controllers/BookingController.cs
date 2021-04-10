@@ -1,6 +1,7 @@
 ﻿using AintBnB.BusinessLogic.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Threading.Tasks;
 
 namespace AintBnB.WebApi.Controllers
 {
@@ -22,13 +23,13 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{startDate}/{bookerId}/{nights}/{accommodationId}")]
-        public IActionResult Book([FromRoute] string startDate, [FromRoute] int bookerId, [FromRoute] int nights, [FromRoute] int accommodationId)
+        public async Task<IActionResult> BookAsync([FromRoute] string startDate, [FromRoute] int bookerId, [FromRoute] int nights, [FromRoute] int accommodationId)
         {
             try
             {
-                var booker = _userService.GetUser(bookerId);
-                var accommodation = _accommodationService.GetAccommodation(accommodationId);
-                var booking = _bookingService.Book(startDate, booker, nights, accommodation);
+                var booker = await _userService.GetUserAsync(bookerId);
+                var accommodation = await _accommodationService.GetAccommodationAsync(accommodationId);
+                var booking = await _bookingService.BookAsync(startDate, booker, nights, accommodation);
                 return Ok(booking);
             }
             catch (Exception ex)
@@ -39,12 +40,12 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{newStartDate}/{nights}/{bookingId}")]
-        public IActionResult UpdateBooking([FromRoute] string newStartDate, [FromRoute] int nights, [FromRoute] int bookingId)
+        public async Task<IActionResult> UpdateBookingAsync([FromRoute] string newStartDate, [FromRoute] int nights, [FromRoute] int bookingId)
         {
             try
             {
-                var booking = _bookingService.GetBooking(bookingId);
-                _bookingService.UpdateBooking(newStartDate, nights, bookingId);
+                var booking = await _bookingService.GetBookingAsync(bookingId);
+                await _bookingService.UpdateBookingAsync(newStartDate, nights, bookingId);
                 return Ok(booking);
             }
             catch (Exception ex)
@@ -55,11 +56,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/rate/{bookingId}/{rating}")]
-        public IActionResult LeaveRating([FromRoute] int bookingId, [FromRoute] int rating)
+        public async Task<IActionResult> LeaveRatingAsync([FromRoute] int bookingId, [FromRoute] int rating)
         {
             try
             {
-                _bookingService.Rate(bookingId, rating);
+                await _bookingService.RateAsync(bookingId, rating);
                 return Ok("Rated");
             }
             catch (Exception ex)
@@ -70,11 +71,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{id}")]
-        public IActionResult GetBooking([FromRoute] int id)
+        public async Task<IActionResult> GetBookingAsync([FromRoute] int id)
         {
             try
             {
-                return Ok(_bookingService.GetBooking(id));
+                return Ok(await _bookingService.GetBookingAsync(id));
             }
             catch (Exception ex)
             {
@@ -84,11 +85,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]/{id}/bookingsownaccommodation")]
-        public IActionResult GetBookingsOnOwnedAccommodations([FromRoute] int id)
+        public async Task<IActionResult> GetBookingsOnOwnedAccommodationsAsync([FromRoute] int id)
         {
             try
             {
-                return Ok(_bookingService.GetBookingsOfOwnedAccommodation(id));
+                return Ok(await _bookingService.GetBookingsOfOwnedAccommodationAsync(id));
             }
             catch (Exception ex)
             {
@@ -98,11 +99,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpGet]
         [Route("api/[controller]")]
-        public IActionResult GetAllBookings()
+        public async Task<IActionResult> GetAllBookingsAsync()
         {
             try
             {
-                return Ok(_bookingService.GetAllBookings());
+                return Ok(await _bookingService.GetAllBookingsAsync());
             }
             catch (Exception ex)
             {
@@ -112,11 +113,11 @@ namespace AintBnB.WebApi.Controllers
 
         [HttpDelete]
         [Route("api/[controller]/{id}")]
-        public IActionResult DeleteBooking([FromRoute] int id)
+        public async Task<IActionResult> DeleteBookingAsync([FromRoute] int id)
         {
             try
             {
-                _deletionService.DeleteBooking(id);
+                await _deletionService.DeleteBookingAsync(id);
                 return Ok("Deletion ok");
             }
             catch (Exception ex)

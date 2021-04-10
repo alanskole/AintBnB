@@ -9,7 +9,7 @@ namespace AintBnB.BusinessLogic.CustomExceptions
         {
         }
 
-        public CancelBookingException(string type, int id, int deadlineInDays) : base($"The {type} cannot be deleted because it has a booking with ID {id} with a start date less than {deadlineInDays} days away! Delete when no bookings are less than {deadlineInDays} days away.")
+        public CancelBookingException(string type, int id, int deadlineInDays) : base($"The {type} cannot be deleted because it has a booking with ID {id} with a start date less than {deadlineInDays} days away! DeleteAsync when no bookings are less than {deadlineInDays} days away.")
         {
         }
     }

@@ -1,4 +1,5 @@
 ﻿using AintBnB.Core.Models;
+using System.Threading.Tasks;
 
 namespace AintBnB.Repository.Interfaces
 {
@@ -7,6 +8,6 @@ namespace AintBnB.Repository.Interfaces
         IRepository<Accommodation> AccommodationRepository { get; }
         IRepository<Booking> BookingRepository { get; }
         IRepository<User> UserRepository { get; }
-        void Commit();
+        Task CommitAsync();
     }
 }

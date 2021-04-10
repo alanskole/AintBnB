@@ -1,6 +1,7 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.Database.DbCtx;
 using AintBnB.Repository.Interfaces;
+using System.Threading.Tasks;
 
 namespace AintBnB.Repository.Imp
 {
@@ -49,9 +50,9 @@ namespace AintBnB.Repository.Imp
             _databaseContext = databaseContext;
         }
 
-        public void Commit()
+        public async Task CommitAsync()
         {
-            _databaseContext.SaveChanges();
+            await _databaseContext.SaveChangesAsync();
         }
     }
 }
