@@ -1,13 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-
-using static AintBnB.BusinessLogic.Helpers.AllCountiresAndCities;
+using static AintBnB.BusinessLogic.Helpers.AllCountriesAndCities;
 
 namespace AintBnB.WebApi.Controllers
 {
     public class WorldController : Controller
     {
+
         [HttpGet]
         [Route("api/[controller]/countries")]
         public async Task<IActionResult> GetAllCountriesInTheWorldAsync()
