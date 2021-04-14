@@ -1,9 +1,11 @@
-﻿namespace AintBnB.BusinessLogic.Interfaces
+﻿using System.Threading.Tasks;
+
+namespace AintBnB.BusinessLogic.Interfaces
 {
     public interface IDeletionService
     {
-        void DeleteAccommodation(int id);
-        void DeleteBooking(int id);
-        void DeleteUser(int id);
+        Task DeleteAccommodationAsync(int id);
+        Task DeleteBookingAsync(int id);
+        Task DeleteUserAsync(int id);
     }
 }

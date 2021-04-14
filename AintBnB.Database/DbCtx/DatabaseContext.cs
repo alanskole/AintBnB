@@ -1,5 +1,4 @@
 ﻿using AintBnB.Core.Models;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
@@ -7,7 +6,7 @@ using System.Collections.Generic;
 
 namespace AintBnB.Database.DbCtx
 {
-    public class DatabaseContext  : DbContext
+    public class DatabaseContext : DbContext
     {
         public DbSet<Accommodation> Accommodation { get; set; }
         public DbSet<Address> Address { get; set; }

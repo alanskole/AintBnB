@@ -33,8 +33,8 @@ namespace AintBnB.Views
         {
             try
             {
-                int userid = await AuthenticationViewModel.IdOfLoggedInUser();
-                await FindUserType(userid);
+                var userid = await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                await FindUserTypeAsync(userid);
             }
             catch (Exception ex)
             {
@@ -43,40 +43,40 @@ namespace AintBnB.Views
 
         }
 
-        private async Task FindUserType(int userid)
+        private async Task FindUserTypeAsync(int userid)
         {
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdmin();
+                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
 
-                await FillComboBoxWithUserIds();
+                await FillComboBoxWithUserIdsAsync();
 
                 if (ComboBoxUsers.SelectedIndex == -1)
                     ComboBoxUsers.SelectedValue = userid;
             }
             catch (Exception)
             {
-                await GetCustomerById(userid);
+                await GetCustomerByIdAsync(userid);
             }
         }
 
-        private async Task FillComboBoxWithUserIds()
+        private async Task FillComboBoxWithUserIdsAsync()
         {
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
-            foreach (var user in await UserViewModel.GetAllUsers())
+            foreach (var user in await UserViewModel.GetAllUsersAsync())
                 ids.Add(user.Id);
 
             ComboBoxUsers.ItemsSource = ids;
         }
 
-        private async Task GetCustomerById(int userid)
+        private async Task GetCustomerByIdAsync(int userid)
         {
             ComboBoxUsers.Visibility = Visibility.Collapsed;
 
             UserViewModel.User.Id = userid;
 
-            await UserViewModel.GetAUser();
+            await UserViewModel.GetAUserAsync();
 
             userIdTextBox.Visibility = Visibility.Visible;
         }
@@ -87,9 +87,9 @@ namespace AintBnB.Views
             {
                 UserViewModel.User.Id = int.Parse(ComboBoxUsers.SelectedValue.ToString());
 
-                await UserViewModel.GetAUser();
+                await UserViewModel.GetAUserAsync();
 
-                if (await AuthenticationViewModel.IdOfLoggedInUser() != UserViewModel.User.Id)
+                if (await AuthenticationViewModel.IdOfLoggedInUserAsync() != UserViewModel.User.Id)
                     ChangePasswordButton.Visibility = Visibility.Collapsed;
                 else
                     ChangePasswordButton.Visibility = Visibility.Visible;
@@ -99,17 +99,17 @@ namespace AintBnB.Views
                 await new MessageDialog(ex.Message).ShowAsync();
             }
 
-            await VisibilityDeleteButton();
+            await VisibilityDeleteButtonAsync();
 
-            await VisibilityOfMakeEmployeeButton();
+            await VisibilityOfMakeEmployeeButtonAsync();
         }
 
-        private async Task VisibilityDeleteButton()
+        private async Task VisibilityDeleteButtonAsync()
         {
 
             try
             {
-                await AuthenticationViewModel.IsAdmin();
+                await AuthenticationViewModel.IsAdminAsync();
 
                 ShowDeleteButtonIfAdminIsLoggedIn();
 
@@ -125,6 +125,8 @@ namespace AintBnB.Views
 
             if (userType.Text != "Admin")
                 DeleteButton.Visibility = Visibility.Visible;
+            else
+                DeleteButton.Visibility = Visibility.Collapsed;
         }
 
         private void HideDeleteButtonIfEmployeeIsLoggedIn()
@@ -136,8 +138,8 @@ namespace AintBnB.Views
         {
             try
             {
-                await UserViewModel.MakeEmployee();
-                await VisibilityOfMakeEmployeeButton();
+                await UserViewModel.MakeEmployeeAsync();
+                await VisibilityOfMakeEmployeeButtonAsync();
             }
             catch (Exception ex)
             {
@@ -145,11 +147,11 @@ namespace AintBnB.Views
             }
         }
 
-        private async Task VisibilityOfMakeEmployeeButton()
+        private async Task VisibilityOfMakeEmployeeButtonAsync()
         {
             try
             {
-                await AuthenticationViewModel.IsAdmin();
+                await AuthenticationViewModel.IsAdminAsync();
 
                 if (userType.Text == "RequestToBeEmployee")
                     EmployeeButton.Visibility = Visibility.Visible;
@@ -166,7 +168,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await UserViewModel.UpdateAUser();
+                await UserViewModel.UpdateAUserAsync();
                 await new MessageDialog("Update ok!").ShowAsync();
             }
             catch (Exception ex)
@@ -179,7 +181,7 @@ namespace AintBnB.Views
         {
             contentDialog.Visibility = Visibility.Visible;
 
-            ContentDialogResult result = await contentDialog.ShowAsync();
+            var result = await contentDialog.ShowAsync();
 
             if (result == ContentDialogResult.Primary)
             {
@@ -187,7 +189,7 @@ namespace AintBnB.Views
                 PasswordChangerViewModel.UserId = UserViewModel.User.Id;
                 try
                 {
-                    await PasswordChangerViewModel.ChangePassword();
+                    await PasswordChangerViewModel.ChangePasswordAsync();
                     await new MessageDialog("Password changed!").ShowAsync();
                 }
                 catch (Exception ex)
@@ -212,11 +214,11 @@ namespace AintBnB.Views
                 return;
 
 
-            bool wasDeleted = false;
+            var wasDeleted = false;
 
             try
             {
-                await UserViewModel.DeleteAUser();
+                await UserViewModel.DeleteAUserAsync();
 
                 await new MessageDialog("Deletion ok!").ShowAsync();
 
@@ -228,19 +230,19 @@ namespace AintBnB.Views
             }
 
             if (wasDeleted)
-                await RedirectToCorrectViewBasedOnUserType();
+                await RedirectToCorrectViewBasedOnUserTypeAsync();
         }
 
-        private async Task RedirectToCorrectViewBasedOnUserType()
+        private async Task RedirectToCorrectViewBasedOnUserTypeAsync()
         {
             try
             {
-                await AuthenticationViewModel.IsAdmin();
+                await AuthenticationViewModel.IsAdminAsync();
                 Frame.Navigate(typeof(AllUsersPage));
             }
             catch (Exception)
             {
-                await AuthenticationViewModel.LogoutFromApp();
+                await AuthenticationViewModel.LogoutFromAppAsync();
                 Frame.Navigate(typeof(MainPage));
             }
         }

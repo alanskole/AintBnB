@@ -1,8 +1,7 @@
+using AintBnB.BusinessLogic.CustomExceptions;
 using AintBnB.Core.Models;
 using System;
-using AintBnB.BusinessLogic.CustomExceptions;
 using System.Collections.Generic;
-using System.Net;
 using static AintBnB.BusinessLogic.Helpers.PasswordHashing;
 
 namespace AintBnB.BusinessLogic.Helpers

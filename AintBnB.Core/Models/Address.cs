@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AintBnB.Core.Models
+﻿namespace AintBnB.Core.Models
 {
     public class Address
     {
@@ -72,7 +70,7 @@ namespace AintBnB.Core.Models
             }
         }
 
-        public string Country 
+        public string Country
         {
             get { return _country; }
             set

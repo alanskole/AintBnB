@@ -21,7 +21,7 @@ namespace AintBnB.Views
         {
             try
             {
-                listView.ItemsSource = await UserViewModel.GetAllUsers();
+                listView.ItemsSource = await UserViewModel.GetAllUsersAsync();
             }
             catch (Exception ex)
             {
@@ -30,7 +30,7 @@ namespace AintBnB.Views
 
             try
             {
-                await AuthenticationViewModel.IsAdmin();
+                await AuthenticationViewModel.IsAdminAsync();
                 EmpReqButton.Visibility = Visibility.Visible;
             }
             catch (Exception)

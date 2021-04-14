@@ -33,26 +33,26 @@ namespace AintBnB.Views
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedIn();
+                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
             }
             catch (Exception ex)
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
 
-            bool normalUserLoggedIn = false;
+            var normalUserLoggedIn = false;
             await FindUserTypeOfLoggedInUser(normalUserLoggedIn);
         }
 
         private async Task FindUserTypeOfLoggedInUser(bool normalUserLoggedIn)
         {
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdmin();
+                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
 
-                foreach (var acc in await AccommodationViewModel.GetAllAccommodations())
+                foreach (var acc in await AccommodationViewModel.GetAllAccommodationsAsync())
                     ids.Add(acc.Id);
             }
             catch (Exception)
@@ -69,11 +69,11 @@ namespace AintBnB.Views
         {
             if (normalUserLoggedIn)
             {
-                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUserAsync();
 
                 try
                 {
-                    foreach (var acc in await AccommodationViewModel.GetAllAccommodationsOfAUser())
+                    foreach (var acc in await AccommodationViewModel.GetAllAccommodationsOfAUserAsync())
                         ids.Add(acc.Id);
                 }
                 catch (Exception ex)
@@ -91,7 +91,7 @@ namespace AintBnB.Views
             {
                 AccommodationViewModel.Accommodation.Id = int.Parse(ComboBoxAccommodations.SelectedValue.ToString());
 
-                await AccommodationViewModel.GetAccommodation();
+                await AccommodationViewModel.GetAccommodationAsync();
             }
             catch (Exception ex)
             {
@@ -177,7 +177,7 @@ namespace AintBnB.Views
 
         private async void GetPhotos()
         {
-            List<BitmapImage> bmimg = new List<BitmapImage>();
+            var bmimg = new List<BitmapImage>();
 
             await ConvertBytesToBitmapImageList(AccommodationViewModel.Accommodation.Picture, bmimg);
 
@@ -193,7 +193,7 @@ namespace AintBnB.Views
                 return;
             }
 
-            BitmapImage img = (BitmapImage)listViewPicture.SelectedItem;
+            var img = (BitmapImage)listViewPicture.SelectedItem;
 
             var contentDialog = new ContentDialog
             {
@@ -206,7 +206,7 @@ namespace AintBnB.Views
                 CloseButtonText = "Cancel",
             };
 
-            ContentDialogResult result = await contentDialog.ShowAsync();
+            var result = await contentDialog.ShowAsync();
 
             if (result == ContentDialogResult.Primary)
             {
@@ -224,7 +224,7 @@ namespace AintBnB.Views
             if ((int)res.Id == 1)
                 return;
 
-            int index = listViewPicture.SelectedIndex;
+            var index = listViewPicture.SelectedIndex;
 
             AccommodationViewModel.Accommodation.Picture.Remove(AccommodationViewModel.Accommodation.Picture[index]);
 
@@ -235,7 +235,7 @@ namespace AintBnB.Views
 
         private async void Button_Click_Upload(object sender, RoutedEventArgs e)
         {
-            int sizeBeforeUploading = AccommodationViewModel.Accommodation.Picture.Count;
+            var sizeBeforeUploading = AccommodationViewModel.Accommodation.Picture.Count;
 
             await PhotoUpload(AccommodationViewModel.Accommodation.Picture);
 
@@ -248,7 +248,7 @@ namespace AintBnB.Views
 
         private void Refresh()
         {
-            AccommodationInfoPage infoPage = new AccommodationInfoPage();
+            var infoPage = new AccommodationInfoPage();
             Content = infoPage;
             infoPage.ComboBoxAccommodations.SelectedIndex = ComboBoxAccommodations.Items.IndexOf(AccommodationViewModel.Accommodation.Id);
         }

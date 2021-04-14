@@ -19,7 +19,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AuthenticationViewModel.LogoutFromApp();
+                await AuthenticationViewModel.LogoutFromAppAsync();
                 await new MessageDialog("Logout ok!").ShowAsync();
                 Frame.Navigate(typeof(MainPage));
             }

@@ -1,11 +1,10 @@
-﻿using AintBnB.Core.Models;
+﻿using AintBnB.CommonMethodsAndProperties;
+using AintBnB.Core.Models;
 using AintBnB.Helpers;
 using Newtonsoft.Json;
-using System.Net.Http;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
-using AintBnB.CommonMethodsAndProperties;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
 namespace AintBnB.ViewModels
@@ -77,71 +76,71 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task BookAccommodation()
+        public async Task BookAccommodationAsync()
         {
             _uniquePartOfUri = StartDate + "/" + Booking.BookedBy.Id + "/" + Nights + "/" + Booking.Accommodation.Id;
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonBooking = await response.Content.ReadAsStringAsync();
+            var jsonBooking = await response.Content.ReadAsStringAsync();
             Booking = JsonConvert.DeserializeObject<Booking>(jsonBooking);
             NotifyPropertyChanged("Booking");
         }
 
-        public async Task UpdateBooking()
+        public async Task UpdateBookingAsync()
         {
             _uniquePartOfUri = StartDate + "/" + Nights + "/" + Booking.Id;
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonBooking = await response.Content.ReadAsStringAsync();
+            var jsonBooking = await response.Content.ReadAsStringAsync();
             Booking = JsonConvert.DeserializeObject<Booking>(jsonBooking);
             NotifyPropertyChanged("Booking");
         }
 
-        public async Task Rate()
+        public async Task RateAsync()
         {
             _uniquePartOfUri = "rate/" + Booking.Id + "/" + Booking.Rating;
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
-        public async Task GetABooking()
+        public async Task GetABookingAsync()
         {
             _uniquePartOfUri = Booking.Id.ToString();
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonBooking = await response.Content.ReadAsStringAsync();
+            var jsonBooking = await response.Content.ReadAsStringAsync();
             Booking = JsonConvert.DeserializeObject<Booking>(jsonBooking);
             NotifyPropertyChanged("Booking");
         }
 
-        public async Task<List<Booking>> GetAllBookings()
+        public async Task<List<Booking>> GetAllBookingsAsync()
         {
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri));
             ResponseChecker(response);
-            string jsonBookings = await response.Content.ReadAsStringAsync();
+            var jsonBookings = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<Booking>>(jsonBookings);
         }
 
-        public async Task<List<Booking>> GetAllBookingsOfOwnedAccommodations()
+        public async Task<List<Booking>> GetAllBookingsOfOwnedAccommodationsAsync()
         {
             _uniquePartOfUri = UserId + "/" + "bookingsownaccommodation";
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonBookings = await response.Content.ReadAsStringAsync();
+            var jsonBookings = await response.Content.ReadAsStringAsync();
             AllBookingsOfOwnedAccommodations = JsonConvert.DeserializeObject<List<Booking>>(jsonBookings);
             return AllBookingsOfOwnedAccommodations;
         }
 
-        public async Task DeleteABooking()
+        public async Task DeleteABookingAsync()
         {
             _uniquePartOfUri = Booking.Id.ToString();
 
-            HttpResponseMessage response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
     }

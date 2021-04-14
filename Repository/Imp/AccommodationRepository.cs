@@ -1,10 +1,10 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.Database.DbCtx;
+using AintBnB.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-using Microsoft.EntityFrameworkCore;
-using AintBnB.Repository.Interfaces;
+using System.Threading.Tasks;
 
 namespace AintBnB.Repository.Imp
 {
@@ -17,32 +17,32 @@ namespace AintBnB.Repository.Imp
             _databaseContext = databaseContext;
         }
 
-        public void Create(Accommodation accommodation)
+        public async Task CreateAsync(Accommodation accommodation)
         {
-            _databaseContext.Address.Add(accommodation.Address);
-            _databaseContext.Accommodation.Add(accommodation);
+            await _databaseContext.Address.AddAsync(accommodation.Address);
+            await _databaseContext.Accommodation.AddAsync(accommodation);
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            var acc = _databaseContext.Accommodation.Find(id);
+            var acc = await ReadAsync(id);
             _databaseContext.Address.Remove(acc.Address);
-            _databaseContext.Accommodation.Remove(Read(id));
+            _databaseContext.Accommodation.Remove(acc);
         }
 
-        public List<Accommodation> GetAll()
+        public async Task<List<Accommodation>> GetAllAsync()
         {
-            return _databaseContext.Accommodation.Include(ac => ac.Address).Include(ac => ac.Owner).ToList();
+            return await _databaseContext.Accommodation.Include(ac => ac.Address).Include(ac => ac.Owner).ToListAsync();
         }
 
-        public Accommodation Read(int id)
+        public async Task<Accommodation> ReadAsync(int id)
         {
-            return _databaseContext.Accommodation.Include(ac => ac.Address).Include(ac => ac.Owner).FirstOrDefault(ac => ac.Id == id);
+            return await _databaseContext.Accommodation.Include(ac => ac.Address).Include(ac => ac.Owner).FirstOrDefaultAsync(ac => ac.Id == id);
         }
 
-        public void Update(int id, Accommodation accommodation)
+        public async Task UpdateAsync(int id, Accommodation accommodation)
         {
-            var acc = _databaseContext.Accommodation.Find(id);
+            var acc = await ReadAsync(id);
             acc.SquareMeters = accommodation.SquareMeters;
             acc.AmountOfBedrooms = accommodation.AmountOfBedrooms;
             acc.Description = accommodation.Description;

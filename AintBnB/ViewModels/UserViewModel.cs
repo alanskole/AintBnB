@@ -1,12 +1,12 @@
-﻿using AintBnB.Core.Models;
+﻿using AintBnB.CommonMethodsAndProperties;
+using AintBnB.Core.Models;
 using AintBnB.Helpers;
 using Newtonsoft.Json;
-using System.Net.Http;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using System;
-using AintBnB.CommonMethodsAndProperties;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
 namespace AintBnB.ViewModels
@@ -55,10 +55,10 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task MakeEmployee()
+        public async Task MakeEmployeeAsync()
         {
             User.UserType = UserTypes.Employee;
-            await UpdateAUser();
+            await UpdateAUserAsync();
         }
 
         public void RequestToBecomeEmployee()
@@ -66,72 +66,72 @@ namespace AintBnB.ViewModels
             User.UserType = UserTypes.RequestToBeEmployee;
         }
 
-        public async Task CreateTheUser()
+        public async Task CreateTheUserAsync()
         {
             if (User.Password != PasswordConfirm)
                 throw new Exception("The passwords don't match!");
 
-            string userJson = JsonConvert.SerializeObject(User);
-            HttpResponseMessage response = await _clientProvider.client.PostAsync(
+            var userJson = JsonConvert.SerializeObject(User);
+            var response = await _clientProvider.client.PostAsync(
                 _uri, new StringContent(userJson, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }
 
-        public async Task GetAUser()
+        public async Task GetAUserAsync()
         {
             _uniquePartOfUri = User.Id.ToString();
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonUser = await response.Content.ReadAsStringAsync();
+            var jsonUser = await response.Content.ReadAsStringAsync();
             _user = JsonConvert.DeserializeObject<User>(jsonUser);
             NotifyPropertyChanged("User");
         }
 
-        public async Task<List<User>> GetAllUsers()
+        public async Task<List<User>> GetAllUsersAsync()
         {
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri));
             ResponseChecker(response);
-            string jsonUsers = await response.Content.ReadAsStringAsync();
+            var jsonUsers = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<User>>(jsonUsers);
         }
 
-        public async Task<List<User>> GetAllCustomers()
+        public async Task<List<User>> GetAllCustomersAsync()
         {
             _uniquePartOfUri = "allcustomers";
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonUsers = await response.Content.ReadAsStringAsync();
+            var jsonUsers = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<User>>(jsonUsers);
         }
 
-        public async Task<List<User>> GetAllEmployeeRequests()
+        public async Task<List<User>> GetAllEmployeeRequestsAsync()
         {
             _uniquePartOfUri = "requests";
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonUsers = await response.Content.ReadAsStringAsync();
+            var jsonUsers = await response.Content.ReadAsStringAsync();
             AllEmployeeRequests = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
             return AllEmployeeRequests;
         }
 
-        public async Task DeleteAUser()
+        public async Task DeleteAUserAsync()
         {
             _uniquePartOfUri = User.Id.ToString();
 
-            HttpResponseMessage response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
-        public async Task UpdateAUser()
+        public async Task UpdateAUserAsync()
         {
             _uniquePartOfUri = User.Id.ToString();
 
-            string userJson = JsonConvert.SerializeObject(User);
+            var userJson = JsonConvert.SerializeObject(User);
 
-            HttpResponseMessage response = await _clientProvider.client.PutAsync(
+            var response = await _clientProvider.client.PutAsync(
                 new Uri(_uri + _uniquePartOfUri), new StringContent(userJson, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }

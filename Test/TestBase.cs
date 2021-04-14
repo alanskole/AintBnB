@@ -8,6 +8,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test
@@ -36,17 +37,17 @@ namespace Test
         protected Booking booking2;
         protected Booking booking3;
 
-        public void SetupDatabaseForTesting()
+        public async Task SetupDatabaseForTesting()
         {
             var sqlconnection = new SqliteConnection("Data Source=:memory:");
-            sqlconnection.Open();
+            await sqlconnection.OpenAsync();
 
             var options = new DbContextOptionsBuilder<DatabaseContext>()
                     .UseSqlite(sqlconnection)
                     .Options;
 
             connection = new DatabaseContext(options);
-            connection.Database.EnsureCreated();
+            await connection.Database.EnsureCreatedAsync();
         }
 
         public void SetupTestClasses()
@@ -58,7 +59,7 @@ namespace Test
             userService = new UserService(unitOfWork);
         }
 
-        public void CreateDummyUsers()
+        public async Task CreateDummyUsers()
         {
             userAdmin = new User
             {
@@ -114,23 +115,23 @@ namespace Test
                 UserType = UserTypes.Customer
             };
 
-            unitOfWork.UserRepository.Create(userAdmin);
-            connection.SaveChanges();
-            unitOfWork.UserRepository.Create(userEmployee1);
-            connection.SaveChanges();
-            unitOfWork.UserRepository.Create(userRequestToBecomeEmployee);
-            connection.SaveChanges();
-            unitOfWork.UserRepository.Create(userRequestToBecomeEmployee2);
-            connection.SaveChanges();
-            unitOfWork.UserRepository.Create(userCustomer1);
-            connection.SaveChanges();
-            unitOfWork.UserRepository.Create(userCustomer2);
-            connection.SaveChanges();
+            await unitOfWork.UserRepository.CreateAsync(userAdmin);
+            await connection.SaveChangesAsync();
+            await unitOfWork.UserRepository.CreateAsync(userEmployee1);
+            await connection.SaveChangesAsync();
+            await unitOfWork.UserRepository.CreateAsync(userRequestToBecomeEmployee);
+            await connection.SaveChangesAsync();
+            await unitOfWork.UserRepository.CreateAsync(userRequestToBecomeEmployee2);
+            await connection.SaveChangesAsync();
+            await unitOfWork.UserRepository.CreateAsync(userCustomer1);
+            await connection.SaveChangesAsync();
+            await unitOfWork.UserRepository.CreateAsync(userCustomer2);
+            await connection.SaveChangesAsync();
         }
 
-        public void CreateDummyAccommodation()
+        public async Task CreateDummyAccommodation()
         {
-            SortedDictionary<string, bool> schedule = new SortedDictionary<string, bool>();
+            var schedule = new SortedDictionary<string, bool>();
 
             for (int i = 0; i < 100; i++)
             {
@@ -179,41 +180,41 @@ namespace Test
                 Picture = new List<byte[]>()
             };
 
-            unitOfWork.AccommodationRepository.Create(accommodation1);
-            connection.SaveChanges();
-            unitOfWork.AccommodationRepository.Create(accommodation2);
-            connection.SaveChanges();
-            unitOfWork.AccommodationRepository.Create(accommodation3);
-            connection.SaveChanges();
+            await unitOfWork.AccommodationRepository.CreateAsync(accommodation1);
+            await connection.SaveChangesAsync();
+            await unitOfWork.AccommodationRepository.CreateAsync(accommodation2);
+            await connection.SaveChangesAsync();
+            await unitOfWork.AccommodationRepository.CreateAsync(accommodation3);
+            await connection.SaveChangesAsync();
         }
 
-        public void CreateDummyBooking()
+        public async Task CreateDummyBooking()
         {
-            DateTime bkdt = DateTime.Today.AddDays(2);
+            var bkdt = DateTime.Today.AddDays(2);
 
-            List<string> dates1 = new List<string>();
+            var dates1 = new List<string>();
 
             for (int i = 0; i < 5; i++)
             {
-                DateTime dt = bkdt.AddDays(i);
+                var dt = bkdt.AddDays(i);
                 accommodation1.Schedule[dt.ToString("yyyy-MM-dd")] = false;
                 dates1.Add(dt.ToString("yyyy-MM-dd"));
             }
 
-            List<string> dates2 = new List<string>();
+            var dates2 = new List<string>();
 
             for (int i = 3; i < 15; i++)
             {
-                DateTime dt = bkdt.AddDays(i);
+                var dt = bkdt.AddDays(i);
                 accommodation2.Schedule[dt.ToString("yyyy-MM-dd")] = false;
                 dates2.Add(dt.ToString("yyyy-MM-dd"));
             }
 
-            List<string> dates3 = new List<string>();
+            var dates3 = new List<string>();
 
             for (int i = 0; i < 4; i++)
             {
-                DateTime dt = DateTime.Today.AddDays(i + 2);
+                var dt = DateTime.Today.AddDays(i + 2);
                 accommodation3.Schedule[dt.ToString("yyyy-MM-dd")] = false;
                 dates3.Add(dt.ToString("yyyy-MM-dd"));
             }
@@ -242,17 +243,17 @@ namespace Test
                 Price = (accommodation3.PricePerNight * dates3.Count)
             };
 
-            unitOfWork.BookingRepository.Create(booking1);
-            connection.SaveChanges();
-            unitOfWork.BookingRepository.Create(booking2);
-            connection.SaveChanges();
-            unitOfWork.BookingRepository.Create(booking3);
-            connection.SaveChanges();
+            await unitOfWork.BookingRepository.CreateAsync(booking1);
+            await connection.SaveChangesAsync();
+            await unitOfWork.BookingRepository.CreateAsync(booking2);
+            await connection.SaveChangesAsync();
+            await unitOfWork.BookingRepository.CreateAsync(booking3);
+            await connection.SaveChangesAsync();
         }
 
-        public void Dispose()
+        public async Task DisposeAsync()
         {
-            connection.Database.EnsureDeleted();
+            await connection.Database.EnsureDeletedAsync();
         }
     }
 }

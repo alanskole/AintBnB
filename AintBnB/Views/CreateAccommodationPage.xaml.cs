@@ -23,18 +23,18 @@ namespace AintBnB.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await CheckIfAnyoneIsLoggedIn();
+            await CheckIfAnyoneIsLoggedInAsync();
 
-            await FindUserType();
+            await FindUserTypeAsync();
 
-            ComboBoxCountries.ItemsSource = await WorldViewModel.GetAllCountriesInTheWorld();
+            ComboBoxCountries.ItemsSource = await WorldViewModel.GetAllCountriesInTheWorldAsync();
         }
 
-        private async Task CheckIfAnyoneIsLoggedIn()
+        private async Task CheckIfAnyoneIsLoggedInAsync()
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedIn();
+                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
             }
             catch (Exception ex)
             {
@@ -42,27 +42,27 @@ namespace AintBnB.Views
             }
         }
 
-        private async Task FindUserType()
+        private async Task FindUserTypeAsync()
         {
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdmin();
+                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
 
-                await FillComboboxWithIdsOfAllCustomers();
+                await FillComboboxWithIdsOfAllCustomersAsync();
             }
             catch (Exception)
             {
-                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUserAsync();
             }
         }
 
-        private async Task FillComboboxWithIdsOfAllCustomers()
+        private async Task FillComboboxWithIdsOfAllCustomersAsync()
         {
             ComboBoxUsers.Visibility = Visibility.Visible;
 
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
-            foreach (var user in await UserViewModel.GetAllCustomers())
+            foreach (var user in await UserViewModel.GetAllCustomersAsync())
                 ids.Add(user.Id);
 
             ComboBoxUsers.ItemsSource = ids;
@@ -79,7 +79,7 @@ namespace AintBnB.Views
 
             WorldViewModel.Country = ComboBoxCountries.SelectedValue.ToString();
 
-            ComboBoxCities.ItemsSource = await WorldViewModel.GetAllCitiesOfACountry();
+            ComboBoxCities.ItemsSource = await WorldViewModel.GetAllCitiesOfACountryAsync();
 
             AccommodationViewModel.Accommodation.Address.Country = ComboBoxCountries.SelectedValue.ToString();
         }
@@ -94,7 +94,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AccommodationViewModel.CreateAccommodation();
+                await AccommodationViewModel.CreateAccommodationAsync();
                 await new MessageDialog("Creation ok!").ShowAsync();
                 Frame.Navigate(typeof(AllAccommodationsPage));
             }

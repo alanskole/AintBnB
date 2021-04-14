@@ -29,11 +29,11 @@ namespace AintBnB.Views
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedIn();
+                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
 
-                BookingViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUser();
+                BookingViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUserAsync();
 
-                await FillComboboxWithAllBookings();
+                await FillComboboxWithAllBookingsAsync();
             }
             catch (Exception ex)
             {
@@ -41,11 +41,11 @@ namespace AintBnB.Views
             }
         }
 
-        private async Task FillComboboxWithAllBookings()
+        private async Task FillComboboxWithAllBookingsAsync()
         {
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
-            foreach (var booking in await BookingViewModel.GetAllBookings())
+            foreach (var booking in await BookingViewModel.GetAllBookingsAsync())
                 ids.Add(booking.Id);
 
             ComboBoxBookings.ItemsSource = ids;
@@ -55,7 +55,7 @@ namespace AintBnB.Views
         {
             contentDialog.Visibility = Visibility.Visible;
 
-            ContentDialogResult result = await contentDialog.ShowAsync();
+            var result = await contentDialog.ShowAsync();
 
             if (result == ContentDialogResult.Primary)
             {
@@ -64,15 +64,15 @@ namespace AintBnB.Views
                 if ((int)res.Id == 1)
                     return;
 
-                await UpdateTheBooking();
+                await UpdateTheBookingAsync();
             }
         }
 
-        private async Task UpdateTheBooking()
+        private async Task UpdateTheBookingAsync()
         {
             try
             {
-                await BookingViewModel.UpdateBooking();
+                await BookingViewModel.UpdateBookingAsync();
                 await new MessageDialog("Update ok!").ShowAsync();
                 listView.ItemsSource = BookingViewModel.Booking.Dates;
             }
@@ -89,22 +89,22 @@ namespace AintBnB.Views
 
         private async void Button_Click_Rate(object sender, RoutedEventArgs e)
         {
-            int rating = (int)ComboBoxRating.SelectedItem;
+            var rating = (int)ComboBoxRating.SelectedItem;
 
             var res = await DialogeMessageAsync($"Ratings cannot be changed, are you sure you want to rate it {rating}?", "Rate");
 
             if ((int)res.Id == 1)
                 return;
 
-            await Rate(rating);
+            await RateAsync(rating);
         }
 
-        private async Task Rate(int rating)
+        private async Task RateAsync(int rating)
         {
             try
             {
                 BookingViewModel.Booking.Rating = rating;
-                await BookingViewModel.Rate();
+                await BookingViewModel.RateAsync();
                 RatingButtonVisibility();
             }
             catch (Exception ex)
@@ -120,14 +120,14 @@ namespace AintBnB.Views
             if ((int)res.Id == 1)
                 return;
 
-            await DeleteBooking();
+            await DeleteBookingAsync();
         }
 
-        private async Task DeleteBooking()
+        private async Task DeleteBookingAsync()
         {
             try
             {
-                await BookingViewModel.DeleteABooking();
+                await BookingViewModel.DeleteABookingAsync();
                 await new MessageDialog("Deletion ok!").ShowAsync();
                 Frame.Navigate(typeof(AllBookingsPage));
             }
@@ -143,7 +143,7 @@ namespace AintBnB.Views
             {
                 BookingViewModel.Booking.Id = int.Parse(ComboBoxBookings.SelectedValue.ToString());
 
-                await BookingViewModel.GetABooking();
+                await BookingViewModel.GetABookingAsync();
 
                 listView.ItemsSource = BookingViewModel.Booking.Dates;
             }

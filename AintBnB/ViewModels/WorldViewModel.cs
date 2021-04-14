@@ -1,10 +1,9 @@
-﻿using AintBnB.Helpers;
+﻿using AintBnB.CommonMethodsAndProperties;
+using AintBnB.Helpers;
 using Newtonsoft.Json;
-using System.Net.Http;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
-using AintBnB.CommonMethodsAndProperties;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
 namespace AintBnB.ViewModels
@@ -45,23 +44,23 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task<List<string>> GetAllCountriesInTheWorld()
+        public async Task<List<string>> GetAllCountriesInTheWorldAsync()
         {
             _uniquePartOfUri = "countries";
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonUsers = await response.Content.ReadAsStringAsync();
+            var jsonUsers = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<string>>(jsonUsers);
         }
 
-        public async Task<List<string>> GetAllCitiesOfACountry()
+        public async Task<List<string>> GetAllCitiesOfACountryAsync()
         {
             _uniquePartOfUri = "cities/" + Country;
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonUsers = await response.Content.ReadAsStringAsync();
+            var jsonUsers = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<string>>(jsonUsers);
         }
     }

@@ -17,8 +17,9 @@ namespace AintBnB.Views
 
         private async void Button_Click_Login(object sender, RoutedEventArgs e)
         {
-            try {
-                await AuthenticationViewModel.Login();
+            try
+            {
+                await AuthenticationViewModel.LoginAsync();
                 Frame.Navigate(typeof(SearchPage));
             }
             catch (Exception ex)
@@ -36,7 +37,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedIn();
+                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
             }
             catch (Exception)
             {

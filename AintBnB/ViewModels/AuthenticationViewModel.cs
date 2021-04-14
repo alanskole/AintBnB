@@ -1,11 +1,11 @@
-﻿using AintBnB.Core.Models;
+﻿using AintBnB.CommonMethodsAndProperties;
+using AintBnB.Core.Models;
 using AintBnB.Helpers;
-using AintBnB.CommonMethodsAndProperties;
 using Newtonsoft.Json;
 using System;
 using System.Net.Http;
-using System.Threading.Tasks;
 using System.Text;
+using System.Threading.Tasks;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
 namespace AintBnB.ViewModels
@@ -33,23 +33,23 @@ namespace AintBnB.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task Login()
+        public async Task LoginAsync()
         {
             CheckForEmptyFields();
 
             _uniquePartOfUri = "login";
-            string[] userAndPass = new string[] { User.UserName.Trim(), User.Password.Trim() };
-            string loginJson = JsonConvert.SerializeObject(userAndPass);
-            HttpResponseMessage response = await _clientProvider.client.PostAsync(
+            var userAndPass = new string[] { User.UserName.Trim(), User.Password.Trim() };
+            var loginJson = JsonConvert.SerializeObject(userAndPass);
+            var response = await _clientProvider.client.PostAsync(
                 (_uri + _uniquePartOfUri), new StringContent(loginJson, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }
 
 
-        public async Task IsAnyoneLoggedIn()
+        public async Task IsAnyoneLoggedInAsync()
         {
             _uniquePartOfUri = "anyoneloggedin";
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
@@ -59,43 +59,35 @@ namespace AintBnB.ViewModels
                 throw new ArgumentException("None of the fields can be empty");
         }
 
-        public async Task<int> IdOfLoggedInUser()
+        public async Task<int> IdOfLoggedInUserAsync()
         {
             _uniquePartOfUri = "loggedin";
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
-            string jsonUser = await response.Content.ReadAsStringAsync();
+            var jsonUser = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<User>(jsonUser).Id;
         }
 
-        public async Task IsAdmin()
+        public async Task IsAdminAsync()
         {
             _uniquePartOfUri = "admin";
 
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
-        public async Task IsEmployee()
-        {
-            _uniquePartOfUri = "employee";
-
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
-        }
-
-        public async Task IsEmployeeOrAdmin()
+        public async Task IsEmployeeOrAdminAsync()
         {
             _uniquePartOfUri = "elevatedrights";
 
-             HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
 
-        public async Task LogoutFromApp()
+        public async Task LogoutFromAppAsync()
         {
             _uniquePartOfUri = "logout";
-            HttpResponseMessage response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
+            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
             ResponseChecker(response);
         }
     }

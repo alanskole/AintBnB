@@ -24,25 +24,25 @@ namespace AintBnB.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await CheckIfAnyoneIsLoggedIn();
+            await CheckIfAnyoneIsLoggedInAsync();
 
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdmin();
+                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
 
-                await FillComboboxWithIdsOfAllTheCustomers();
+                await FillComboboxWithIdsOfAllTheCustomersAsync();
             }
             catch (Exception)
             {
-                await FillListWithBookings(await AuthenticationViewModel.IdOfLoggedInUser());
+                await FillListWithBookingsAsync(await AuthenticationViewModel.IdOfLoggedInUserAsync());
             }
         }
 
-        private async Task CheckIfAnyoneIsLoggedIn()
+        private async Task CheckIfAnyoneIsLoggedInAsync()
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedIn();
+                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
             }
             catch (Exception ex)
             {
@@ -50,11 +50,11 @@ namespace AintBnB.Views
             }
         }
 
-        private async Task FillComboboxWithIdsOfAllTheCustomers()
+        private async Task FillComboboxWithIdsOfAllTheCustomersAsync()
         {
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
-            foreach (var user in await UserViewModel.GetAllCustomers())
+            foreach (var user in await UserViewModel.GetAllCustomersAsync())
                 ids.Add(user.Id);
 
             ComboBoxUsers.ItemsSource = ids;
@@ -66,7 +66,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await FillListWithBookings(int.Parse(ComboBoxUsers.SelectedValue.ToString()));
+                await FillListWithBookingsAsync(int.Parse(ComboBoxUsers.SelectedValue.ToString()));
 
             }
             catch (Exception ex)
@@ -75,13 +75,13 @@ namespace AintBnB.Views
             }
         }
 
-        private async Task FillListWithBookings(int userId)
+        private async Task FillListWithBookingsAsync(int userId)
         {
             BookingViewModel.UserId = userId;
 
             try
             {
-                listView.ItemsSource = await BookingViewModel.GetAllBookingsOfOwnedAccommodations();
+                listView.ItemsSource = await BookingViewModel.GetAllBookingsOfOwnedAccommodationsAsync();
             }
             catch (Exception ex)
             {
@@ -114,15 +114,15 @@ namespace AintBnB.Views
                 if ((int)res.Id == 1)
                     return;
 
-                await DeleteBooking();
+                await DeleteBookingAsync();
             }
         }
 
-        private async Task DeleteBooking()
+        private async Task DeleteBookingAsync()
         {
             try
             {
-                await BookingViewModel.DeleteABooking();
+                await BookingViewModel.DeleteABookingAsync();
 
                 await new MessageDialog("Booking deleted!").ShowAsync();
 

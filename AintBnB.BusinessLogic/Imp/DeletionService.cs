@@ -1,11 +1,12 @@
-﻿using AintBnB.Core.Models;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Core.Models;
+using AintBnB.Repository.Interfaces;
 using System;
+using System.Threading.Tasks;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BusinessLogic.Helpers.DateHelper;
 using static AintBnB.BusinessLogic.Helpers.UpdateCancelledDatesInSchedule;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
-using AintBnB.BusinessLogic.CustomExceptions;
-using AintBnB.Repository.Interfaces;
-using AintBnB.BusinessLogic.Interfaces;
 
 namespace AintBnB.BusinessLogic.Imp
 {
@@ -18,20 +19,21 @@ namespace AintBnB.BusinessLogic.Imp
             _unitOfWork = unitOfWork;
         }
 
-        public void DeleteUser(int id)
+        public async Task DeleteUserAsync(int id)
         {
+            var user = await _unitOfWork.UserRepository.ReadAsync(id);
             if (CorrectUserOrAdmin(id))
             {
-                CheckIfUserCanBeDeleted(_unitOfWork.UserRepository.Read(id));
-                DeleteUsersAccommodations(id);
-                DeleteUsersBookings(id);
-                _unitOfWork.UserRepository.Delete(id);
-                _unitOfWork.Commit();
-                
+                CheckIfUserCanBeDeleted(user);
+                await DeleteUsersAccommodationsAsync(id);
+                await DeleteUsersBookingsAsync(id);
+                await _unitOfWork.UserRepository.DeleteAsync(id);
+                await _unitOfWork.CommitAsync();
+
                 if (!AdminChecker())
                     Logout();
             }
-            else if (_unitOfWork.UserRepository.Read(id).UserType == UserTypes.Employee)
+            else if (user.UserType == UserTypes.Employee)
                 throw new AccessException("Employees cannot delete any accounts, even if it's their own accounts!");
             else
                 throw new AccessException($"Administrator or user with ID {id} only!");
@@ -46,26 +48,26 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new AccessException("Admin cannot be deleted!");
         }
 
-        private void DeleteUsersAccommodations(int id)
+        private async Task DeleteUsersAccommodationsAsync(int id)
         {
-            foreach (Accommodation accommodation in _unitOfWork.AccommodationRepository.GetAll())
+            foreach (var accommodation in await _unitOfWork.AccommodationRepository.GetAllAsync())
             {
-                if (accommodation.Owner == _unitOfWork.UserRepository.Read(id))
+                if (accommodation.Owner == await _unitOfWork.UserRepository.ReadAsync(id))
                 {
-                    DeleteAccommodation(accommodation.Id);
+                    await DeleteAccommodationAsync(accommodation.Id);
                 }
             }
         }
 
-        private void DeleteUsersBookings(int id)
+        private async Task DeleteUsersBookingsAsync(int id)
         {
-            foreach (Booking booking in _unitOfWork.BookingRepository.GetAll())
+            foreach (var booking in await _unitOfWork.BookingRepository.GetAllAsync())
             {
-                if (booking.BookedBy == _unitOfWork.UserRepository.Read(id))
+                if (booking.BookedBy == await _unitOfWork.UserRepository.ReadAsync(id))
                 {
                     try
                     {
-                        DeleteBooking(booking.Id);
+                        await DeleteBookingAsync(booking.Id);
                     }
                     catch (Exception)
                     {
@@ -75,16 +77,16 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
-        public void DeleteAccommodation(int id)
+        public async Task DeleteAccommodationAsync(int id)
         {
-            Accommodation accommodation = _unitOfWork.AccommodationRepository.Read(id);
+            var accommodation = await _unitOfWork.AccommodationRepository.ReadAsync(id);
 
             CanAccommodationBeDeleted(accommodation);
 
-            DeleteAccommodationBookings(accommodation.Id);
+            await DeleteAccommodationBookingsAsync(accommodation.Id);
 
-            _unitOfWork.AccommodationRepository.Delete(id);
-            _unitOfWork.Commit();
+            await _unitOfWork.AccommodationRepository.DeleteAsync(id);
+            await _unitOfWork.CommitAsync();
         }
 
         private void CanAccommodationBeDeleted(Accommodation accommodation)
@@ -96,15 +98,15 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new AccessException($"Administrator, employee or user with ID {accommodation.Owner.Id} only!");
         }
 
-        private void DeleteAccommodationBookings(int accommodationId)
+        private async Task DeleteAccommodationBookingsAsync(int accommodationId)
         {
-            foreach (Booking booking in _unitOfWork.BookingRepository.GetAll())
+            foreach (var booking in await _unitOfWork.BookingRepository.GetAllAsync())
             {
-                if (booking.Accommodation == _unitOfWork.AccommodationRepository.Read(accommodationId))
+                if (booking.Accommodation == await _unitOfWork.AccommodationRepository.ReadAsync(accommodationId))
                 {
                     try
                     {
-                        DeleteBooking(booking.Id);
+                        await DeleteBookingAsync(booking.Id);
                     }
                     catch (Exception)
                     {
@@ -114,38 +116,39 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
-        public void DeleteBooking(int id)
+        public async Task DeleteBookingAsync(int id)
         {
-            Booking booking = _unitOfWork.BookingRepository.Read(id);
+            var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
 
             if (booking == null)
                 throw new IdNotFoundException("Booking", id);
 
             if (CorrectUserOrOwnerOrAdminOrEmployee(booking.Accommodation.Owner.Id, booking.BookedBy))
-                DeadLineExpiration(id, booking.Accommodation.CancellationDeadlineInDays);
+                await DeadLineExpirationAsync(id, booking.Accommodation.CancellationDeadlineInDays);
             else
                 throw new AccessException();
         }
 
-        private void DeadLineExpiration(int id, int deadlineInDays)
+        private async Task DeadLineExpirationAsync(int id, int deadlineInDays)
         {
-            string firstDateBooked = _unitOfWork.BookingRepository.Read(id).Dates[0];
+            var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
+            var firstDateBooked = booking.Dates[0];
 
             if (CancelationDeadlineCheck(firstDateBooked, deadlineInDays))
             {
-                ResetAvailableStatusAfterDeletingBooking(id);
-                _unitOfWork.BookingRepository.Delete(id);
-                _unitOfWork.Commit();
+                await ResetAvailableStatusAfterDeletingBookingAsync(id);
+                await _unitOfWork.BookingRepository.DeleteAsync(id);
+                await _unitOfWork.CommitAsync();
             }
             else
                 throw new CancelBookingException(id, deadlineInDays);
         }
 
-        private void ResetAvailableStatusAfterDeletingBooking(int id)
+        private async Task ResetAvailableStatusAfterDeletingBookingAsync(int id)
         {
-            Booking booking = _unitOfWork.BookingRepository.Read(id);
+            var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
             ResetDatesToAvailable(booking.Dates, booking.Accommodation.Schedule);
-            _unitOfWork.AccommodationRepository.Update(booking.Accommodation.Id, booking.Accommodation);
+            await _unitOfWork.AccommodationRepository.UpdateAsync(booking.Accommodation.Id, booking.Accommodation);
         }
     }
 }

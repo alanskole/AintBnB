@@ -1,12 +1,12 @@
-﻿using System;
+﻿using AintBnB.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using AintBnB.ViewModels;
-using Windows.UI.Popups;
 using Windows.UI.Xaml.Media.Imaging;
-using System.Collections.Generic;
 using static AintBnB.CommonMethodsAndProperties.CommonViewMethods;
-using System.Threading.Tasks;
 
 namespace AintBnB.Views
 {
@@ -27,9 +27,9 @@ namespace AintBnB.Views
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedIn();
+                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
 
-                ComboBoxCountries.ItemsSource = await WorldViewModel.GetAllCountriesInTheWorld();
+                ComboBoxCountries.ItemsSource = await WorldViewModel.GetAllCountriesInTheWorldAsync();
 
             }
             catch (Exception ex)
@@ -37,29 +37,29 @@ namespace AintBnB.Views
                 await new MessageDialog(ex.Message).ShowAsync();
             }
 
-            await FindUserType();
+            await FindUserTypeAsync();
         }
 
-        private async Task FindUserType()
+        private async Task FindUserTypeAsync()
         {
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdmin();
+                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
 
-                await FillComboboxWithTheIdsOfAllTheCustomers();
+                await FillComboboxWithTheIdsOfAllTheCustomersAsync();
             }
             catch (Exception)
             {
             }
         }
 
-        private async Task FillComboboxWithTheIdsOfAllTheCustomers()
+        private async Task FillComboboxWithTheIdsOfAllTheCustomersAsync()
         {
             ComboBoxUsers.Visibility = Visibility.Visible;
 
-            List<int> ids = new List<int>();
+            var ids = new List<int>();
 
-            foreach (var user in await UserViewModel.GetAllCustomers())
+            foreach (var user in await UserViewModel.GetAllCustomersAsync())
                 ids.Add(user.Id);
 
             ComboBoxUsers.ItemsSource = ids;
@@ -76,7 +76,7 @@ namespace AintBnB.Views
 
             WorldViewModel.Country = ComboBoxCountries.SelectedValue.ToString();
 
-            ComboBoxCities.ItemsSource = await WorldViewModel.GetAllCitiesOfACountry();
+            ComboBoxCities.ItemsSource = await WorldViewModel.GetAllCitiesOfACountryAsync();
 
         }
 
@@ -95,9 +95,9 @@ namespace AintBnB.Views
                 return;
             }
 
-            List<BitmapImage> bmimg = new List<BitmapImage>();
+            var bmimg = new List<BitmapImage>();
 
-            int index = listView.SelectedIndex;
+            var index = listView.SelectedIndex;
 
             await ConvertBytesToBitmapImageList(AccommodationViewModel.AvailableAccommodations[index].Picture, bmimg);
 
@@ -105,20 +105,20 @@ namespace AintBnB.Views
 
             contentDialog.Visibility = Visibility.Visible;
 
-            ContentDialogResult result = await contentDialog.ShowAsync();
+            var result = await contentDialog.ShowAsync();
 
             _skipSelectionChanged = true;
             listView.SelectedItem = null;
 
             if (result == ContentDialogResult.Primary)
-                await Book(index);
+                await BookAsync(index);
         }
 
-        private async Task Book(int index)
+        private async Task BookAsync(int index)
         {
             BookingViewModel.StartDate = AccommodationViewModel.FromDate;
 
-            await IfNotAdminOrEmployeeGetIdOfLoggedInCustomer();
+            await IfNotAdminOrEmployeeGetIdOfLoggedInCustomerAsync();
 
             BookingViewModel.Nights = int.Parse(nights.Text);
             BookingViewModel.Booking.Accommodation.Id = AccommodationViewModel.AvailableAccommodations[index].Id;
@@ -128,26 +128,26 @@ namespace AintBnB.Views
             if ((int)res.Id == 1)
                 return;
 
-            await BookTheAccommodation();
+            await BookTheAccommodationAsync();
         }
 
-        private async Task IfNotAdminOrEmployeeGetIdOfLoggedInCustomer()
+        private async Task IfNotAdminOrEmployeeGetIdOfLoggedInCustomerAsync()
         {
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdmin();
+                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
             }
             catch (Exception)
             {
-                BookingViewModel.Booking.BookedBy.Id = await AuthenticationViewModel.IdOfLoggedInUser();
+                BookingViewModel.Booking.BookedBy.Id = await AuthenticationViewModel.IdOfLoggedInUserAsync();
             }
         }
 
-        private async Task BookTheAccommodation()
+        private async Task BookTheAccommodationAsync()
         {
             try
             {
-                await BookingViewModel.BookAccommodation();
+                await BookingViewModel.BookAccommodationAsync();
                 await new MessageDialog("Booking successful!").ShowAsync();
                 Frame.Navigate(typeof(AllBookingsPage));
             }
@@ -163,14 +163,14 @@ namespace AintBnB.Views
 
             AccommodationViewModel.Accommodation.Address.City = WorldViewModel.City;
 
-            await FillListView();
+            await FillListViewAsync();
         }
 
-        private async Task FillListView()
+        private async Task FillListViewAsync()
         {
             try
             {
-                listView.ItemsSource = await AccommodationViewModel.GetAvailable();
+                listView.ItemsSource = await AccommodationViewModel.GetAvailableAsync();
 
                 RatingAsc.Visibility = Visibility.Visible;
                 PriceAsc.Visibility = Visibility.Visible;
@@ -189,43 +189,43 @@ namespace AintBnB.Views
         }
         private async void Button_Click_SortByRatingAsc(object sender, RoutedEventArgs e)
         {
-            await Sort("Rating", "Ascending", RatingAsc, RatingDesc);
+            await SortAsync("Rating", "Ascending", RatingAsc, RatingDesc);
         }
         private async void Button_Click_SortByRatingDesc(object sender, RoutedEventArgs e)
         {
-            await Sort("Rating", "Descending", RatingDesc, RatingAsc);
+            await SortAsync("Rating", "Descending", RatingDesc, RatingAsc);
         }
         private async void Button_Click_SortByPriceAsc(object sender, RoutedEventArgs e)
         {
-            await Sort("Price", "Ascending", PriceAsc, PriceDesc);
+            await SortAsync("Price", "Ascending", PriceAsc, PriceDesc);
         }
         private async void Button_Click_SortByPriceDesc(object sender, RoutedEventArgs e)
         {
-            await Sort("Price", "Descending", PriceDesc, PriceAsc);
+            await SortAsync("Price", "Descending", PriceDesc, PriceAsc);
         }
         private async void Button_Click_SortBySizeAsc(object sender, RoutedEventArgs e)
         {
-            await Sort("Size", "Ascending", SizeAsc, SizeDesc);
+            await SortAsync("Size", "Ascending", SizeAsc, SizeDesc);
         }
         private async void Button_Click_SortBySizeDesc(object sender, RoutedEventArgs e)
         {
-            await Sort("Size", "Descending", SizeDesc, SizeAsc);
+            await SortAsync("Size", "Descending", SizeDesc, SizeAsc);
         }
         private async void Button_Click_SortByDistanceAsc(object sender, RoutedEventArgs e)
         {
-            await Sort("Distance", "Ascending", DistanceAsc, DistanceDesc);
+            await SortAsync("Distance", "Ascending", DistanceAsc, DistanceDesc);
         }
         private async void Button_Click_SortByDistanceDesc(object sender, RoutedEventArgs e)
         {
-            await Sort("Distance", "Descending", DistanceDesc, DistanceAsc);
+            await SortAsync("Distance", "Descending", DistanceDesc, DistanceAsc);
         }
 
-        private async Task Sort(string sortBy, string ascOrDesc, Button hide, Button show)
+        private async Task SortAsync(string sortBy, string ascOrDesc, Button hide, Button show)
         {
             AccommodationViewModel.SortBy = sortBy;
             AccommodationViewModel.AscOrDesc = ascOrDesc;
 
-            await AccommodationViewModel.SortAvailableList();
+            await AccommodationViewModel.SortAvailableListAsync();
 
             listView.ItemsSource = AccommodationViewModel.AvailableAccommodations;
 

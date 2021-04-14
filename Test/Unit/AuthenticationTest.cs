@@ -3,6 +3,8 @@ using AintBnB.BusinessLogic.Helpers;
 using AintBnB.Core.Models;
 using NUnit.Framework;
 using System.Reflection;
+using System.Threading.Tasks;
+
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test.Unit
@@ -391,33 +393,35 @@ namespace Test.Unit
 
 
         [Test]
-        public void LoginUser_ShouldSucceed_IfTheUserLoggingInHasEnteredCorrectUsernameAndPassword()
+        public async Task LoginUser_ShouldSucceed_IfTheUserLoggingInHasEnteredCorrectUsernameAndPassword()
         {
             LoggedInAs = null;
-            SetupDatabaseForTesting();
+            await SetupDatabaseForTesting();
             SetupTestClasses();
-            CreateDummyUsers();
+            await CreateDummyUsers();
 
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
 
-            Assert.DoesNotThrow(() 
-                => result.Invoke(null, new object[] { userCustomer1.UserName, "aaaaaa", userService.GetAllUsersForLogin() }));
+            var all = await userService.GetAllUsersForLoginAsync();
+
+            Assert.DoesNotThrow(()
+                => result.Invoke(null, new object[] { userCustomer1.UserName, "aaaaaa", all }));
         }
 
         [Test]
-        public void LoginUser_ShouldFail_IfTheUsernameIsWrong()
+        public async Task LoginUser_ShouldFail_IfTheUsernameIsWrong()
         {
             LoggedInAs = null;
-            SetupDatabaseForTesting();
+            await SetupDatabaseForTesting();
             SetupTestClasses();
-            CreateDummyUsers();
+            await CreateDummyUsers();
 
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
 
-            var ex = Assert.Throws<TargetInvocationException>(()
-                => result.Invoke(null, new object[] { "ssssssssssssssss", "aaaaaa", userService.GetAllUsersForLogin() }));
+            var ex = Assert.ThrowsAsync<TargetInvocationException>(async()
+                => await (Task)result.Invoke(null, new object[] { "ssssssssssssssss", "aaaaaa", await userService.GetAllUsersForLoginAsync() }));
 
 
             Assert.AreEqual(ex.InnerException.GetType(), typeof(LoginException));
@@ -426,18 +430,18 @@ namespace Test.Unit
         }
 
         [Test]
-        public void LoginUser_ShouldFail_IfThePasswordIsWrong()
+        public async Task LoginUser_ShouldFail_IfThePasswordIsWrong()
         {
             LoggedInAs = null;
-            SetupDatabaseForTesting();
+            await SetupDatabaseForTesting();
             SetupTestClasses();
-            CreateDummyUsers();
+            await CreateDummyUsers();
 
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
 
-            var ex = Assert.Throws<TargetInvocationException>(()
-                => result.Invoke(null, new object[] { userCustomer1.UserName, "blablablabla", userService.GetAllUsersForLogin() }));
+            var ex = Assert.ThrowsAsync<TargetInvocationException>(async ()
+                => await (Task)result.Invoke(null, new object[] { userCustomer1.UserName, "blablablabla", await userService.GetAllUsersForLoginAsync() }));
 
 
             Assert.AreEqual(ex.InnerException.GetType(), typeof(LoginException));
@@ -446,18 +450,18 @@ namespace Test.Unit
         }
 
         [Test]
-        public void LoginUser_ShouldFail_IfTheUserTryingToLoginIsOfUsertypeRequestToBeEmployee()
+        public async Task LoginUser_ShouldFail_IfTheUserTryingToLoginIsOfUsertypeRequestToBeEmployee()
         {
             LoggedInAs = null;
-            SetupDatabaseForTesting();
+            await SetupDatabaseForTesting();
             SetupTestClasses();
-            CreateDummyUsers();
+            await CreateDummyUsers();
 
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
 
-            var ex = Assert.Throws<TargetInvocationException>(()
-                => result.Invoke(null, new object[] { employeeRequester.UserName, "aaaaaa", userService.GetAllUsersForLogin() }));
+            var ex = Assert.ThrowsAsync<TargetInvocationException>(async()
+                => await (Task)result.Invoke(null, new object[] { employeeRequester.UserName, "aaaaaa", await userService.GetAllUsersForLoginAsync() }));
 
 
             Assert.AreEqual(ex.InnerException.GetType(), typeof(LoginException));
@@ -466,16 +470,16 @@ namespace Test.Unit
         }
 
         [Test]
-        public void TryToLogin_ShouldFail_IfAlreadyLoggedIn()
+        public async Task TryToLogin_ShouldFail_IfAlreadyLoggedIn()
         {
-            SetupDatabaseForTesting();
+            await SetupDatabaseForTesting();
             SetupTestClasses();
-            CreateDummyUsers();
+            await CreateDummyUsers();
 
             LoggedInAs = userCustomer1;
 
-            var ex = Assert.Throws<AlreadyLoggedInException>(()
-                => TryToLogin(userCustomer1.UserName, "blablablabla", userService.GetAllUsersForLogin()));
+            var ex = Assert.ThrowsAsync<AlreadyLoggedInException>(async()
+                => TryToLogin(userCustomer1.UserName, "blablablabla", await userService.GetAllUsersForLoginAsync()));
 
             Assert.AreEqual("Already logged in!", ex.Message);
         }

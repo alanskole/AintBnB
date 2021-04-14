@@ -4,11 +4,11 @@ using AintBnB.WebApi;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
 using Microsoft.Extensions.DependencyInjection;
-using System.Linq;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test
 {
@@ -122,7 +122,7 @@ namespace Test
                 db.Add(userCustomer2);
                 db.SaveChanges();
 
-                SortedDictionary<string, bool> schedule = new SortedDictionary<string, bool>();
+                var schedule = new SortedDictionary<string, bool>();
 
                 for (int i = 0; i < 100; i++)
                 {
@@ -130,9 +130,9 @@ namespace Test
                 }
 
                 db.Add(adr);
-                db.SaveChanges(); 
+                db.SaveChanges();
                 db.Add(adr2);
-                db.SaveChanges(); 
+                db.SaveChanges();
                 db.Add(adr3);
                 db.SaveChanges();
 
@@ -185,31 +185,31 @@ namespace Test
                 db.Add(accommodation3);
                 db.SaveChanges();
 
-                DateTime bkdt = DateTime.Today.AddDays(2);
+                var bkdt = DateTime.Today.AddDays(2);
 
-                List<string> dates1 = new List<string>();
+                var dates1 = new List<string>();
 
                 for (int i = 0; i < 5; i++)
                 {
-                    DateTime dt = bkdt.AddDays(i);
+                    var dt = bkdt.AddDays(i);
                     accommodation1.Schedule[dt.ToString("yyyy-MM-dd")] = false;
                     dates1.Add(dt.ToString("yyyy-MM-dd"));
                 }
 
-                List<string> dates2 = new List<string>();
+                var dates2 = new List<string>();
 
                 for (int i = 3; i < 15; i++)
                 {
-                    DateTime dt = bkdt.AddDays(i);
+                    var dt = bkdt.AddDays(i);
                     accommodation2.Schedule[dt.ToString("yyyy-MM-dd")] = false;
                     dates2.Add(dt.ToString("yyyy-MM-dd"));
                 }
 
-                List<string> dates3 = new List<string>();
+                var dates3 = new List<string>();
 
                 for (int i = 0; i < 4; i++)
                 {
-                    DateTime dt = DateTime.Today.AddDays(i + 2);
+                    var dt = DateTime.Today.AddDays(i + 2);
                     accommodation3.Schedule[dt.ToString("yyyy-MM-dd")] = false;
                     dates3.Add(dt.ToString("yyyy-MM-dd"));
                 }

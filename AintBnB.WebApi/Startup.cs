@@ -5,18 +5,10 @@ using AintBnB.Repository.Imp;
 using AintBnB.Repository.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 
 namespace AintBnB.WebApi
 {
@@ -36,11 +28,6 @@ namespace AintBnB.WebApi
 
             services.AddDbContext<DatabaseContext>(
                 options => options.UseSqlServer(conString));
-
-            
-            //No point in doing this because it's already ok
-            /*BusinessLogic.Helpers.AllCountiresAndCities.con = new SqlConnection(conString);
-            BusinessLogic.Helpers.AllCountiresAndCities.AllCitiesAndCountries();*/
 
             services.AddTransient<IUnitOfWork, UnitOfWork>();
             services.AddTransient<IAccommodationService, AccommodationService>();

@@ -140,7 +140,7 @@ namespace AintBnB.Core.Models
 
         public override string ToString()
         {
-            return 
+            return
                 ($"Accommodation ID: {Id} " +
                 $"\nOwner: {Owner} " +
                 $"\nAddress: {Address} " +

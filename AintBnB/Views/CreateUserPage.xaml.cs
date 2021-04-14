@@ -24,7 +24,7 @@ namespace AintBnB.Views
 
             try
             {
-                await UserViewModel.CreateTheUser();
+                await UserViewModel.CreateTheUserAsync();
 
                 await new MessageDialog("Your account was created successfully!").ShowAsync();
 

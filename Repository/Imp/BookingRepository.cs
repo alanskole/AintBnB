@@ -2,11 +2,9 @@
 using AintBnB.Database.DbCtx;
 using AintBnB.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
 namespace AintBnB.Repository.Imp
 {
@@ -18,29 +16,29 @@ namespace AintBnB.Repository.Imp
         {
             _databaseContext = databaseContext;
         }
-        public void Create(Booking booking)
+        public async Task CreateAsync(Booking booking)
         {
-            _databaseContext.Booking.Add(booking);
+            await _databaseContext.Booking.AddAsync(booking);
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            _databaseContext.Booking.Remove(Read(id));
+            _databaseContext.Booking.Remove(await ReadAsync(id));
         }
 
-        public List<Booking> GetAll()
+        public async Task<List<Booking>> GetAllAsync()
         {
-            return _databaseContext.Booking.Include(bk => bk.BookedBy).Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).Include(bk => bk.Accommodation.Owner).ToList();
+            return await _databaseContext.Booking.Include(bk => bk.BookedBy).Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).Include(bk => bk.Accommodation.Owner).ToListAsync();
         }
 
-        public Booking Read(int id)
+        public async Task<Booking> ReadAsync(int id)
         {
-            return _databaseContext.Booking.Include(bk => bk.BookedBy).Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).Include(bk => bk.Accommodation.Owner).FirstOrDefault(bk => bk.Id == id);
+            return await _databaseContext.Booking.Include(bk => bk.BookedBy).Include(bk => bk.Accommodation).ThenInclude(ac => ac.Address).Include(bk => bk.Accommodation.Owner).FirstOrDefaultAsync(bk => bk.Id == id);
         }
 
-        public void Update(int id, Booking updatedBooking)
+        public async Task UpdateAsync(int id, Booking updatedBooking)
         {
-            Booking oldBooking = Read(id);
+            var oldBooking = await ReadAsync(id);
             oldBooking.Dates = updatedBooking.Dates;
             oldBooking.Price = updatedBooking.Price;
             oldBooking.Rating = updatedBooking.Rating;

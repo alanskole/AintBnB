@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AintBnB.Repository.Interfaces
 {
     public interface IRepository<T>
     {
-        void Create(T t);
+        Task CreateAsync(T t);
 
-        T Read(int id);
+        Task<T> ReadAsync(int id);
 
-        List<T> GetAll();
+        Task<List<T>> GetAllAsync();
 
-        void Update(int id, T t);
+        Task UpdateAsync(int id, T t);
 
-        void Delete(int id);
+        Task DeleteAsync(int id);
     }
 }

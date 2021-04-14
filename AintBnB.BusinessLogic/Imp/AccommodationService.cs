@@ -1,15 +1,15 @@
-﻿using AintBnB.Core.Models;
-using static AintBnB.BusinessLogic.Helpers.DateHelper;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
-using static AintBnB.BusinessLogic.Helpers.Regexp;
-using static AintBnB.BusinessLogic.Helpers.AllCountiresAndCities;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Core.Models;
+using AintBnB.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AintBnB.BusinessLogic.CustomExceptions;
-using AintBnB.BusinessLogic.Interfaces;
-using AintBnB.Repository.Interfaces;
-using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.BusinessLogic.Helpers.AllCountriesAndCities;
+using static AintBnB.BusinessLogic.Helpers.DateHelper;
+using static AintBnB.BusinessLogic.Helpers.Regexp;
 
 namespace AintBnB.BusinessLogic.Imp
 {
@@ -22,28 +22,28 @@ namespace AintBnB.BusinessLogic.Imp
             _unitOfWork = unitOfWork;
         }
 
-        public Accommodation CreateAccommodation(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, List<byte[]> picture, int daysToCreateScheduleFor)
+        public async Task<Accommodation> CreateAccommodationAsync(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, List<byte[]> picture, int daysToCreateScheduleFor)
         {
             if (daysToCreateScheduleFor < 1)
                 throw new ParameterException("Days to create the schedule for", "less than one");
 
             if (CheckIfUserIsAllowedToPerformAction(owner))
             {
-                Accommodation accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight, cancellationDeadlineInDays);
+                var accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight, cancellationDeadlineInDays);
 
                 accommodation.Picture = picture;
 
-                ValidateAccommodation(accommodation);
+                await ValidateAccommodationAsync(accommodation);
 
                 CreateScheduleForXAmountOfDays(accommodation, daysToCreateScheduleFor);
-                _unitOfWork.AccommodationRepository.Create(accommodation);
-                _unitOfWork.Commit();
+                await _unitOfWork.AccommodationRepository.CreateAsync(accommodation);
+                await _unitOfWork.CommitAsync();
                 return accommodation;
             }
             throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
         }
 
-        public void ValidateAccommodation(Accommodation accommodation)
+        public async Task ValidateAccommodationAsync(Accommodation accommodation)
         {
             accommodation.Description = accommodation.Description.Trim();
             accommodation.Address.Street = accommodation.Address.Street.Trim();
@@ -62,7 +62,7 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new ParameterException("Zip", "any other than numbers, letters, space or dash between the numbers and letters");
             if (!onlyLettersNumbersOneSpaceOrDash.IsMatch(accommodation.Address.Area))
                 throw new ParameterException("Area", "any other than letters or numbers with a space or dash betwwen them");
-            IsCountryAndCityCorrect(accommodation.Address.Country, accommodation.Address.City);
+            await IsCountryAndCityCorrectAsync(accommodation.Address.Country, accommodation.Address.City);
             if (accommodation.SquareMeters == 0)
                 throw new ParameterException("SquareMeters", "zero");
             if (accommodation.Description == null || accommodation.Description.Length == 0)
@@ -75,8 +75,8 @@ namespace AintBnB.BusinessLogic.Imp
 
         private void CreateScheduleForXAmountOfDays(Accommodation accommodation, int days)
         {
-            DateTime todaysDate = DateTime.Today;
-            SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
+            var todaysDate = DateTime.Today;
+            var dateAndStatus = new SortedDictionary<string, bool>();
             AddDaysToDateAndAddToSchedule(days, todaysDate, dateAndStatus);
             accommodation.Schedule = dateAndStatus;
         }
@@ -92,11 +92,11 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
-        public Accommodation GetAccommodation(int id)
+        public async Task<Accommodation> GetAccommodationAsync(int id)
         {
             AnyoneLoggedIn();
 
-            Accommodation acc = _unitOfWork.AccommodationRepository.Read(id);
+            var acc = await _unitOfWork.AccommodationRepository.ReadAsync(id);
 
             if (acc == null)
                 throw new IdNotFoundException("Accommodation", id);
@@ -104,11 +104,11 @@ namespace AintBnB.BusinessLogic.Imp
             return acc;
         }
 
-        public List<Accommodation> GetAllAccommodations()
+        public async Task<List<Accommodation>> GetAllAccommodationsAsync()
         {
             AnyoneLoggedIn();
 
-            List<Accommodation> all = _unitOfWork.AccommodationRepository.GetAll();
+            var all = await _unitOfWork.AccommodationRepository.GetAllAsync();
 
             if (all.Count == 0)
                 throw new NoneFoundInDatabaseTableException("accommodations");
@@ -116,13 +116,13 @@ namespace AintBnB.BusinessLogic.Imp
             return all;
         }
 
-        public List<Accommodation> GetAllOwnedAccommodations(int userid)
+        public async Task<List<Accommodation>> GetAllOwnedAccommodationsAsync(int userid)
         {
             AnyoneLoggedIn();
 
-            List<Accommodation> all = new List<Accommodation>();
+            var all = new List<Accommodation>();
 
-            FindAllAccommodationsOfAUser(all, userid);
+            await FindAllAccommodationsOfAUserAsync(all, userid);
 
             if (all.Count == 0)
                 throw new NoneFoundInDatabaseTableException(userid, "accommodations");
@@ -130,21 +130,24 @@ namespace AintBnB.BusinessLogic.Imp
             return all;
         }
 
-        private void FindAllAccommodationsOfAUser(List<Accommodation> all, int userid)
+        private async Task FindAllAccommodationsOfAUserAsync(List<Accommodation> all, int userid)
         {
-            foreach (var acc in GetAllAccommodations())
+            foreach (var acc in await GetAllAccommodationsAsync())
             {
                 if (acc.Owner.Id == userid)
                     all.Add(acc);
             }
         }
 
-        public void UpdateAccommodation(int id, Accommodation accommodation)
+        public async Task UpdateAccommodationAsync(int id, Accommodation accommodation)
         {
-            User owner = _unitOfWork.AccommodationRepository.Read(id).Owner;
+            var acc = await _unitOfWork.AccommodationRepository.ReadAsync(id);
+
+            var owner = acc.Owner;
+
             if (CorrectUserOrAdminOrEmployee(owner))
             {
-                GetAccommodation(id);
+                await GetAccommodationAsync(id);
 
                 accommodation.Description = accommodation.Description.Trim();
 
@@ -152,8 +155,8 @@ namespace AintBnB.BusinessLogic.Imp
 
                 accommodation.Id = id;
 
-                _unitOfWork.AccommodationRepository.Update(id, accommodation);
-                _unitOfWork.Commit();
+                await _unitOfWork.AccommodationRepository.UpdateAsync(id, accommodation);
+                await _unitOfWork.CommitAsync();
             }
             else
                 throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
@@ -171,26 +174,27 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new ParameterException("Cancellation deadline", "less than one day");
         }
 
-        public void ExpandScheduleOfAccommodationWithXAmountOfDays(int id, int days)
+        public async Task ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(int id, int days)
         {
             if (days < 1)
                 throw new ParameterException("Days", "less than one");
 
-            User owner = GetAccommodation(id).Owner;
+            var acc = await GetAccommodationAsync(id);
+            var owner = acc.Owner;
 
             if (CorrectUserOrAdminOrEmployee(owner))
             {
-                SortedDictionary<string, bool> dateAndStatus = new SortedDictionary<string, bool>();
+                var dateAndStatus = new SortedDictionary<string, bool>();
 
-                DateTime fromDate = DateTime.Parse(GetAccommodation(id).Schedule.Keys.Last()).AddDays(1);
+                var fromDate = DateTime.Parse(acc.Schedule.Keys.Last()).AddDays(1);
 
                 AddDaysToDateAndAddToSchedule(days, fromDate, dateAndStatus);
 
-                MergeTwoSortedDictionaries(_unitOfWork.AccommodationRepository.Read(id).Schedule, dateAndStatus);
+                MergeTwoSortedDictionaries(acc.Schedule, dateAndStatus);
 
-                _unitOfWork.AccommodationRepository.Update(id, _unitOfWork.AccommodationRepository.Read(id));
+                await _unitOfWork.AccommodationRepository.UpdateAsync(id, acc);
 
-                _unitOfWork.Commit();
+                await _unitOfWork.CommitAsync();
             }
             else
                 throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
@@ -204,13 +208,13 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
-        public List<Accommodation> FindAvailable(string country, string city, string startdate, int nights)
+        public async Task<List<Accommodation>> FindAvailableAsync(string country, string city, string startdate, int nights)
         {
             AnyoneLoggedIn();
 
-            List<Accommodation> available = new List<Accommodation>();
+            var available = new List<Accommodation>();
 
-            SearchInCountryAndCity(country, city, startdate, nights, available);
+            await SearchInCountryAndCityAsync(country, city, startdate, nights, available);
 
             if (available.Count == 0)
                 throw new DateException(($"No available accommodations found in {country}, {city} from {startdate} for {nights} nights"));
@@ -218,9 +222,9 @@ namespace AintBnB.BusinessLogic.Imp
             return available;
         }
 
-        private void SearchInCountryAndCity(string country, string city, string startdate, int nights, List<Accommodation> available)
+        private async Task SearchInCountryAndCityAsync(string country, string city, string startdate, int nights, List<Accommodation> available)
         {
-            foreach (Accommodation accommodation in _unitOfWork.AccommodationRepository.GetAll())
+            foreach (var accommodation in await _unitOfWork.AccommodationRepository.GetAllAsync())
             {
                 if (string.Equals(accommodation.Address.Country, country, StringComparison.OrdinalIgnoreCase) &&
                     string.Equals(accommodation.Address.City, city, StringComparison.OrdinalIgnoreCase))
