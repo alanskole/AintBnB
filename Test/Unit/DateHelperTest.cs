@@ -47,21 +47,15 @@ namespace Test.Unit
         [Test]
         public void StartDateIsInThePast_ShouldReturn_TrueWhenCheckingADateInThePast()
         {
-            var result = typeof(DateHelper)
-                .GetMethod("StartDateIsInThePast", BindingFlags.NonPublic | BindingFlags.Static);
-
-            bool res = (bool)result.Invoke(null, new object[] { DateTime.Today.AddDays(-2).ToString("yyyy-MM-dd") });
+            var res = DateIsInThePast(DateTime.Today.AddDays(-2).ToString("yyyy-MM-dd"));
 
             Assert.True(res);
         }
 
         [Test]
-        public void StartDateIsInThePast_ShouldReturn_FalseWhenCheckingADateNotInThePast()
+        public void DateIsInThePast_ShouldReturn_FalseWhenCheckingADateNotInThePast()
         {
-            var result = typeof(DateHelper)
-                .GetMethod("StartDateIsInThePast", BindingFlags.NonPublic | BindingFlags.Static);
-
-            bool res = (bool)result.Invoke(null, new object[] { DateTime.Today.ToString("yyyy-MM-dd") });
+            var res = DateIsInThePast(DateTime.Today.ToString("yyyy-MM-dd"));
 
             Assert.False(res);
         }

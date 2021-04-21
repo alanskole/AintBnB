@@ -128,7 +128,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AccommodationViewModel.UpdateAccommodation();
+                await AccommodationViewModel.UpdateAccommodationAsync();
                 await new MessageDialog("Update ok").ShowAsync();
             }
             catch (Exception ex)
@@ -141,7 +141,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AccommodationViewModel.ExpandScheduleOfAccommodation();
+                await AccommodationViewModel.ExpandScheduleOfAccommodationAsync();
                 await new MessageDialog("Expansion of schedule ok").ShowAsync();
             }
             catch (Exception ex)
@@ -164,7 +164,7 @@ namespace AintBnB.Views
         {
             try
             {
-                await AccommodationViewModel.DeleteAccommodation();
+                await AccommodationViewModel.DeleteAccommodationAsync();
                 await new MessageDialog("Deletion ok!").ShowAsync();
                 Frame.Navigate(typeof(AllAccommodationsPage));
 
@@ -210,14 +210,14 @@ namespace AintBnB.Views
 
             if (result == ContentDialogResult.Primary)
             {
-                await DeleteThePhoto();
+                await DeleteThePhotoAsync();
             }
 
             _skipSelectionChanged = true;
             listViewPicture.SelectedItem = null;
         }
 
-        private async Task DeleteThePhoto()
+        private async Task DeleteThePhotoAsync()
         {
             var res = await DialogeMessageAsync("This will delete the photo! Are you sure?", "Delete");
 
@@ -228,7 +228,7 @@ namespace AintBnB.Views
 
             AccommodationViewModel.Accommodation.Picture.Remove(AccommodationViewModel.Accommodation.Picture[index]);
 
-            await AccommodationViewModel.UpdateAccommodation();
+            await AccommodationViewModel.UpdateAccommodationAsync();
 
             Refresh();
         }
@@ -241,7 +241,7 @@ namespace AintBnB.Views
 
             if (sizeBeforeUploading != AccommodationViewModel.Accommodation.Picture.Count)
             {
-                await AccommodationViewModel.UpdateAccommodation();
+                await AccommodationViewModel.UpdateAccommodationAsync();
                 Refresh();
             }
         }

@@ -420,7 +420,7 @@ namespace Test.Unit
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
 
-            var ex = Assert.ThrowsAsync<TargetInvocationException>(async()
+            var ex = Assert.ThrowsAsync<TargetInvocationException>(async ()
                 => await (Task)result.Invoke(null, new object[] { "ssssssssssssssss", "aaaaaa", await userService.GetAllUsersForLoginAsync() }));
 
 
@@ -460,7 +460,7 @@ namespace Test.Unit
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
 
-            var ex = Assert.ThrowsAsync<TargetInvocationException>(async()
+            var ex = Assert.ThrowsAsync<TargetInvocationException>(async ()
                 => await (Task)result.Invoke(null, new object[] { employeeRequester.UserName, "aaaaaa", await userService.GetAllUsersForLoginAsync() }));
 
 
@@ -478,7 +478,7 @@ namespace Test.Unit
 
             LoggedInAs = userCustomer1;
 
-            var ex = Assert.ThrowsAsync<AlreadyLoggedInException>(async()
+            var ex = Assert.ThrowsAsync<AlreadyLoggedInException>(async ()
                 => TryToLogin(userCustomer1.UserName, "blablablabla", await userService.GetAllUsersForLoginAsync()));
 
             Assert.AreEqual("Already logged in!", ex.Message);

@@ -220,7 +220,7 @@ namespace AintBnB.BusinessLogic.Imp
 
             if (CorrectUserOrOwnerOrAdminOrEmployee(booking.Accommodation.Owner.Id, booking.BookedBy))
                 return booking;
-            
+
             throw new AccessException();
         }
 

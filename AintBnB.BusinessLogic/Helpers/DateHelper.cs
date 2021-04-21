@@ -19,15 +19,15 @@ namespace AintBnB.BusinessLogic.Helpers
         {
             var lastDate = DateFormatterCustomDate(DateTime.Parse(fromDate).AddDays(nights - 1));
 
-            if (StartDateIsInThePast(fromDate) || !schedule.ContainsKey(fromDate) || !schedule.ContainsKey(lastDate))
+            if (DateIsInThePast(fromDate) || !schedule.ContainsKey(fromDate) || !schedule.ContainsKey(lastDate))
                 return false;
 
             return true;
         }
 
-        private static bool StartDateIsInThePast(string startDate)
+        public static bool DateIsInThePast(string date)
         {
-            var dateToCheck = DateTime.Parse(startDate);
+            var dateToCheck = DateTime.Parse(date);
             if (dateToCheck >= DateTime.Today)
                 return false;
             return true;

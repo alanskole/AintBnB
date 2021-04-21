@@ -132,16 +132,28 @@ namespace AintBnB.BusinessLogic.Imp
         private async Task DeadLineExpirationAsync(int id, int deadlineInDays)
         {
             var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
+
+            if (DateIsInThePast(booking.Dates[booking.Dates.Count - 1]))
+            {
+                await DeleteTheBookingAsync(id);
+                return;
+            }
+
             var firstDateBooked = booking.Dates[0];
 
             if (CancelationDeadlineCheck(firstDateBooked, deadlineInDays))
             {
                 await ResetAvailableStatusAfterDeletingBookingAsync(id);
-                await _unitOfWork.BookingRepository.DeleteAsync(id);
-                await _unitOfWork.CommitAsync();
+                await DeleteTheBookingAsync(id);
             }
             else
                 throw new CancelBookingException(id, deadlineInDays);
+        }
+
+        private async Task DeleteTheBookingAsync(int id)
+        {
+            await _unitOfWork.BookingRepository.DeleteAsync(id);
+            await _unitOfWork.CommitAsync();
         }
 
         private async Task ResetAvailableStatusAfterDeletingBookingAsync(int id)

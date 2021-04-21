@@ -73,7 +73,7 @@ namespace AintBnB.WebApi.Controllers
             try
             {
                 await _accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(id, days);
-                return Ok(_accommodationService.GetAccommodationAsync(id));
+                return Ok(await _accommodationService.GetAccommodationAsync(id));
             }
             catch (Exception ex)
             {
