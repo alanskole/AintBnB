@@ -1,8 +1,5 @@
 ﻿using AintBnB.CommonMethodsAndProperties;
 using AintBnB.Helpers;
-using Newtonsoft.Json;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
@@ -67,11 +64,7 @@ namespace AintBnB.ViewModels
         {
             var elements = new string[] { Old, UserId.ToString(), New1, New2 };
 
-            var elementsJson = JsonConvert.SerializeObject(elements);
-            var response = await _clientProvider.client.PostAsync(
-                _uri, new StringContent(elementsJson, Encoding.UTF8, "application/json"));
-
-            ResponseChecker(response);
+            await PostAsync(_uri, elements, _clientProvider);
         }
     }
 }

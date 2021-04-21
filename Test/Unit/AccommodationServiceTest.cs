@@ -70,7 +70,7 @@ namespace Test.Unit
         {
             LoggedInAs = userCustomer1;
 
-            var ex = Assert.ThrowsAsync<ParameterException>(async()
+            var ex = Assert.ThrowsAsync<ParameterException>(async ()
                 => await accommodationService.CreateAccommodationAsync(userCustomer2, adr, 50, 2, 2.3, "mmm mmm", 600, 2, new List<byte[]>(), 0));
 
             Assert.AreEqual("Days to create the schedule for cannot be less than one!", ex.Message);
@@ -171,7 +171,7 @@ namespace Test.Unit
             var ad = new Address { Street = street, Number = number, Zip = zip, Area = area, City = city, Country = country };
             var acc = new Accommodation { Owner = owner, Address = ad, SquareMeters = squareMeters, Description = description, PricePerNight = pricePerNight, CancellationDeadlineInDays = cancellationDeadlineInDays };
 
-            Assert.DoesNotThrowAsync(async() => await accommodationService.ValidateAccommodationAsync(acc));
+            Assert.DoesNotThrowAsync(async () => await accommodationService.ValidateAccommodationAsync(acc));
         }
 
         [Test]
@@ -183,7 +183,7 @@ namespace Test.Unit
             var ad = new Address { Street = street, Number = number, Zip = zip, Area = area, City = city, Country = country };
             var acc = new Accommodation { Owner = owner, Address = ad, SquareMeters = squareMeters, Description = description, PricePerNight = pricePerNight, CancellationDeadlineInDays = cancellationDeadlineInDays };
 
-            Assert.DoesNotThrowAsync(async() => await accommodationService.ValidateAccommodationAsync(acc));
+            Assert.DoesNotThrowAsync(async () => await accommodationService.ValidateAccommodationAsync(acc));
         }
 
         [Test]
@@ -273,7 +273,7 @@ namespace Test.Unit
 
             await CreateDummyAccommodation();
 
-            var ex = Assert.ThrowsAsync<IdNotFoundException>(async()
+            var ex = Assert.ThrowsAsync<IdNotFoundException>(async ()
                 => await accommodationService.GetAccommodationAsync(1000));
 
             Assert.AreEqual("Accommodation with ID 1000 not found!", ex.Message);
@@ -296,7 +296,7 @@ namespace Test.Unit
         {
             LoggedInAs = userCustomer1;
 
-            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async()
+            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async ()
                 => await accommodationService.GetAllAccommodationsAsync());
 
             Assert.AreEqual("No accommodations found!", ex.Message);
@@ -375,7 +375,7 @@ namespace Test.Unit
 
             Accommodation upd = new Accommodation { SquareMeters = 1, Description = "new", PricePerNight = 1, CancellationDeadlineInDays = 11 };
 
-            var ex = Assert.ThrowsAsync<AccessException>(async()
+            var ex = Assert.ThrowsAsync<AccessException>(async ()
                 => await accommodationService.UpdateAccommodationAsync(accommodation1.Id, upd));
 
             Assert.AreEqual($"Must be performed by a customer with ID {accommodation1.Owner.Id}, or by admin or an employee on behalf of a customer with ID {accommodation1.Owner.Id}!", ex.Message);
@@ -450,7 +450,7 @@ namespace Test.Unit
 
             LoggedInAs = accommodation3.Owner;
 
-            var ex = Assert.ThrowsAsync<AccessException>(async()
+            var ex = Assert.ThrowsAsync<AccessException>(async ()
                 => await accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(accommodation1.Id, 10));
 
             Assert.AreEqual($"Must be performed by a customer with ID {accommodation1.Owner.Id}, or by admin or an employee on behalf of a customer with ID {accommodation1.Owner.Id}!", ex.Message);
@@ -463,7 +463,7 @@ namespace Test.Unit
 
             LoggedInAs = accommodation1.Owner;
 
-            var ex = Assert.ThrowsAsync<ParameterException>(async()
+            var ex = Assert.ThrowsAsync<ParameterException>(async ()
                 => await accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(accommodation1.Id, 0));
 
             Assert.AreEqual("Days cannot be less than one!", ex.Message);
@@ -476,7 +476,7 @@ namespace Test.Unit
 
             LoggedInAs = accommodation1.Owner;
 
-            var ex = Assert.ThrowsAsync<IdNotFoundException>(async()
+            var ex = Assert.ThrowsAsync<IdNotFoundException>(async ()
                 => await accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(100, 10));
 
             Assert.AreEqual("Accommodation with ID 100 not found!", ex.Message);
@@ -509,7 +509,7 @@ namespace Test.Unit
 
             LoggedInAs = accommodation1.Owner;
 
-            var ex = Assert.ThrowsAsync<DateException>(async()
+            var ex = Assert.ThrowsAsync<DateException>(async ()
                 => await accommodationService.FindAvailableAsync(accommodation1.Address.Country, accommodation1.Address.City, DateTime.Today.AddDays(6).ToString("yyyy-MM-dd"), 15));
 
             Assert.AreEqual($"No available accommodations found in {accommodation1.Address.Country}, {accommodation1.Address.City} from {DateTime.Today.AddDays(6).ToString("yyyy-MM-dd")} for {15} nights", ex.Message);

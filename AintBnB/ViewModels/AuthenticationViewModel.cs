@@ -1,10 +1,7 @@
 ﻿using AintBnB.CommonMethodsAndProperties;
 using AintBnB.Core.Models;
 using AintBnB.Helpers;
-using Newtonsoft.Json;
 using System;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
@@ -38,19 +35,17 @@ namespace AintBnB.ViewModels
             CheckForEmptyFields();
 
             _uniquePartOfUri = "login";
+
             var userAndPass = new string[] { User.UserName.Trim(), User.Password.Trim() };
-            var loginJson = JsonConvert.SerializeObject(userAndPass);
-            var response = await _clientProvider.client.PostAsync(
-                (_uri + _uniquePartOfUri), new StringContent(loginJson, Encoding.UTF8, "application/json"));
-            ResponseChecker(response);
+
+            await PostAsync(_uri + _uniquePartOfUri, userAndPass, _clientProvider);
         }
 
 
         public async Task IsAnyoneLoggedInAsync()
         {
             _uniquePartOfUri = "anyoneloggedin";
-            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
+            await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         private void CheckForEmptyFields()
@@ -62,33 +57,29 @@ namespace AintBnB.ViewModels
         public async Task<int> IdOfLoggedInUserAsync()
         {
             _uniquePartOfUri = "loggedin";
-            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
-            var jsonUser = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<User>(jsonUser).Id;
+
+            var user = await GetAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
+            return user.Id;
         }
 
         public async Task IsAdminAsync()
         {
             _uniquePartOfUri = "admin";
 
-            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
+            await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task IsEmployeeOrAdminAsync()
         {
             _uniquePartOfUri = "elevatedrights";
 
-            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
+            await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task LogoutFromAppAsync()
         {
             _uniquePartOfUri = "logout";
-            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
+            await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
         }
     }
 }

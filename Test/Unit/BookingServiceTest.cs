@@ -55,7 +55,7 @@ namespace Test.Unit
             var startDate = DateTime.Today.ToString("yyyy-MM-dd");
             var nights = 2;
 
-            var ex = Assert.ThrowsAsync<ParameterException>(async()
+            var ex = Assert.ThrowsAsync<ParameterException>(async ()
                 => await bookingService.BookAsync(startDate, userCustomer1, nights, accommodation1));
 
             Assert.AreEqual("Accommodation cannot be booked by the owner!", ex.Message);
@@ -69,7 +69,7 @@ namespace Test.Unit
             var startDate = DateTime.Today.ToString("yyyy-MM-dd");
             var nights = 0;
 
-            var ex = Assert.ThrowsAsync<ParameterException>(async()
+            var ex = Assert.ThrowsAsync<ParameterException>(async ()
                 => await bookingService.BookAsync(startDate, userCustomer2, nights, accommodation1));
 
             Assert.AreEqual("Nights cannot be less than one!", ex.Message);
@@ -416,7 +416,7 @@ namespace Test.Unit
 
             LoggedInAs = userCustomer1;
 
-            var ex = Assert.ThrowsAsync<IdNotFoundException>(async()
+            var ex = Assert.ThrowsAsync<IdNotFoundException>(async ()
                 => await bookingService.GetBookingAsync(100));
 
             Assert.AreEqual("Booking with ID 100 not found!", ex.Message);
@@ -464,7 +464,7 @@ namespace Test.Unit
 
             await accommodationService.CreateAccommodationAsync(userRequestToBecomeEmployee, adr, 1, 2, 1, "d", 1, 1, new List<byte[]>(), 10);
 
-            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async()
+            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async ()
                 => await bookingService.GetBookingsOfOwnedAccommodationAsync(3));
 
             Assert.AreEqual($"User with Id {userRequestToBecomeEmployee.Id} doesn't have any bookings of owned accommodations!", ex.Message);
@@ -519,7 +519,7 @@ namespace Test.Unit
         {
             LoggedInAs = userAdmin;
 
-            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async()
+            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async ()
                 => await bookingService.GetAllBookingsAsync());
 
             Assert.AreEqual("No bookings found!", ex.Message);
@@ -530,7 +530,7 @@ namespace Test.Unit
         {
             LoggedInAs = userCustomer1;
 
-            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async()
+            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async ()
                 => await bookingService.GetAllBookingsAsync());
 
             Assert.AreEqual($"User with Id {userCustomer1.Id} doesn't have any bookings!", ex.Message);

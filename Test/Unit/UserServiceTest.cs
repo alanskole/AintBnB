@@ -42,7 +42,7 @@ namespace Test.Unit
         {
             Logout();
 
-            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async()
+            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async ()
                 => await userService.GetAllUsersForLoginAsync());
 
             Assert.AreEqual(ex.Message, "No users found!");
@@ -87,7 +87,7 @@ namespace Test.Unit
             var result = typeof(UserService)
                 .GetMethod("IsUserNameFreeAsync", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            var ex = Assert.ThrowsAsync<ParameterException>(async()
+            var ex = Assert.ThrowsAsync<ParameterException>(async ()
                 => await (Task)result.Invoke(userService, new object[] { "admin" }));
 
             Assert.AreEqual(ex.Message, "Username already taken!");
@@ -159,9 +159,9 @@ namespace Test.Unit
             user.LastName = newLastname;
 
             await userService.UpdateUserAsync(id, await unitOfWork.UserRepository.ReadAsync(id));
-            
+
             user = await userService.GetUserAsync(id);
-            
+
             Assert.AreEqual(user.FirstName, newFirstname);
             Assert.AreEqual(user.LastName, newLastname);
         }
@@ -235,14 +235,14 @@ namespace Test.Unit
 
             if (id == 1)
             {
-                var ex = Assert.ThrowsAsync<PasswordChangeException>(async()
+                var ex = Assert.ThrowsAsync<PasswordChangeException>(async ()
                     => await userService.ChangePasswordAsync("aaaaaab", id, newPass, newPassConfirmed));
 
                 Assert.AreEqual(ex.Message, "The old passwords don't match!");
             }
             else if (id == 2)
             {
-                var ex = Assert.ThrowsAsync<PasswordChangeException>(async()
+                var ex = Assert.ThrowsAsync<PasswordChangeException>(async ()
                     => await userService.ChangePasswordAsync("aaaaaa", id, newPass, newPassConfirmed));
 
                 Assert.AreEqual(ex.Message, "The new and old password must be different!");
@@ -266,7 +266,7 @@ namespace Test.Unit
 
             LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id - 1);
 
-            var ex = Assert.ThrowsAsync<AccessException>(async()
+            var ex = Assert.ThrowsAsync<AccessException>(async ()
                 => await userService.ChangePasswordAsync(oldPass, id, newPass, newPass));
 
             Assert.AreEqual(ex.Message, "Only the owner of the account can change their password!");
@@ -295,7 +295,7 @@ namespace Test.Unit
 
             LoggedInAs = userCustomer1;
 
-            var exc = Assert.ThrowsAsync<AccessException>(async()
+            var exc = Assert.ThrowsAsync<AccessException>(async ()
                 => await userService.GetUserAsync(6));
 
             Assert.AreEqual(exc.Message, "Restricted access!");
@@ -308,7 +308,7 @@ namespace Test.Unit
 
             LoggedInAs = userAdmin;
 
-            var ex = Assert.ThrowsAsync<IdNotFoundException>(async()
+            var ex = Assert.ThrowsAsync<IdNotFoundException>(async ()
                 => await userService.GetUserAsync(600));
 
             Assert.AreEqual("User with ID 600 not found!", ex.Message);
@@ -321,11 +321,11 @@ namespace Test.Unit
 
             LoggedInAs = userAdmin;
 
-            Assert.DoesNotThrowAsync(async() => await userService.GetUserAsync(1));
+            Assert.DoesNotThrowAsync(async () => await userService.GetUserAsync(1));
 
             LoggedInAs = userEmployee1;
 
-            var ex = Assert.ThrowsAsync<AccessException>(async()
+            var ex = Assert.ThrowsAsync<AccessException>(async ()
                 => await userService.GetUserAsync(1));
 
             Assert.AreEqual(ex.Message, "Restricted access!");
@@ -379,7 +379,7 @@ namespace Test.Unit
 
             LoggedInAs = userCustomer1;
 
-            var ex = Assert.ThrowsAsync<AccessException>(async()
+            var ex = Assert.ThrowsAsync<AccessException>(async ()
                 => await userService.GetAllUsersAsync());
 
             Assert.AreEqual(ex.Message, "Restricted access!");
@@ -403,7 +403,7 @@ namespace Test.Unit
 
             LoggedInAs = userEmployee1;
 
-            var ex = Assert.ThrowsAsync<AccessException>(async()
+            var ex = Assert.ThrowsAsync<AccessException>(async ()
                 => await userService.GetAllEmployeeRequestsAsync());
 
             Assert.AreEqual(ex.Message, "Admin only!");

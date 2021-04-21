@@ -1,11 +1,8 @@
 ﻿using AintBnB.CommonMethodsAndProperties;
 using AintBnB.Core.Models;
 using AintBnB.Helpers;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
 
@@ -71,49 +68,36 @@ namespace AintBnB.ViewModels
             if (User.Password != PasswordConfirm)
                 throw new Exception("The passwords don't match!");
 
-            var userJson = JsonConvert.SerializeObject(User);
-            var response = await _clientProvider.client.PostAsync(
-                _uri, new StringContent(userJson, Encoding.UTF8, "application/json"));
-            ResponseChecker(response);
+            await PostAsync(_uri, User, _clientProvider);
         }
 
         public async Task GetAUserAsync()
         {
             _uniquePartOfUri = User.Id.ToString();
 
-            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
-            var jsonUser = await response.Content.ReadAsStringAsync();
-            _user = JsonConvert.DeserializeObject<User>(jsonUser);
+            _user = await GetAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
+
             NotifyPropertyChanged("User");
         }
 
         public async Task<List<User>> GetAllUsersAsync()
         {
-            var response = await _clientProvider.client.GetAsync(new Uri(_uri));
-            ResponseChecker(response);
-            var jsonUsers = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<User>>(jsonUsers);
+            return await GetAllAsync<User>(_uri, _clientProvider);
         }
 
         public async Task<List<User>> GetAllCustomersAsync()
         {
             _uniquePartOfUri = "allcustomers";
 
-            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
-            var jsonUsers = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<User>>(jsonUsers);
+            return await GetAllAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task<List<User>> GetAllEmployeeRequestsAsync()
         {
             _uniquePartOfUri = "requests";
 
-            var response = await _clientProvider.client.GetAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
-            var jsonUsers = await response.Content.ReadAsStringAsync();
-            AllEmployeeRequests = JsonConvert.DeserializeObject<List<User>>(jsonUsers);
+            AllEmployeeRequests = await GetAllAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
+
             return AllEmployeeRequests;
         }
 
@@ -121,19 +105,14 @@ namespace AintBnB.ViewModels
         {
             _uniquePartOfUri = User.Id.ToString();
 
-            var response = await _clientProvider.client.DeleteAsync(new Uri(_uri + _uniquePartOfUri));
-            ResponseChecker(response);
+            await DeleteAsync(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task UpdateAUserAsync()
         {
             _uniquePartOfUri = User.Id.ToString();
 
-            var userJson = JsonConvert.SerializeObject(User);
-
-            var response = await _clientProvider.client.PutAsync(
-                new Uri(_uri + _uniquePartOfUri), new StringContent(userJson, Encoding.UTF8, "application/json"));
-            ResponseChecker(response);
+            await PutAsync(_uri + _uniquePartOfUri, User, _clientProvider);
         }
     }
 }

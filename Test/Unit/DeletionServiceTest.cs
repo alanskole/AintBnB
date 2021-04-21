@@ -55,7 +55,7 @@ namespace Test.Unit
 
             LoggedInAs = booking2.BookedBy;
 
-            var ex = Assert.ThrowsAsync<CancelBookingException>(async()
+            var ex = Assert.ThrowsAsync<CancelBookingException>(async ()
                 => await deletionService.DeleteUserAsync(booking2.BookedBy.Id));
 
             Assert.AreEqual($"The user cannot be deleted because it has a booking with ID {booking3.Id} with a start date less than {booking3.Accommodation.CancellationDeadlineInDays} days away! DeleteAsync when no bookings are less than {booking3.Accommodation.CancellationDeadlineInDays} days away.", ex.Message);
@@ -95,7 +95,7 @@ namespace Test.Unit
             await deletionService.DeleteUserAsync(booking2.BookedBy.Id);
 
             all = await userService.GetAllUsersAsync();
-            
+
             Assert.False(all.Contains(userCustomer1));
         }
 
@@ -104,7 +104,7 @@ namespace Test.Unit
         {
             LoggedInAs = userEmployee1;
 
-            var ex = Assert.ThrowsAsync<AccessException>(async()
+            var ex = Assert.ThrowsAsync<AccessException>(async ()
                 => await deletionService.DeleteUserAsync(userEmployee1.Id));
 
             Assert.AreEqual("Employees cannot delete any accounts, even if it's their own accounts!", ex.Message);
@@ -115,7 +115,7 @@ namespace Test.Unit
         {
             LoggedInAs = userCustomer1;
 
-            var ex = Assert.ThrowsAsync<AccessException>(async()
+            var ex = Assert.ThrowsAsync<AccessException>(async ()
                 => await deletionService.DeleteUserAsync(userCustomer2.Id));
 
             Assert.AreEqual($"Administrator or user with ID {userCustomer2.Id} only!", ex.Message);
@@ -297,7 +297,7 @@ namespace Test.Unit
             var result = typeof(DeletionService)
                 .GetMethod("DeadLineExpirationAsync", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            var ex = Assert.ThrowsAsync<CancelBookingException>(async()
+            var ex = Assert.ThrowsAsync<CancelBookingException>(async ()
                 => await (Task)result.Invoke(deletionService, new object[] { booking3.Id, booking3.Accommodation.CancellationDeadlineInDays }));
 
             Assert.AreEqual($"Cannot change the booking with ID {booking3.Id} because the start date of the booking is less than {booking3.Accommodation.CancellationDeadlineInDays} days away!", ex.Message);
