@@ -3,7 +3,6 @@ using AintBnB.Core.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using AintBnB.BusinessLogic.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -194,7 +194,7 @@ namespace AintBnB.BusinessLogic.Imp
 
             if (DateIsInThePast(booking.Dates[booking.Dates.Count - 1]))
                 return;
-            
+
             ResetDatesToAvailable(booking.Dates, booking.Accommodation.Schedule);
             await _unitOfWork.AccommodationRepository.UpdateAsync(booking.Accommodation.Id, booking.Accommodation);
         }
