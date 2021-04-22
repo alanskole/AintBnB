@@ -212,7 +212,7 @@ namespace Test.Unit
             Assert.Null(acc.Schedule);
 
             var result = typeof(AccommodationService)
-                            .GetMethod("CreateScheduleForXAmountOfDays", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("CreateScheduleForXAmountOfDays", BindingFlags.NonPublic | BindingFlags.Instance);
             result.Invoke(accommodationService, new object[] { acc, days });
 
             Assert.AreEqual(acc.Schedule.Count, days);
@@ -230,7 +230,7 @@ namespace Test.Unit
             Assert.AreEqual(0, dateAndStatus.Count);
 
             var result = typeof(AccommodationService)
-                            .GetMethod("AddDaysToDateAndAddToSchedule", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("AddDaysToDateAndAddToSchedule", BindingFlags.NonPublic | BindingFlags.Instance);
             result.Invoke(accommodationService, new object[] { daysToAddToSchedule, td, dateAndStatus });
 
             Assert.AreEqual(td.ToString("yyyy-MM-dd"), dateAndStatus.Keys.First());
@@ -493,7 +493,7 @@ namespace Test.Unit
             Assert.AreEqual(accommodation1.Address.Country, accommodation2.Address.Country);
             Assert.AreNotEqual(accommodation1.Address.City, accommodation3.Address.City);
 
-            List<Accommodation> av = await accommodationService.FindAvailableAsync(accommodation1.Address.Country, accommodation1.Address.City, DateTime.Today.ToString("yyyy-MM-dd"), 5);
+            var av = await accommodationService.FindAvailableAsync(accommodation1.Address.Country, accommodation1.Address.City, DateTime.Today.ToString("yyyy-MM-dd"), 5);
 
             Assert.True(av.Contains(accommodation1));
             Assert.True(av.Contains(accommodation2));
@@ -522,7 +522,7 @@ namespace Test.Unit
 
             LoggedInAs = accommodation1.Owner;
 
-            List<Accommodation> av = await accommodationService.FindAvailableAsync(accommodation1.Address.Country, accommodation1.Address.City, DateTime.Today.ToString("yyyy-MM-dd"), 5);
+            var av = await accommodationService.FindAvailableAsync(accommodation1.Address.Country, accommodation1.Address.City, DateTime.Today.ToString("yyyy-MM-dd"), 5);
 
             Assert.True(accommodation1.SquareMeters < accommodation2.SquareMeters);
 

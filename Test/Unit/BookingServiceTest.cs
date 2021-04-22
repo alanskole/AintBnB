@@ -84,7 +84,7 @@ namespace Test.Unit
             int nights = 2;
 
             var result = typeof(BookingService)
-                            .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.Throws<TargetInvocationException>(()
                 => result.Invoke(bookingService, new object[] { startDate, userAdmin, nights, accommodation1 }));
@@ -103,7 +103,7 @@ namespace Test.Unit
             var nights = 2;
 
             var result = typeof(BookingService)
-                            .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.Throws<TargetInvocationException>(()
                 => result.Invoke(bookingService, new object[] { startDate, userEmployee1, nights, accommodation1 }));
@@ -122,7 +122,7 @@ namespace Test.Unit
             var nights = 2;
 
             var result = typeof(BookingService)
-                            .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.Throws<TargetInvocationException>(()
                 => result.Invoke(bookingService, new object[] { startDate, userCustomer2, nights, accommodation1 }));
@@ -141,7 +141,7 @@ namespace Test.Unit
             var nights = 2;
 
             var result = typeof(BookingService)
-                            .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
 
             Assert.DoesNotThrow(()
                 => result.Invoke(bookingService, new object[] { startDate, userCustomer2, nights, accommodation1 }));
@@ -156,7 +156,7 @@ namespace Test.Unit
             var nights = 2;
 
             var result = typeof(BookingService)
-                            .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
 
             Assert.DoesNotThrow(()
                 => result.Invoke(bookingService, new object[] { startDate, userCustomer2, nights, accommodation1 }));
@@ -171,7 +171,7 @@ namespace Test.Unit
             var nights = 2;
 
             var result = typeof(BookingService)
-                            .GetMethod("TryToBookIfAllDatesAvailable", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("TryToBookIfAllDatesAvailable", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.Throws<TargetInvocationException>(()
                 => result.Invoke(bookingService, new object[] { startDate, userCustomer2, nights, accommodation1 }));
@@ -189,7 +189,7 @@ namespace Test.Unit
             var nights = 2;
 
             var result = typeof(BookingService)
-                            .GetMethod("TryToBookIfAllDatesAvailable", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("TryToBookIfAllDatesAvailable", BindingFlags.NonPublic | BindingFlags.Instance);
 
             Assert.DoesNotThrow(()
                 => result.Invoke(bookingService, new object[] { startDate, userCustomer2, nights, accommodation1 }));
@@ -252,7 +252,7 @@ namespace Test.Unit
 
 
             var result = typeof(BookingService)
-                            .GetMethod("TryToBookIfAllDatesAvailable", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("TryToBookIfAllDatesAvailable", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.Throws<TargetInvocationException>(()
                 => result.Invoke(bookingService, new object[] { newStartDate, userCustomer2, 1, accommodation1 }));
@@ -479,7 +479,7 @@ namespace Test.Unit
 
             var allBookings = await bookingService.GetAllBookingsAsync();
 
-            Assert.AreEqual(3, allBookings.Count);
+            Assert.AreEqual(4, allBookings.Count);
             Assert.True(allBookings.Contains(booking1));
             Assert.True(allBookings.Contains(booking2));
             Assert.True(allBookings.Contains(booking3));
@@ -494,7 +494,7 @@ namespace Test.Unit
 
             var allBookings = await bookingService.GetAllBookingsAsync();
 
-            Assert.AreEqual(3, allBookings.Count);
+            Assert.AreEqual(4, allBookings.Count);
             Assert.True(allBookings.Contains(booking1));
             Assert.True(allBookings.Contains(booking2));
             Assert.True(allBookings.Contains(booking3));
@@ -544,7 +544,7 @@ namespace Test.Unit
             LoggedInAs = booking1.BookedBy;
 
             var result = typeof(BookingService)
-                            .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.Throws<TargetInvocationException>(()
                 => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 3 }));
@@ -562,7 +562,7 @@ namespace Test.Unit
             LoggedInAs = userAdmin;
 
             var result = typeof(BookingService)
-                            .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.Throws<TargetInvocationException>(()
                 => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 3 }));
@@ -582,7 +582,7 @@ namespace Test.Unit
             booking1.Rating = 2;
 
             var result = typeof(BookingService)
-                            .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.Throws<TargetInvocationException>(()
                 => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 3 }));
@@ -600,7 +600,7 @@ namespace Test.Unit
             LoggedInAs = booking1.BookedBy;
 
             var result = typeof(BookingService)
-                            .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.Throws<TargetInvocationException>(()
                 => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 0 }));
@@ -610,7 +610,7 @@ namespace Test.Unit
             Assert.AreEqual("Rating cannot be less than 1 or bigger than 5!", ex.InnerException.Message);
 
             result = typeof(BookingService)
-                            .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
+                .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
             ex = Assert.Throws<TargetInvocationException>(()
                 => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 6 }));

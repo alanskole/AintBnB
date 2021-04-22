@@ -3,6 +3,7 @@ using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Core.Models;
 using AintBnB.Repository.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BusinessLogic.Helpers.DateHelper;
@@ -50,31 +51,47 @@ namespace AintBnB.BusinessLogic.Imp
 
         private async Task DeleteUsersAccommodationsAsync(int id)
         {
+            var accommodationsToBeDeleted = new List<Accommodation>();
+
             foreach (var accommodation in await _unitOfWork.AccommodationRepository.GetAllAsync())
             {
-                if (accommodation.Owner == await _unitOfWork.UserRepository.ReadAsync(id))
+                if (accommodation.Owner.Id == id)
                 {
-                    await DeleteAccommodationAsync(accommodation.Id);
+                    CanAccommodationBeDeleted(accommodation);
+
+                    await CanAccommodationBookingsBeDeletedAsync(accommodation.Id);
+
+                    accommodationsToBeDeleted.Add(accommodation);
                 }
             }
+
+            foreach (var acc in accommodationsToBeDeleted)
+                await _unitOfWork.AccommodationRepository.DeleteAsync(acc.Id);
         }
 
         private async Task DeleteUsersBookingsAsync(int id)
         {
+            var bookingsToBeDeleted = new List<Booking>();
+
             foreach (var booking in await _unitOfWork.BookingRepository.GetAllAsync())
             {
-                if (booking.BookedBy == await _unitOfWork.UserRepository.ReadAsync(id))
+                if (booking.BookedBy.Id == id)
                 {
                     try
                     {
-                        await DeleteBookingAsync(booking.Id);
+                        await CanTheBookingBeDeletedAsync(booking.Id, booking);
                     }
                     catch (Exception)
                     {
                         throw new CancelBookingException("user", booking.Id, booking.Accommodation.CancellationDeadlineInDays);
                     }
+
+                    bookingsToBeDeleted.Add(booking);
                 }
             }
+
+            foreach (var booking in bookingsToBeDeleted)
+                await DeleteTheBookingAsync(booking.Id);
         }
 
         public async Task DeleteAccommodationAsync(int id)
@@ -83,7 +100,7 @@ namespace AintBnB.BusinessLogic.Imp
 
             CanAccommodationBeDeleted(accommodation);
 
-            await DeleteAccommodationBookingsAsync(accommodation.Id);
+            await CanAccommodationBookingsBeDeletedAsync(accommodation.Id);
 
             await _unitOfWork.AccommodationRepository.DeleteAsync(id);
             await _unitOfWork.CommitAsync();
@@ -98,22 +115,29 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new AccessException($"Administrator, employee or user with ID {accommodation.Owner.Id} only!");
         }
 
-        private async Task DeleteAccommodationBookingsAsync(int accommodationId)
+        private async Task CanAccommodationBookingsBeDeletedAsync(int accommodationId)
         {
+            var toDelete = new List<Booking>();
+
             foreach (var booking in await _unitOfWork.BookingRepository.GetAllAsync())
             {
-                if (booking.Accommodation == await _unitOfWork.AccommodationRepository.ReadAsync(accommodationId))
+                if (booking.Accommodation.Id == accommodationId)
                 {
                     try
                     {
-                        await DeleteBookingAsync(booking.Id);
+                        await CanTheBookingBeDeletedAsync(booking.Id, booking);
                     }
                     catch (Exception)
                     {
                         throw new CancelBookingException("accommodation", booking.Id, booking.Accommodation.CancellationDeadlineInDays);
                     }
+
+                    toDelete.Add(booking);
                 }
             }
+
+            foreach (var booking in toDelete)
+                await DeleteTheBookingAsync(booking.Id);
         }
 
         public async Task DeleteBookingAsync(int id)
@@ -123,6 +147,15 @@ namespace AintBnB.BusinessLogic.Imp
             if (booking == null)
                 throw new IdNotFoundException("Booking", id);
 
+            await CanTheBookingBeDeletedAsync(id, booking);
+
+            await DeleteTheBookingAsync(id);
+
+            await _unitOfWork.CommitAsync();
+        }
+
+        private async Task CanTheBookingBeDeletedAsync(int id, Booking booking)
+        {
             if (CorrectUserOrOwnerOrAdminOrEmployee(booking.Accommodation.Owner.Id, booking.BookedBy))
                 await DeadLineExpirationAsync(id, booking.Accommodation.CancellationDeadlineInDays);
             else
@@ -134,31 +167,27 @@ namespace AintBnB.BusinessLogic.Imp
             var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
 
             if (DateIsInThePast(booking.Dates[booking.Dates.Count - 1]))
-            {
-                await DeleteTheBookingAsync(id);
                 return;
-            }
 
             var firstDateBooked = booking.Dates[0];
 
-            if (CancelationDeadlineCheck(firstDateBooked, deadlineInDays))
-            {
-                await ResetAvailableStatusAfterDeletingBookingAsync(id);
-                await DeleteTheBookingAsync(id);
-            }
-            else
+            if (!CancelationDeadlineCheck(firstDateBooked, deadlineInDays))
                 throw new CancelBookingException(id, deadlineInDays);
         }
 
         private async Task DeleteTheBookingAsync(int id)
         {
+            await ResetAvailableStatusAfterDeletingBookingAsync(id);
             await _unitOfWork.BookingRepository.DeleteAsync(id);
-            await _unitOfWork.CommitAsync();
         }
 
         private async Task ResetAvailableStatusAfterDeletingBookingAsync(int id)
         {
             var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
+
+            if (DateIsInThePast(booking.Dates[booking.Dates.Count - 1]))
+                return;
+            
             ResetDatesToAvailable(booking.Dates, booking.Accommodation.Schedule);
             await _unitOfWork.AccommodationRepository.UpdateAsync(booking.Accommodation.Id, booking.Accommodation);
         }

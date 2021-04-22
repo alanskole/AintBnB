@@ -33,7 +33,7 @@ namespace Test.Unit
 
             Logout();
             var all = await userService.GetAllUsersForLoginAsync();
-            Assert.AreEqual(6, all.Count);
+            Assert.AreEqual(7, all.Count);
             Assert.AreEqual(UserTypes.Admin, all[0].UserType);
         }
 
@@ -94,17 +94,18 @@ namespace Test.Unit
         }
 
         [Test]
-        public void UserTypeCheck_ShouldSetUserTypeToAdmin_IfFirstCreatedUser()
+        public async Task UserTypeCheck_ShouldSetUserTypeToAdmin_IfFirstCreatedUser()
         {
             var dummy = new User { UserType = UserTypes.Employee };
             var dummy2 = new User { UserType = UserTypes.RequestToBeEmployee };
             var dummy3 = new User { UserType = UserTypes.Customer };
 
             var result = typeof(UserService)
-                            .GetMethod("UserTypeCheckAsync", BindingFlags.NonPublic | BindingFlags.Instance);
-            result.Invoke(userService, new object[] { dummy.UserType, dummy });
-            result.Invoke(userService, new object[] { dummy2.UserType, dummy2 });
-            result.Invoke(userService, new object[] { dummy3.UserType, dummy3 });
+                .GetMethod("UserTypeCheckAsync", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            await (Task)result.Invoke(userService, new object[] { dummy.UserType, dummy });
+            await (Task)result.Invoke(userService, new object[] { dummy2.UserType, dummy2 });
+            await (Task)result.Invoke(userService, new object[] { dummy3.UserType, dummy3 });
 
             Assert.AreEqual(UserTypes.Admin, dummy.UserType);
             Assert.AreEqual(UserTypes.Admin, dummy2.UserType);
@@ -119,8 +120,9 @@ namespace Test.Unit
             var dummy = new User { UserType = UserTypes.Employee };
 
             var result = typeof(UserService)
-                            .GetMethod("UserTypeCheckAsync", BindingFlags.NonPublic | BindingFlags.Instance);
-            result.Invoke(userService, new object[] { dummy.UserType, dummy });
+                .GetMethod("UserTypeCheckAsync", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            await (Task)result.Invoke(userService, new object[] { dummy.UserType, dummy });
 
             Assert.AreEqual(UserTypes.Customer, dummy.UserType);
         }
@@ -133,8 +135,9 @@ namespace Test.Unit
             User dummy = new User { UserType = UserTypes.RequestToBeEmployee };
 
             var result = typeof(UserService)
-                            .GetMethod("UserTypeCheckAsync", BindingFlags.NonPublic | BindingFlags.Instance);
-            result.Invoke(userService, new object[] { dummy.UserType, dummy });
+                .GetMethod("UserTypeCheckAsync", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            await (Task)result.Invoke(userService, new object[] { dummy.UserType, dummy });
 
             Assert.AreEqual(UserTypes.RequestToBeEmployee, dummy.UserType);
         }
@@ -354,7 +357,7 @@ namespace Test.Unit
 
             var all = await userService.GetAllUsersAsync();
 
-            Assert.AreEqual(6, all.Count);
+            Assert.AreEqual(7, all.Count);
         }
 
         [Test]
@@ -366,7 +369,7 @@ namespace Test.Unit
 
             var all = await userService.GetAllUsersAsync();
 
-            Assert.AreEqual(3, all.Count);
+            Assert.AreEqual(4, all.Count);
             Assert.AreEqual(2, all[0].Id);
             Assert.AreEqual(UserTypes.Customer, all[1].UserType);
             Assert.AreEqual(UserTypes.Customer, all[2].UserType);

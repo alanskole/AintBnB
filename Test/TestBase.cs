@@ -27,6 +27,7 @@ namespace Test
         protected User userRequestToBecomeEmployee2;
         protected User userCustomer1;
         protected User userCustomer2;
+        protected User userCustomer3;
         protected Address adr = new Address("str", "1", "1111", "ar", "Fredrikstad", "Norway");
         protected Address adr2 = new Address("anotherstr", "10A", "1414", "frstd", "Fredrikstad", "Norway");
         protected Address adr3 = new Address("capitalstr", "42", "0531", "osl", "Oslo", "Norway");
@@ -36,6 +37,7 @@ namespace Test
         protected Booking booking1;
         protected Booking booking2;
         protected Booking booking3;
+        protected Booking booking4;
 
         public async Task SetupDatabaseForTesting()
         {
@@ -115,6 +117,15 @@ namespace Test
                 UserType = UserTypes.Customer
             };
 
+            userCustomer3 = new User
+            {
+                UserName = "customer3",
+                Password = HashPassword("aaaaaa"),
+                FirstName = "Third",
+                LastName = "Customer",
+                UserType = UserTypes.Customer
+            };
+
             await unitOfWork.UserRepository.CreateAsync(userAdmin);
             await connection.SaveChangesAsync();
             await unitOfWork.UserRepository.CreateAsync(userEmployee1);
@@ -126,6 +137,8 @@ namespace Test
             await unitOfWork.UserRepository.CreateAsync(userCustomer1);
             await connection.SaveChangesAsync();
             await unitOfWork.UserRepository.CreateAsync(userCustomer2);
+            await connection.SaveChangesAsync();
+            await unitOfWork.UserRepository.CreateAsync(userCustomer3);
             await connection.SaveChangesAsync();
         }
 
@@ -191,6 +204,15 @@ namespace Test
         public async Task CreateDummyBooking()
         {
             var bkdt = DateTime.Today.AddDays(2);
+            var past = DateTime.Today.AddDays(-20);
+
+            var dates4 = new List<string>();
+
+            for (int i = 0; i < 5; i++)
+            {
+                var dt = past.AddDays(i);
+                dates4.Add(dt.ToString("yyyy-MM-dd"));
+            }
 
             var dates1 = new List<string>();
 
@@ -243,11 +265,21 @@ namespace Test
                 Price = (accommodation3.PricePerNight * dates3.Count)
             };
 
+            booking4 = new Booking
+            {
+                BookedBy = userCustomer3,
+                Accommodation = accommodation1,
+                Dates = dates4,
+                Price = (accommodation1.PricePerNight * dates1.Count)
+            };
+
             await unitOfWork.BookingRepository.CreateAsync(booking1);
             await connection.SaveChangesAsync();
             await unitOfWork.BookingRepository.CreateAsync(booking2);
             await connection.SaveChangesAsync();
             await unitOfWork.BookingRepository.CreateAsync(booking3);
+            await connection.SaveChangesAsync();
+            await unitOfWork.BookingRepository.CreateAsync(booking4);
             await connection.SaveChangesAsync();
         }
 
