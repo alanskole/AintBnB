@@ -86,6 +86,9 @@ namespace AintBnB.BusinessLogic.Imp
         {
             var originalBooking = await _unitOfWork.BookingRepository.ReadAsync(bookingId);
 
+            if (DateIsInThePast(originalBooking.Dates[originalBooking.Dates.Count - 1]))
+                throw new DateException("Can't update a booking that has a checkout date that's in the past!");
+
             CanBookingBeUpdated(newStartDate, nights, originalBooking);
 
             if (!AreAllDatesAvailable(originalBooking.Accommodation.Schedule, newStartDate, nights))

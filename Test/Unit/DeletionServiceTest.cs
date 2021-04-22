@@ -39,8 +39,8 @@ namespace Test.Unit
             var ex = Assert.ThrowsAsync<CancelBookingException>(async ()
                 => await deletionService.DeleteUserAsync(booking1.BookedBy.Id));
 
-            Assert.AreEqual($"The accommodation cannot be deleted because it has a booking with ID {booking3.Id} with a start date less than {booking3.Accommodation.CancellationDeadlineInDays} days away! Delete when no bookings are less than {booking3.Accommodation.CancellationDeadlineInDays} days away.", ex.Message);
-            
+            Assert.AreEqual($"The user with ID {booking1.BookedBy.Id} cannot be deleted because it has an accommodation with ID {booking3.Accommodation.Id} that has bookings that can't be deleted because of the cancellation deadline of the accommodation. Delete when no bookings of the accommodation have surpassed the cancellation deadline of {booking3.Accommodation.CancellationDeadlineInDays} days.", ex.Message);
+
             all = await bookingService.GetBookingsOfOwnedAccommodationAsync(booking1.BookedBy.Id);
 
             Assert.AreEqual(2, all.Count);
@@ -237,8 +237,8 @@ namespace Test.Unit
 
             var ex = Assert.ThrowsAsync<CancelBookingException>(async ()
                 => await (Task)result.Invoke(deletionService, new object[] { booking3.Accommodation.Owner.Id }));
-            
-            Assert.AreEqual("The accommodation cannot be deleted because it has a booking with ID 3 with a start date less than 3 days away! Delete when no bookings are less than 3 days away.", ex.Message);
+
+            Assert.AreEqual($"The user with ID {booking1.BookedBy.Id} cannot be deleted because it has an accommodation with ID {booking3.Accommodation.Id} that has bookings that can't be deleted because of the cancellation deadline of the accommodation. Delete when no bookings of the accommodation have surpassed the cancellation deadline of {booking3.Accommodation.CancellationDeadlineInDays} days.", ex.Message);
         }
 
         [Test]
@@ -365,7 +365,7 @@ namespace Test.Unit
             var ex = Assert.ThrowsAsync<CancelBookingException>(async ()
                 => await deletionService.DeleteAccommodationAsync(accommodation3.Id));
 
-            Assert.AreEqual($"The accommodation cannot be deleted because it has a booking with ID {booking3.Id} with a start date less than {accommodation3.CancellationDeadlineInDays} days away! Delete when no bookings are less than {accommodation3.CancellationDeadlineInDays} days away.", ex.Message);
+            Assert.AreEqual($"The accommodation with ID {accommodation3.Id} cannot be deleted because it has a booking with ID {booking3.Id} with a start date less than {accommodation3.CancellationDeadlineInDays} days away! Delete when no bookings are less than {accommodation3.CancellationDeadlineInDays} days away.", ex.Message);
 
             all = await accommodationService.GetAllAccommodationsAsync();
             allBk = await bookingService.GetBookingsOfOwnedAccommodationAsync(accommodation3.Owner.Id);

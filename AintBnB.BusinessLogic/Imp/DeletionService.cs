@@ -59,7 +59,14 @@ namespace AintBnB.BusinessLogic.Imp
                 {
                     CanAccommodationBeDeleted(accommodation);
 
-                    await CanAccommodationBookingsBeDeletedAsync(accommodation.Id);
+                    try
+                    {
+                        await CanAccommodationBookingsBeDeletedAsync(accommodation.Id);
+                    }
+                    catch (Exception)
+                    {
+                        throw new CancelBookingException(new int[] { id, accommodation.Id, accommodation.CancellationDeadlineInDays });
+                    }
 
                     accommodationsToBeDeleted.Add(accommodation);
                 }
@@ -129,7 +136,7 @@ namespace AintBnB.BusinessLogic.Imp
                     }
                     catch (Exception)
                     {
-                        throw new CancelBookingException("accommodation", booking.Id, booking.Accommodation.CancellationDeadlineInDays);
+                        throw new CancelBookingException($"accommodation with ID {booking.Accommodation.Id}", booking.Id, booking.Accommodation.CancellationDeadlineInDays);
                     }
 
                     toDelete.Add(booking);

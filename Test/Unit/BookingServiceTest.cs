@@ -277,6 +277,28 @@ namespace Test.Unit
         }
 
         [Test]
+        public async Task UpdateBookingAsync_ShouldFail_WhenCheckOutDateOfOriginalBookingIsInThePast()
+        {
+            await CreateDummyBookingAsync();
+
+            LoggedInAs = booking4.BookedBy;
+
+            var newStartDateTime = DateTime.Today.AddDays(10);
+            var orignalDates = booking4.Dates;
+
+            var newStartDate = newStartDateTime.ToString("yyyy-MM-dd");
+
+            var ex = Assert.ThrowsAsync<DateException>(async ()
+                => await bookingService.UpdateBookingAsync(newStartDate, 5, booking4.Id));
+
+            Assert.AreEqual("Can't update a booking that has a checkout date that's in the past!", ex.Message);
+
+
+            Assert.AreEqual(orignalDates.Count, booking4.Dates.Count);
+            Assert.AreEqual(orignalDates, booking4.Dates);
+        }
+
+        [Test]
         public async Task UpdateBookingAsync_ShouldSucceed_AndSetTheOriginalDatesThatAreNotBookedAnyLongerToAvailable_CaseWhenNewCheckOutDateIsBeforeOriginal()
         {
             await CreateDummyBookingAsync();
