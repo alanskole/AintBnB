@@ -24,7 +24,9 @@ namespace AintBnB.WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public virtual void ConfigureServices(IServiceCollection services)
         {
-            string conString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AintBnB.Database;Integrated Security=True";
+            //var conString = @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=AintBnB.Database;Integrated Security=True";
+
+            var conString = Configuration.GetConnectionString("DefaultConnection");
 
             services.AddDbContext<DatabaseContext>(
                 options => options.UseSqlServer(conString));
@@ -48,8 +50,6 @@ namespace AintBnB.WebApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
