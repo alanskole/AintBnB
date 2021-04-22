@@ -28,18 +28,22 @@ namespace Test
         protected User userCustomer1;
         protected User userCustomer2;
         protected User userCustomer3;
-        protected Address adr = new Address("str", "1", "1111", "ar", "Fredrikstad", "Norway");
+        protected Address adr1 = new Address("str", "1", "1111", "ar", "Fredrikstad", "Norway");
         protected Address adr2 = new Address("anotherstr", "10A", "1414", "frstd", "Fredrikstad", "Norway");
         protected Address adr3 = new Address("capitalstr", "42", "0531", "osl", "Oslo", "Norway");
+        protected Address adr4 = new Address("blabla", "4232", "34343", "hld", "Halden", "Norway");
         protected Accommodation accommodation1;
         protected Accommodation accommodation2;
         protected Accommodation accommodation3;
+        protected Accommodation accommodation4;
         protected Booking booking1;
         protected Booking booking2;
         protected Booking booking3;
         protected Booking booking4;
+        protected Booking booking5;
+        protected Booking booking6;
 
-        public async Task SetupDatabaseForTesting()
+        public async Task SetupDatabaseForTestingAsync()
         {
             var sqlconnection = new SqliteConnection("Data Source=:memory:");
             await sqlconnection.OpenAsync();
@@ -61,7 +65,7 @@ namespace Test
             userService = new UserService(unitOfWork);
         }
 
-        public async Task CreateDummyUsers()
+        public async Task CreateDummyUsersAsync()
         {
             userAdmin = new User
             {
@@ -142,7 +146,7 @@ namespace Test
             await connection.SaveChangesAsync();
         }
 
-        public async Task CreateDummyAccommodation()
+        public async Task CreateDummyAccommodationAsync()
         {
             var schedule = new SortedDictionary<string, bool>();
 
@@ -154,7 +158,7 @@ namespace Test
             accommodation1 = new Accommodation
             {
                 Owner = userCustomer1,
-                Address = adr,
+                Address = adr1,
                 SquareMeters = 50,
                 AmountOfBedrooms = 1,
                 KilometersFromCenter = 1.2,
@@ -193,26 +197,34 @@ namespace Test
                 Picture = new List<byte[]>()
             };
 
+            accommodation4 = new Accommodation
+            {
+                Owner = userCustomer3,
+                Address = adr4,
+                SquareMeters = 60,
+                AmountOfBedrooms = 2,
+                KilometersFromCenter = 4.8,
+                Description = "bla bla",
+                PricePerNight = 590,
+                CancellationDeadlineInDays = 1,
+                Schedule = new SortedDictionary<string, bool>(schedule),
+                Picture = new List<byte[]>()
+            };
+
             await unitOfWork.AccommodationRepository.CreateAsync(accommodation1);
             await connection.SaveChangesAsync();
             await unitOfWork.AccommodationRepository.CreateAsync(accommodation2);
             await connection.SaveChangesAsync();
             await unitOfWork.AccommodationRepository.CreateAsync(accommodation3);
             await connection.SaveChangesAsync();
+            await unitOfWork.AccommodationRepository.CreateAsync(accommodation4);
+            await connection.SaveChangesAsync();
         }
 
-        public async Task CreateDummyBooking()
+        public async Task CreateDummyBookingAsync()
         {
             var bkdt = DateTime.Today.AddDays(2);
             var past = DateTime.Today.AddDays(-20);
-
-            var dates4 = new List<string>();
-
-            for (int i = 0; i < 5; i++)
-            {
-                var dt = past.AddDays(i);
-                dates4.Add(dt.ToString("yyyy-MM-dd"));
-            }
 
             var dates1 = new List<string>();
 
@@ -239,6 +251,14 @@ namespace Test
                 var dt = DateTime.Today.AddDays(i + 2);
                 accommodation3.Schedule[dt.ToString("yyyy-MM-dd")] = false;
                 dates3.Add(dt.ToString("yyyy-MM-dd"));
+            }
+
+            var dates4 = new List<string>();
+
+            for (int i = 0; i < 5; i++)
+            {
+                var dt = past.AddDays(i);
+                dates4.Add(dt.ToString("yyyy-MM-dd"));
             }
 
             booking1 = new Booking
@@ -270,7 +290,23 @@ namespace Test
                 BookedBy = userCustomer3,
                 Accommodation = accommodation1,
                 Dates = dates4,
-                Price = (accommodation1.PricePerNight * dates1.Count)
+                Price = (accommodation1.PricePerNight * dates4.Count)
+            };
+
+            booking5 = new Booking
+            {
+                BookedBy = userCustomer2,
+                Accommodation = accommodation4,
+                Dates = dates2,
+                Price = (accommodation1.PricePerNight * dates2.Count)
+            };
+
+            booking6 = new Booking
+            {
+                BookedBy = userCustomer3,
+                Accommodation = accommodation1,
+                Dates = dates2,
+                Price = (accommodation1.PricePerNight * dates2.Count)
             };
 
             await unitOfWork.BookingRepository.CreateAsync(booking1);
@@ -280,6 +316,10 @@ namespace Test
             await unitOfWork.BookingRepository.CreateAsync(booking3);
             await connection.SaveChangesAsync();
             await unitOfWork.BookingRepository.CreateAsync(booking4);
+            await connection.SaveChangesAsync();
+            await unitOfWork.BookingRepository.CreateAsync(booking5);
+            await connection.SaveChangesAsync();
+            await unitOfWork.BookingRepository.CreateAsync(booking6);
             await connection.SaveChangesAsync();
         }
 

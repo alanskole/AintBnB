@@ -396,9 +396,9 @@ namespace Test.Unit
         public async Task LoginUser_ShouldSucceed_IfTheUserLoggingInHasEnteredCorrectUsernameAndPassword()
         {
             LoggedInAs = null;
-            await SetupDatabaseForTesting();
+            await SetupDatabaseForTestingAsync();
             SetupTestClasses();
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
@@ -413,9 +413,9 @@ namespace Test.Unit
         public async Task LoginUser_ShouldFail_IfTheUsernameIsWrong()
         {
             LoggedInAs = null;
-            await SetupDatabaseForTesting();
+            await SetupDatabaseForTestingAsync();
             SetupTestClasses();
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
@@ -433,9 +433,9 @@ namespace Test.Unit
         public async Task LoginUser_ShouldFail_IfThePasswordIsWrong()
         {
             LoggedInAs = null;
-            await SetupDatabaseForTesting();
+            await SetupDatabaseForTestingAsync();
             SetupTestClasses();
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
@@ -453,9 +453,9 @@ namespace Test.Unit
         public async Task LoginUser_ShouldFail_IfTheUserTryingToLoginIsOfUsertypeRequestToBeEmployee()
         {
             LoggedInAs = null;
-            await SetupDatabaseForTesting();
+            await SetupDatabaseForTestingAsync();
             SetupTestClasses();
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             var result = typeof(Authentication)
                 .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
@@ -472,9 +472,9 @@ namespace Test.Unit
         [Test]
         public async Task TryToLogin_ShouldFail_IfAlreadyLoggedIn()
         {
-            await SetupDatabaseForTesting();
+            await SetupDatabaseForTestingAsync();
             SetupTestClasses();
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userCustomer1;
 

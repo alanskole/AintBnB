@@ -16,7 +16,7 @@ namespace Test.Unit
         [SetUp]
         public async Task SetUp()
         {
-            await SetupDatabaseForTesting();
+            await SetupDatabaseForTestingAsync();
             SetupTestClasses();
         }
 
@@ -27,9 +27,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetAllUsersForLogin_ShouldReturn_ListOfAllUsers_WhenNoOneLoggedIn()
+        public async Task GetAllUsersForLoginAsync_ShouldReturn_ListOfAllUsers_WhenNoOneLoggedIn()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             Logout();
             var all = await userService.GetAllUsersForLoginAsync();
@@ -38,7 +38,7 @@ namespace Test.Unit
         }
 
         [Test]
-        public void GetAllUsersForLogin_ShoudFail_WhenLoggingInWithoutAnyRegisteredUsers()
+        public void GetAllUsersForLoginAsync_ShoudFail_WhenLoggingInWithoutAnyRegisteredUsers()
         {
             Logout();
 
@@ -49,9 +49,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetAllUsersForLogin_ShoudFail_WhenAlreadyLoggedIn()
+        public async Task GetAllUsersForLoginAsync_ShoudFail_WhenAlreadyLoggedIn()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userAdmin;
 
@@ -62,7 +62,7 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task CreateUser_ShouldReturn_NewlyCreatedUser()
+        public async Task CreateUserAsync_ShouldReturn_NewlyCreatedUser()
         {
             var first = await userService.CreateUserAsync("admin", "aaaaaa", "adminfirstname", "adminlastname", UserTypes.Employee);
             var second = await userService.CreateUserAsync("empreq", "aaaaaa", "empreqfirstname", "empreqlastname", UserTypes.RequestToBeEmployee);
@@ -80,9 +80,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task IsUserNameFree_ShouldFail_IfUsernameAlreadyExists()
+        public async Task IsUserNameFreeAsync_ShouldFail_IfUsernameAlreadyExists()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             var result = typeof(UserService)
                 .GetMethod("IsUserNameFreeAsync", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -94,7 +94,7 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task UserTypeCheck_ShouldSetUserTypeToAdmin_IfFirstCreatedUser()
+        public async Task UserTypeCheckAsync_ShouldSetUserTypeToAdmin_IfFirstCreatedUser()
         {
             var dummy = new User { UserType = UserTypes.Employee };
             var dummy2 = new User { UserType = UserTypes.RequestToBeEmployee };
@@ -113,9 +113,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task UserTypeCheck_ShouldSetUserTypeToCustomer_IfNotRequestToBeEmployeeOrFirstCreatedUser()
+        public async Task UserTypeCheckAsync_ShouldSetUserTypeToCustomer_IfNotRequestToBeEmployeeOrFirstCreatedUser()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             var dummy = new User { UserType = UserTypes.Employee };
 
@@ -128,9 +128,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task UserTypeCheck_ShouldSetUserTypeToRequestToBeEmployee_IfUserHasThatUserTypeAndNotFirstCreatedUser()
+        public async Task UserTypeCheckAsync_ShouldSetUserTypeToRequestToBeEmployee_IfUserHasThatUserTypeAndNotFirstCreatedUser()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             User dummy = new User { UserType = UserTypes.RequestToBeEmployee };
 
@@ -147,9 +147,9 @@ namespace Test.Unit
         [TestCase(2, "newfirsttwo", "newlasttwo")]
         [TestCase(3, "newfirstthree", "newlastthree")]
         [TestCase(4, "newfirstfour", "newlastfour")]
-        public async Task UpdateUser_ShouldSucceed_WhenUsersChangeFirstAndLastName(int id, string newFirstname, string newLastname)
+        public async Task UpdateUserAsync_ShouldSucceed_WhenUsersChangeFirstAndLastName(int id, string newFirstname, string newLastname)
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id);
 
@@ -170,9 +170,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task UpdateUser_ShouldSucceed_WhenEmployeeUpdatesCustomerAccounts()
+        public async Task UpdateUserAsync_ShouldSucceed_WhenEmployeeUpdatesCustomerAccounts()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userEmployee1;
 
@@ -194,7 +194,7 @@ namespace Test.Unit
         [Test]
         public async Task Admin_Can_Grant_Employee_Account_Request()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userAdmin;
 
@@ -213,9 +213,9 @@ namespace Test.Unit
         [TestCase(2, "newpasstwo", "newpasstwo")]
         [TestCase(3, "newpassthree", "newpassthree")]
         [TestCase(4, "newpassfour", "newpassfour")]
-        public async Task ChangePassword_ShouldSucceed_WhenUserEntersCorrectOld_And_CanConfirmNewPassword(int id, string newPass, string newPassConfirm)
+        public async Task ChangePasswordAsync_ShouldSucceed_WhenUserEntersCorrectOld_And_CanConfirmNewPassword(int id, string newPass, string newPassConfirm)
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id);
 
@@ -230,9 +230,9 @@ namespace Test.Unit
         [TestCase(1, "<'newpassone'>", "<'newpassone'>")]
         [TestCase(2, "aaaaaa", "aaaaaa")]
         [TestCase(3, "aaaaaabb", "aaaaaab")]
-        public async Task ChangePassword_ShouldFailWhen_OldPasswordWrong_NewPasswordConfirmationFails_UnchangedNewAndOld(int id, string newPass, string newPassConfirmed)
+        public async Task ChangePasswordAsync_ShouldFailWhen_OldPasswordWrong_NewPasswordConfirmationFails_UnchangedNewAndOld(int id, string newPass, string newPassConfirmed)
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id);
 
@@ -263,9 +263,9 @@ namespace Test.Unit
         [Test]
         [TestCase(2, "newpasstwo", "aaaaaa")]
         [TestCase(3, "newpassthree", "aaaaaa")]
-        public async Task ChangePassword_ShouldFail_WhenNotDoneByAccountOwner(int id, string oldPass, string newPass)
+        public async Task ChangePasswordAsync_ShouldFail_WhenNotDoneByAccountOwner(int id, string oldPass, string newPass)
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id - 1);
 
@@ -280,9 +280,9 @@ namespace Test.Unit
         [TestCase(2)]
         [TestCase(3)]
         [TestCase(4)]
-        public async Task GetUser_ShouldReturn_CorrectUser(int id)
+        public async Task GetUserAsync_ShouldReturn_CorrectUser(int id)
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id);
 
@@ -292,9 +292,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetUser_ShouldFail_IfCustomerTriesToGetAnotherUserAccount()
+        public async Task GetUserAsync_ShouldFail_IfCustomerTriesToGetAnotherUserAccount()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userCustomer1;
 
@@ -305,9 +305,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetUser_ShouldFail_IfNoUsersWithTheIdExists()
+        public async Task GetUserAsync_ShouldFail_IfNoUsersWithTheIdExists()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userAdmin;
 
@@ -320,7 +320,7 @@ namespace Test.Unit
         [Test]
         public async Task Only_Admin_Can_View_Admin_Account()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userAdmin;
 
@@ -349,9 +349,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetAllUsers_ShouldReturn_AllUsersWhenAdmin()
+        public async Task GetAllUsersAsync_ShouldReturn_AllUsersWhenAdmin()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userAdmin;
 
@@ -361,9 +361,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetAllUsers_ShouldReturn_AllCustomers_And_TheirOwnAccount_WhenEmployee()
+        public async Task GetAllUsersAsync_ShouldReturn_AllCustomers_And_TheirOwnAccount_WhenEmployee()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userEmployee1;
 
@@ -376,9 +376,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetAllUsers_ShouldFail_WhenCustomer()
+        public async Task GetAllUsersAsync_ShouldFail_WhenCustomer()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userCustomer1;
 
@@ -389,9 +389,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetAllEmployeeRequests_ShouldReturn_AllEmployeeRequestsIfAdmin()
+        public async Task GetAllEmployeeRequestsAsync_ShouldReturn_AllEmployeeRequestsIfAdmin()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userAdmin;
 
@@ -400,9 +400,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetAllEmployeeRequests_ShouldFail_IfNotAdmin()
+        public async Task GetAllEmployeeRequestsAsync_ShouldFail_IfNotAdmin()
         {
-            await CreateDummyUsers();
+            await CreateDummyUsersAsync();
 
             LoggedInAs = userEmployee1;
 
@@ -413,7 +413,7 @@ namespace Test.Unit
         }
 
         [Test]
-        public void Validate_ShouldFail_If_UsernameEmpty_FirstAndLastnames_AreNotOnlyLetters_WithOneDash_OrSpace_BetweenNames()
+        public void ValidateUser_ShouldFail_If_UsernameEmpty_FirstAndLastnames_AreNotOnlyLetters_WithOneDash_OrSpace_BetweenNames()
         {
             var ex = Assert.Throws<ParameterException>(()
                 => userService.ValidateUser("", "ss", "dd"));

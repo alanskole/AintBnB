@@ -17,10 +17,10 @@ namespace Test.Unit
         [SetUp]
         public async Task SetUp()
         {
-            await SetupDatabaseForTesting();
+            await SetupDatabaseForTestingAsync();
             SetupTestClasses();
-            await CreateDummyUsers();
-            await CreateDummyAccommodation();
+            await CreateDummyUsersAsync();
+            await CreateDummyAccommodationAsync();
         }
 
         [TearDown]
@@ -30,7 +30,7 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task Book_ShouldReturn_NewBookingIfDatesAreAvailable()
+        public async Task BookAsync_ShouldReturn_NewBookingIfDatesAreAvailable()
         {
             LoggedInAs = userCustomer2;
 
@@ -48,7 +48,7 @@ namespace Test.Unit
         }
 
         [Test]
-        public void Book_ShouldFail_IfOwnerOfAccommodationWantsToBookTheirOwnAccommodation()
+        public void BookAsync_ShouldFail_IfOwnerOfAccommodationWantsToBookTheirOwnAccommodation()
         {
             LoggedInAs = userCustomer1;
 
@@ -62,7 +62,7 @@ namespace Test.Unit
         }
 
         [Test]
-        public void Book_ShouldFail_IfNightsAreLessThanOne()
+        public void BookAsync_ShouldFail_IfNightsAreLessThanOne()
         {
             LoggedInAs = userCustomer2;
 
@@ -165,7 +165,7 @@ namespace Test.Unit
         [Test]
         public async Task TryToBookIfAllDatesAvailable_ShouldFail_IfAllDatesAreNotAvailable()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             var startDate = booking1.Dates[booking1.Dates.Count - 1];
             var nights = 2;
@@ -196,9 +196,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task UpdateBooking_ShouldSucceed_IfNewDatesAreNotBookedByOthers_CaseWhenNewStartDateIsBeforeOriginal_AndNewCheckoutDateIsAfterOriginal()
+        public async Task UpdateBookingAsync_ShouldSucceed_IfNewDatesAreNotBookedByOthers_CaseWhenNewStartDateIsBeforeOriginal_AndNewCheckoutDateIsAfterOriginal()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = booking1.BookedBy;
 
@@ -230,9 +230,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task UpdateBooking_Should_SetUpdatedDatesToUnavailableInSchedule()
+        public async Task UpdateBookingAsync_Should_SetUpdatedDatesToUnavailableInSchedule()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = booking1.BookedBy;
 
@@ -277,9 +277,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task UpdateBooking_ShouldSucceed_AndSetTheOriginalDatesThatAreNotBookedAnyLongerToAvailable_CaseWhenNewCheckOutDateIsBeforeOriginal()
+        public async Task UpdateBookingAsync_ShouldSucceed_AndSetTheOriginalDatesThatAreNotBookedAnyLongerToAvailable_CaseWhenNewCheckOutDateIsBeforeOriginal()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = booking1.BookedBy;
 
@@ -315,9 +315,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task UpdateBooking_ShouldSucceed_AndSetTheOriginalDatesThatAreNotBookedAnyLongerToAvailable_CaseWhenNewStartDateIsAfterOriginal()
+        public async Task UpdateBookingAsync_ShouldSucceed_AndSetTheOriginalDatesThatAreNotBookedAnyLongerToAvailable_CaseWhenNewStartDateIsAfterOriginal()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = booking1.BookedBy;
 
@@ -352,9 +352,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task UpdateBooking_ShouldSucceed_AndUpdateOldDatesToAvailableAndNewDatesToUnavailable_CaseWhenAllTheNewDatesAreDifferentThanOriginal()
+        public async Task UpdateBookingAsync_ShouldSucceed_AndUpdateOldDatesToAvailableAndNewDatesToUnavailable_CaseWhenAllTheNewDatesAreDifferentThanOriginal()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = booking1.BookedBy;
 
@@ -385,9 +385,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetBooking_ShouldReturn_CorrectBooking()
+        public async Task GetBookingAsync_ShouldReturn_CorrectBooking()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = userCustomer2;
 
@@ -397,9 +397,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetBooking_ShouldReturn_CorrectBookingIfOwnerOfAccommodationTriesToGetABookingOfTheirAccommodationByAnotherUser()
+        public async Task GetBookingAsync_ShouldReturn_CorrectBookingIfOwnerOfAccommodationTriesToGetABookingOfTheirAccommodationByAnotherUser()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = userCustomer1;
 
@@ -410,9 +410,9 @@ namespace Test.Unit
 
 
         [Test]
-        public async Task GetBooking_ShouldFail_IfIdDoesNotExist()
+        public async Task GetBookingAsync_ShouldFail_IfIdDoesNotExist()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = userCustomer1;
 
@@ -423,9 +423,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetBooking_ShouldFail_IfUserThatIsNotOwnerOfAccommodationOrAdminOrEmployeeTriesToGetBookingOfAnotherUser()
+        public async Task GetBookingAsync_ShouldFail_IfUserThatIsNotOwnerOfAccommodationOrAdminOrEmployeeTriesToGetBookingOfAnotherUser()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = userRequestToBecomeEmployee;
 
@@ -436,9 +436,9 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetBookingsOfOwnedAccommodation_ShouldReturn_ListOfAllBookingsOnTheAccommodationOfTheUser()
+        public async Task GetBookingsOfOwnedAccommodationAsync_ShouldReturn_ListOfAllBookingsOnTheAccommodationOfTheUser()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = userCustomer2;
 
@@ -452,17 +452,17 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetBookingsOfOwnedAccommodation_ShouldFail_IfThereAreNoBookingsOnTheAccommodationsOfTheUser()
+        public async Task GetBookingsOfOwnedAccommodationAsync_ShouldFail_IfThereAreNoBookingsOnTheAccommodationsOfTheUser()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = userRequestToBecomeEmployee;
 
             userRequestToBecomeEmployee.UserType = UserTypes.Customer;
 
-            adr.Id = 100;
+            adr1.Id = 100;
 
-            await accommodationService.CreateAccommodationAsync(userRequestToBecomeEmployee, adr, 1, 2, 1, "d", 1, 1, new List<byte[]>(), 10);
+            await accommodationService.CreateAccommodationAsync(userRequestToBecomeEmployee, adr1, 1, 2, 1, "d", 1, 1, new List<byte[]>(), 10);
 
             var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async ()
                 => await bookingService.GetBookingsOfOwnedAccommodationAsync(3));
@@ -471,39 +471,39 @@ namespace Test.Unit
         }
 
         [Test]
-        public async Task GetAllBookings_ShouldReturn_AllBookingsInTheSystemIfAdmin()
+        public async Task GetAllBookingsAsync_ShouldReturn_AllBookingsInTheSystemIfAdmin()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = userAdmin;
 
             var allBookings = await bookingService.GetAllBookingsAsync();
 
-            Assert.AreEqual(4, allBookings.Count);
+            Assert.AreEqual(6, allBookings.Count);
             Assert.True(allBookings.Contains(booking1));
             Assert.True(allBookings.Contains(booking2));
             Assert.True(allBookings.Contains(booking3));
         }
 
         [Test]
-        public async Task GetAllBookings_ShouldReturn_AllBookingsInTheSystemIfEmployee()
+        public async Task GetAllBookingsAsync_ShouldReturn_AllBookingsInTheSystemIfEmployee()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = userEmployee1;
 
             var allBookings = await bookingService.GetAllBookingsAsync();
 
-            Assert.AreEqual(4, allBookings.Count);
+            Assert.AreEqual(6, allBookings.Count);
             Assert.True(allBookings.Contains(booking1));
             Assert.True(allBookings.Contains(booking2));
             Assert.True(allBookings.Contains(booking3));
         }
 
         [Test]
-        public async Task GetAllBookings_ShouldReturn_AllBookingsOfTheCustomerIfNormalCustomer()
+        public async Task GetAllBookingsAsync_ShouldReturn_AllBookingsOfTheCustomerIfNormalCustomer()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = userCustomer1;
 
@@ -515,7 +515,7 @@ namespace Test.Unit
         }
 
         [Test]
-        public void GetAllBookings_ShouldFail_IfThereAreNoBookingsInTheSystem()
+        public void GetAllBookingsAsync_ShouldFail_IfThereAreNoBookingsInTheSystem()
         {
             LoggedInAs = userAdmin;
 
@@ -526,7 +526,7 @@ namespace Test.Unit
         }
 
         [Test]
-        public void GetAllBookings_ShouldFail_IfCustomerDoesNotHaveAnyBookings()
+        public void GetAllBookingsAsync_ShouldFail_IfCustomerDoesNotHaveAnyBookings()
         {
             LoggedInAs = userCustomer1;
 
@@ -539,7 +539,7 @@ namespace Test.Unit
         [Test]
         public async Task CanRatingBeGiven_ShouldFail_WhenTryingToBookBeforeTheCheckoutDateHasPassed()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = booking1.BookedBy;
 
@@ -557,7 +557,7 @@ namespace Test.Unit
         [Test]
         public async Task CanRatingBeGiven_ShouldFail_WhenRatingGivenBySomeoneElseThanTheBooker()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = userAdmin;
 
@@ -575,7 +575,7 @@ namespace Test.Unit
         [Test]
         public async Task CanRatingBeGiven_ShouldFail_WhenBookingHasAlreadyBeenRated()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = booking1.BookedBy;
 
@@ -595,7 +595,7 @@ namespace Test.Unit
         [Test]
         public async Task CanRatingBeGiven_ShouldFail_IfRatingIsLessThanOneOrHigherThanFive()
         {
-            await CreateDummyBooking();
+            await CreateDummyBookingAsync();
 
             LoggedInAs = booking1.BookedBy;
 
