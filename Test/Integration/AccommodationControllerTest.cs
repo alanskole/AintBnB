@@ -1,6 +1,6 @@
 ﻿using AintBnB.Core.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -11,26 +11,26 @@ using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test.Integration
 {
-    [TestFixture]
+    [TestClass]
     public class AccommodationControllerTest
     {
         private static CustomWebApplicationFactory _factory;
         private HttpClient _client;
 
-        [SetUp]
+        [TestInitialize]
         public void SetUp()
         {
             _factory = new CustomWebApplicationFactory();
             _client = _factory.CreateClient();
         }
 
-        [TearDown]
+        [TestCleanup]
         public void TearDown()
         {
             _factory.DisposeDb();
         }
 
-        [Test]
+        [TestMethod]
         public async Task CreateAccommodation_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -68,7 +68,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task CreateAccommodation_ShouldReturn_BadRequestIfError()
         {
             LoggedInAs = _factory.userAdmin;
@@ -87,7 +87,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task FindAvailable_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -103,7 +103,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task FindAvailable_ShouldReturn_NotFoundIfError()
         {
             LoggedInAs = _factory.userAdmin;
@@ -119,7 +119,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task SortAvailableList_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -136,7 +136,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task SortAvailableList_ShouldReturn_NotFoundIfError()
         {
             LoggedInAs = _factory.userAdmin;
@@ -154,7 +154,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task ExpandSchedule_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -165,7 +165,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task ExpandSchedule_ShouldReturn_NotFoundIfError()
         {
             LoggedInAs = _factory.userAdmin;
@@ -176,7 +176,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task UpdateAccommodation_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -193,7 +193,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task UpdateAccommodation_ShouldReturn_BadRequestIfError()
         {
             LoggedInAs = _factory.userAdmin;
@@ -208,7 +208,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllAccommodationsInTheSystem_ShouldReturn_SuccessStatus()
         {
 
@@ -220,7 +220,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllAccommodationsInTheSystem_ShouldReturn_NotFoundIfError()
         {
 
@@ -232,7 +232,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllAccommodationsOfAUser_ShouldReturn_SuccessStatus()
         {
 
@@ -244,7 +244,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllAccommodationsOfAUser_ShouldReturn_NotFoundIfError()
         {
 
@@ -256,7 +256,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAccommodation_ShouldReturn_SuccessStatus()
         {
 
@@ -268,7 +268,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAccommodation_ShouldReturn_NotFoundIfError()
         {
 
@@ -280,7 +280,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task DeleteAccommodation_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -291,7 +291,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task DeleteAccommodation_ShouldReturn_BadRequestIfError()
         {
             LoggedInAs = _factory.userAdmin;

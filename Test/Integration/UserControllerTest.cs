@@ -1,6 +1,6 @@
 ﻿using AintBnB.Core.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
-using NUnit.Framework;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -9,26 +9,26 @@ using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test.Integration
 {
-    [TestFixture]
+    [TestClass]
     public class UserControllerTest
     {
         private static CustomWebApplicationFactory _factory;
         private HttpClient _client;
 
-        [SetUp]
+        [TestInitialize]
         public void SetUp()
         {
             _factory = new CustomWebApplicationFactory();
             _client = _factory.CreateClient();
         }
 
-        [TearDown]
+        [TestCleanup]
         public void TearDown()
         {
             _factory.DisposeDb();
         }
 
-        [Test]
+        [TestMethod]
         public async Task CreateUser_ShouldReturn_SuccessStatus()
         {
             User usr = new User
@@ -49,7 +49,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task CreateUser_ShouldReturn_BadRequestIfError()
         {
             User usr = new User
@@ -65,7 +65,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetUser_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -76,7 +76,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetUser_ShouldReturn_NotFoundIfError()
         {
             LoggedInAs = _factory.userAdmin;
@@ -87,7 +87,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task UpdateUser_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -109,7 +109,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task UpdateUser_ShouldReturn_BadRequestIfError()
         {
             LoggedInAs = _factory.userAdmin;
@@ -128,7 +128,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllUser_ShouldReturn_SuccessStatus()
         {
 
@@ -140,7 +140,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllUser_ShouldReturn_NotFoundIfError()
         {
 
@@ -152,7 +152,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllCustomers_ShouldReturn_SuccessStatus()
         {
 
@@ -164,7 +164,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllCustomers_ShouldReturn_NotFoundIfError()
         {
 
@@ -176,7 +176,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllRequestsToBecomeEmployee_ShouldReturn_SuccessStatus()
         {
 
@@ -188,7 +188,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllRequestsToBecomeEmployee_ShouldReturn_NotFoundIfError()
         {
             LoggedInAs = _factory.userEmployee1;
@@ -199,7 +199,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task DeleteUser_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -210,7 +210,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task DeleteUser_ShouldReturn_BadRequestIfError()
         {
             LoggedInAs = _factory.userAdmin;
@@ -221,7 +221,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task ChangePassword_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -236,7 +236,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task ChangePassword_ShouldReturn_BadRequestIfError()
         {
             LoggedInAs = _factory.userAdmin;

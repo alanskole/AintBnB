@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -7,26 +7,26 @@ using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test.Integration
 {
-    [TestFixture]
+    [TestClass]
     public class BookingControllerTest
     {
         private static CustomWebApplicationFactory _factory;
         private HttpClient _client;
 
-        [SetUp]
+        [TestInitialize]
         public void SetUp()
         {
             _factory = new CustomWebApplicationFactory();
             _client = _factory.CreateClient();
         }
 
-        [TearDown]
+        [TestCleanup]
         public void TearDown()
         {
             _factory.DisposeDb();
         }
 
-        [Test]
+        [TestMethod]
         public async Task Book_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -39,7 +39,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task Book_ShouldReturn_BadRequestIfError()
         {
             LoggedInAs = _factory.userAdmin;
@@ -52,7 +52,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task UpdateBooking_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -65,7 +65,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task UpdateBooking_ShouldReturn_BadRequestIfError()
         {
             LoggedInAs = _factory.userAdmin;
@@ -78,7 +78,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetBooking_ShouldReturn_SuccessStatus()
         {
 
@@ -90,7 +90,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetBooking_ShouldReturn_NotFoundIfError()
         {
 
@@ -102,7 +102,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetBookingsOnOwnedAccommodations_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userCustomer2;
@@ -113,7 +113,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetBookingsOnOwnedAccommodations_ShouldReturn_NotFoundIfError()
         {
             LoggedInAs = _factory.userCustomer2;
@@ -124,7 +124,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllBookings_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -135,7 +135,7 @@ namespace Test.Integration
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllBookings_ShouldReturn_NotFoundIfError()
         {
             LoggedInAs = null;
@@ -146,7 +146,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task DeleteBooking_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
@@ -157,7 +157,7 @@ namespace Test.Integration
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
-        [Test]
+        [TestMethod]
         public async Task DeleteBooking_ShouldReturn_BadRequestIfError()
         {
             LoggedInAs = _factory.userAdmin;
