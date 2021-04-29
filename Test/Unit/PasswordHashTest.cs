@@ -1,22 +1,22 @@
-﻿using NUnit.Framework;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static AintBnB.BusinessLogic.Helpers.PasswordHashing;
 
 namespace Test.Unit
 {
-    [TestFixture]
+    [TestClass]
     public class PasswordHashTest
     {
-        [Test]
+        [TestMethod]
         public void VerifyPassword_ShouldReturn_TrueIfPasswordIsAMatch()
         {
             string unHashed = "aaaaaa";
 
             string hashedPass = HashThePassword(unHashed, null, false);
 
-            Assert.True(VerifyThePassword(unHashed, hashedPass));
+            Assert.IsTrue(VerifyThePassword(unHashed, hashedPass));
         }
 
-        [Test]
+        [TestMethod]
         public void VerifyPassword_ShouldReturn_FalseIfPasswordIsNotAMatch()
         {
             string unHashed = "aaaaaa";
@@ -24,7 +24,7 @@ namespace Test.Unit
 
             string hashedPass = HashThePassword(unHashed, null, false);
 
-            Assert.False(VerifyThePassword(unHashedWrong, hashedPass));
+            Assert.IsFalse(VerifyThePassword(unHashedWrong, hashedPass));
         }
     }
 }

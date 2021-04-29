@@ -1,7 +1,7 @@
 ﻿using AintBnB.BusinessLogic.CustomExceptions;
 using AintBnB.BusinessLogic.Imp;
 using AintBnB.Core.Models;
-using NUnit.Framework;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -9,24 +9,24 @@ using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test.Unit
 {
-    [TestFixture]
+    [TestClass]
     public class UserServiceTest : TestBase
     {
 
-        [SetUp]
+        [TestInitialize]
         public async Task SetUp()
         {
             await SetupDatabaseForTestingAsync();
             SetupTestClasses();
         }
 
-        [TearDown]
+        [TestCleanup]
         public async Task TearDown()
         {
             await DisposeAsync();
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllUsersForLoginAsync_ShouldReturn_ListOfAllUsers_WhenNoOneLoggedIn()
         {
             await CreateDummyUsersAsync();
@@ -37,31 +37,31 @@ namespace Test.Unit
             Assert.AreEqual(UserTypes.Admin, all[0].UserType);
         }
 
-        [Test]
-        public void GetAllUsersForLoginAsync_ShoudFail_WhenLoggingInWithoutAnyRegisteredUsers()
+        [TestMethod]
+        public async Task GetAllUsersForLoginAsync_ShoudFail_WhenLoggingInWithoutAnyRegisteredUsersAsync()
         {
             Logout();
 
-            var ex = Assert.ThrowsAsync<NoneFoundInDatabaseTableException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
                 => await userService.GetAllUsersForLoginAsync());
 
             Assert.AreEqual(ex.Message, "No users found!");
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllUsersForLoginAsync_ShoudFail_WhenAlreadyLoggedIn()
         {
             await CreateDummyUsersAsync();
 
             LoggedInAs = userAdmin;
 
-            var ex = Assert.ThrowsAsync<AlreadyLoggedInException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<AlreadyLoggedInException>(async ()
                 => await userService.GetAllUsersForLoginAsync());
 
             Assert.AreEqual(ex.Message, "Already logged in!");
         }
 
-        [Test]
+        [TestMethod]
         public async Task CreateUserAsync_ShouldReturn_NewlyCreatedUser()
         {
             var first = await userService.CreateUserAsync("admin", "aaaaaa", "adminfirstname", "adminlastname", UserTypes.Employee);
@@ -79,7 +79,7 @@ namespace Test.Unit
             Assert.AreEqual("cust2", fourth.UserName);
         }
 
-        [Test]
+        [TestMethod]
         public async Task IsUserNameFreeAsync_ShouldFail_IfUsernameAlreadyExists()
         {
             await CreateDummyUsersAsync();
@@ -87,13 +87,13 @@ namespace Test.Unit
             var result = typeof(UserService)
                 .GetMethod("IsUserNameFreeAsync", BindingFlags.NonPublic | BindingFlags.Instance);
 
-            var ex = Assert.ThrowsAsync<ParameterException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<ParameterException>(async ()
                 => await (Task)result.Invoke(userService, new object[] { "admin" }));
 
             Assert.AreEqual(ex.Message, "Username already taken!");
         }
 
-        [Test]
+        [TestMethod]
         public async Task UserTypeCheckAsync_ShouldSetUserTypeToAdmin_IfFirstCreatedUser()
         {
             var dummy = new User { UserType = UserTypes.Employee };
@@ -112,7 +112,7 @@ namespace Test.Unit
             Assert.AreEqual(UserTypes.Admin, dummy3.UserType);
         }
 
-        [Test]
+        [TestMethod]
         public async Task UserTypeCheckAsync_ShouldSetUserTypeToCustomer_IfNotRequestToBeEmployeeOrFirstCreatedUser()
         {
             await CreateDummyUsersAsync();
@@ -127,7 +127,7 @@ namespace Test.Unit
             Assert.AreEqual(UserTypes.Customer, dummy.UserType);
         }
 
-        [Test]
+        [TestMethod]
         public async Task UserTypeCheckAsync_ShouldSetUserTypeToRequestToBeEmployee_IfUserHasThatUserTypeAndNotFirstCreatedUser()
         {
             await CreateDummyUsersAsync();
@@ -142,11 +142,11 @@ namespace Test.Unit
             Assert.AreEqual(UserTypes.RequestToBeEmployee, dummy.UserType);
         }
 
-        [Test]
-        [TestCase(1, "newfirstone", "newlastone")]
-        [TestCase(2, "newfirsttwo", "newlasttwo")]
-        [TestCase(3, "newfirstthree", "newlastthree")]
-        [TestCase(4, "newfirstfour", "newlastfour")]
+        [DataRow(1, "newfirstone", "newlastone")]
+        [DataRow(2, "newfirsttwo", "newlasttwo")]
+        [DataRow(3, "newfirstthree", "newlastthree")]
+        [DataRow(4, "newfirstfour", "newlastfour")]
+        [DataTestMethod]
         public async Task UpdateUserAsync_ShouldSucceed_WhenUsersChangeFirstAndLastName(int id, string newFirstname, string newLastname)
         {
             await CreateDummyUsersAsync();
@@ -169,7 +169,7 @@ namespace Test.Unit
             Assert.AreEqual(user.LastName, newLastname);
         }
 
-        [Test]
+        [TestMethod]
         public async Task UpdateUserAsync_ShouldSucceed_WhenEmployeeUpdatesCustomerAccounts()
         {
             await CreateDummyUsersAsync();
@@ -191,7 +191,7 @@ namespace Test.Unit
             Assert.AreEqual(userCustomer1.LastName, newLastname);
         }
 
-        [Test]
+        [TestMethod]
         public async Task Admin_Can_Grant_Employee_Account_Request()
         {
             await CreateDummyUsersAsync();
@@ -208,11 +208,11 @@ namespace Test.Unit
             Assert.AreEqual(UserTypes.Employee, userRequestToBecomeEmployee2.UserType);
         }
 
-        [Test]
-        [TestCase(1, "<'newpassone'>", "<'newpassone'>")]
-        [TestCase(2, "newpasstwo", "newpasstwo")]
-        [TestCase(3, "newpassthree", "newpassthree")]
-        [TestCase(4, "newpassfour", "newpassfour")]
+        [DataRow(1, "<'newpassone'>", "<'newpassone'>")]
+        [DataRow(2, "newpasstwo", "newpasstwo")]
+        [DataRow(3, "newpassthree", "newpassthree")]
+        [DataRow(4, "newpassfour", "newpassfour")]
+        [DataTestMethod]
         public async Task ChangePasswordAsync_ShouldSucceed_WhenUserEntersCorrectOld_And_CanConfirmNewPassword(int id, string newPass, string newPassConfirm)
         {
             await CreateDummyUsersAsync();
@@ -226,10 +226,10 @@ namespace Test.Unit
             Assert.IsTrue(UnHashPassword(newPass, LoggedInAs.Password));
         }
 
-        [Test]
-        [TestCase(1, "<'newpassone'>", "<'newpassone'>")]
-        [TestCase(2, "aaaaaa", "aaaaaa")]
-        [TestCase(3, "aaaaaabb", "aaaaaab")]
+        [DataRow(1, "<'newpassone'>", "<'newpassone'>")]
+        [DataRow(2, "aaaaaa", "aaaaaa")]
+        [DataRow(3, "aaaaaabb", "aaaaaab")]
+        [DataTestMethod]
         public async Task ChangePasswordAsync_ShouldFailWhen_OldPasswordWrong_NewPasswordConfirmationFails_UnchangedNewAndOld(int id, string newPass, string newPassConfirmed)
         {
             await CreateDummyUsersAsync();
@@ -238,21 +238,21 @@ namespace Test.Unit
 
             if (id == 1)
             {
-                var ex = Assert.ThrowsAsync<PasswordChangeException>(async ()
+                var ex = await Assert.ThrowsExceptionAsync<PasswordChangeException>(async ()
                     => await userService.ChangePasswordAsync("aaaaaab", id, newPass, newPassConfirmed));
 
                 Assert.AreEqual(ex.Message, "The old passwords don't match!");
             }
             else if (id == 2)
             {
-                var ex = Assert.ThrowsAsync<PasswordChangeException>(async ()
+                var ex = await Assert.ThrowsExceptionAsync<PasswordChangeException>(async ()
                     => await userService.ChangePasswordAsync("aaaaaa", id, newPass, newPassConfirmed));
 
                 Assert.AreEqual(ex.Message, "The new and old password must be different!");
             }
             else if (id == 3)
             {
-                var ex = Assert.ThrowsAsync<PasswordChangeException>(async ()
+                var ex = await Assert.ThrowsExceptionAsync<PasswordChangeException>(async ()
                     => await userService.ChangePasswordAsync("aaaaaa", id, newPass, newPassConfirmed));
 
                 Assert.AreEqual(ex.Message, "The new passwords don't match!");
@@ -260,26 +260,26 @@ namespace Test.Unit
         }
 
 
-        [Test]
-        [TestCase(2, "newpasstwo", "aaaaaa")]
-        [TestCase(3, "newpassthree", "aaaaaa")]
+        [DataRow(2, "newpasstwo", "aaaaaa")]
+        [DataRow(3, "newpassthree", "aaaaaa")]
+        [DataTestMethod]
         public async Task ChangePasswordAsync_ShouldFail_WhenNotDoneByAccountOwner(int id, string oldPass, string newPass)
         {
             await CreateDummyUsersAsync();
 
             LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id - 1);
 
-            var ex = Assert.ThrowsAsync<AccessException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await userService.ChangePasswordAsync(oldPass, id, newPass, newPass));
 
             Assert.AreEqual(ex.Message, "Only the owner of the account can change their password!");
         }
 
-        [Test]
-        [TestCase(1)]
-        [TestCase(2)]
-        [TestCase(3)]
-        [TestCase(4)]
+        [DataRow(1)]
+        [DataRow(2)]
+        [DataRow(3)]
+        [DataRow(4)]
+        [DataTestMethod]
         public async Task GetUserAsync_ShouldReturn_CorrectUser(int id)
         {
             await CreateDummyUsersAsync();
@@ -291,64 +291,64 @@ namespace Test.Unit
             Assert.AreEqual(id, user.Id);
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetUserAsync_ShouldFail_IfCustomerTriesToGetAnotherUserAccount()
         {
             await CreateDummyUsersAsync();
 
             LoggedInAs = userCustomer1;
 
-            var exc = Assert.ThrowsAsync<AccessException>(async ()
+            var exc = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await userService.GetUserAsync(6));
 
             Assert.AreEqual(exc.Message, "Restricted access!");
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetUserAsync_ShouldFail_IfNoUsersWithTheIdExists()
         {
             await CreateDummyUsersAsync();
 
             LoggedInAs = userAdmin;
 
-            var ex = Assert.ThrowsAsync<IdNotFoundException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<IdNotFoundException>(async ()
                 => await userService.GetUserAsync(600));
 
             Assert.AreEqual("User with ID 600 not found!", ex.Message);
         }
 
-        [Test]
+        [TestMethod]
         public async Task Only_Admin_Can_View_Admin_Account()
         {
             await CreateDummyUsersAsync();
 
             LoggedInAs = userAdmin;
 
-            Assert.DoesNotThrowAsync(async () => await userService.GetUserAsync(1));
+            await userService.GetUserAsync(1);
 
             LoggedInAs = userEmployee1;
 
-            var ex = Assert.ThrowsAsync<AccessException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await userService.GetUserAsync(1));
 
             Assert.AreEqual(ex.Message, "Restricted access!");
 
             LoggedInAs = userRequestToBecomeEmployee;
 
-            ex = Assert.ThrowsAsync<AccessException>(async ()
+            ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await userService.GetUserAsync(1));
 
             Assert.AreEqual(ex.Message, "Restricted access!");
 
             LoggedInAs = userCustomer1;
 
-            ex = Assert.ThrowsAsync<AccessException>(async ()
+            ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await userService.GetUserAsync(1));
 
             Assert.AreEqual(ex.Message, "Restricted access!");
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllUsersAsync_ShouldReturn_AllUsersWhenAdmin()
         {
             await CreateDummyUsersAsync();
@@ -360,7 +360,7 @@ namespace Test.Unit
             Assert.AreEqual(7, all.Count);
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllUsersAsync_ShouldReturn_AllCustomers_And_TheirOwnAccount_WhenEmployee()
         {
             await CreateDummyUsersAsync();
@@ -375,20 +375,20 @@ namespace Test.Unit
             Assert.AreEqual(UserTypes.Customer, all[2].UserType);
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllUsersAsync_ShouldFail_WhenCustomer()
         {
             await CreateDummyUsersAsync();
 
             LoggedInAs = userCustomer1;
 
-            var ex = Assert.ThrowsAsync<AccessException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await userService.GetAllUsersAsync());
 
             Assert.AreEqual(ex.Message, "Restricted access!");
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllEmployeeRequestsAsync_ShouldReturn_AllEmployeeRequestsIfAdmin()
         {
             await CreateDummyUsersAsync();
@@ -399,33 +399,33 @@ namespace Test.Unit
             Assert.AreEqual(2, all.Count);
         }
 
-        [Test]
+        [TestMethod]
         public async Task GetAllEmployeeRequestsAsync_ShouldFail_IfNotAdmin()
         {
             await CreateDummyUsersAsync();
 
             LoggedInAs = userEmployee1;
 
-            var ex = Assert.ThrowsAsync<AccessException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await userService.GetAllEmployeeRequestsAsync());
 
             Assert.AreEqual(ex.Message, "Admin only!");
         }
 
-        [Test]
+        [TestMethod]
         public void ValidateUser_ShouldFail_If_UsernameEmpty_FirstAndLastnames_AreNotOnlyLetters_WithOneDash_OrSpace_BetweenNames()
         {
-            var ex = Assert.Throws<ParameterException>(()
+            var ex = Assert.ThrowsException<ParameterException>(()
                 => userService.ValidateUser("", "ss", "dd"));
 
             Assert.AreEqual(ex.Message, "UserName cannot be empty!");
 
-            ex = Assert.Throws<ParameterException>(()
+            ex = Assert.ThrowsException<ParameterException>(()
                 => userService.ValidateUser("s", "ss9", "dd"));
 
             Assert.AreEqual(ex.Message, "FirstName cannot be containing any other than letters and one space or dash between names!");
 
-            ex = Assert.Throws<ParameterException>(()
+            ex = Assert.ThrowsException<ParameterException>(()
                 => userService.ValidateUser("s", "ss", "dd-"));
 
             Assert.AreEqual(ex.Message, "LastName cannot be containing any other than letters and one space or dash between names!");
