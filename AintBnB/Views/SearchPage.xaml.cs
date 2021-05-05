@@ -86,7 +86,7 @@ namespace AintBnB.Views
                 WorldViewModel.City = ComboBoxCities.SelectedValue.ToString();
         }
 
-        private async void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_skipSelectionChanged)
             {

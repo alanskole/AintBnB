@@ -39,7 +39,7 @@ namespace AintBnB.Views
             }
         }
 
-        private void listView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Frame.Navigate(typeof(UserInfoPage), listView.SelectedIndex);
         }

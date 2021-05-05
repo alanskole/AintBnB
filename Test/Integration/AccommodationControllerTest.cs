@@ -35,15 +35,16 @@ namespace Test.Integration
         {
             LoggedInAs = _factory.userAdmin;
 
-            Address addr = new Address();
-
-            addr.Id = 500;
-            addr.Street = _factory.adr.Street;
-            addr.Number = _factory.adr.Number;
-            addr.Zip = _factory.adr.Zip;
-            addr.Area = _factory.adr.Area;
-            addr.City = _factory.adr.City;
-            addr.Country = _factory.adr.Country;
+            Address addr = new Address
+            {
+                Id = 500,
+                Street = _factory.adr.Street,
+                Number = _factory.adr.Number,
+                Zip = _factory.adr.Zip,
+                Area = _factory.adr.Area,
+                City = _factory.adr.City,
+                Country = _factory.adr.Country
+            };
 
             Accommodation ac = new Accommodation
             {
