@@ -4,8 +4,14 @@ using System.Security.Cryptography;
 
 namespace AintBnB.BusinessLogic.Helpers
 {
-    public static class PasswordHashing
+    internal static class PasswordHashing
     {
+
+        /// <summary>Hashes a cleartext password with salt.</summary>
+        /// <param name="password">The cleartext password.</param>
+        /// <param name="salt">The salt.</param>
+        /// <param name="needsOnlyHash">If only a hash is needed.</param>
+        /// <returns>The string with the hashed password</returns>
         public static string HashThePassword(string password, byte[] salt, bool needsOnlyHash)
         {
             if (salt == null || salt.Length != 16)
@@ -29,6 +35,11 @@ namespace AintBnB.BusinessLogic.Helpers
             return $"{hashed}:{Convert.ToBase64String(salt)}";
         }
 
+
+        /// <summary>Verifies the unhashed password with the hashed password.</summary>
+        /// <param name="passwordToCheck">The cleartext password to check.</param>
+        /// <param name="hashedPasswordWithSalt">The hashed password with salt.</param>
+        /// <returns>True if the cleartext password matches the hashed password, false otherwise</returns>
         public static bool VerifyThePassword(string passwordToCheck, string hashedPasswordWithSalt)
         {
 

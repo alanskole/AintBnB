@@ -11,7 +11,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace AintBnB.CommonMethodsAndProperties
 {
-    static public class CommonViewMethods
+    internal static class CommonViewMethods
     {
         public static void WhenNavigatedToView(NavigationEventArgs e, ComboBox comboBox)
         {

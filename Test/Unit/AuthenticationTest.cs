@@ -378,7 +378,7 @@ namespace Test.Unit
             string pass = "a";
             string hashed = HashPassword(pass);
 
-            Assert.IsTrue(UnHashPassword(pass, hashed));
+            Assert.IsTrue(VerifyPasswordHash(pass, hashed));
         }
 
         [TestMethod]
@@ -388,7 +388,7 @@ namespace Test.Unit
             string hashed = HashPassword(pass);
             string wrong = pass + "a";
 
-            Assert.IsFalse(UnHashPassword(wrong, hashed));
+            Assert.IsFalse(VerifyPasswordHash(wrong, hashed));
         }
 
 
