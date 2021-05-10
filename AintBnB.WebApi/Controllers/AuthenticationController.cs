@@ -17,6 +17,8 @@ namespace AintBnB.WebApi.Controllers
             _userService = userService;
         }
 
+        /// <summary>API GET request that checks if anyone is logged in</summary>
+        /// <returns>Status 200 if true, otherwise status code 400</returns>
         [HttpGet]
         [Route("api/[controller]/anyoneloggedin")]
         public IActionResult IsAnyoneLoggedIn()
@@ -32,6 +34,8 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
+        /// <summary>API GET request to get the user that's logged in.</summary>
+        /// <returns>Status 200 and the user if successful, otherwise status code 404</returns>
         [HttpGet]
         [Route("api/[controller]/loggedin")]
         public IActionResult GetLoggedInUser()
@@ -62,6 +66,8 @@ namespace AintBnB.WebApi.Controllers
                 return BadRequest("Restricted access!");
         }
 
+        /// <summary>API GET request to check if user that's logged in is admin or employee</summary>
+        /// <returns>Status 200  if true, otherwise status code 400</returns>
         [HttpGet]
         [Route("api/[controller]/elevatedrights")]
         public IActionResult IsUserAdminOrEmployee()
@@ -72,6 +78,8 @@ namespace AintBnB.WebApi.Controllers
                 return BadRequest("User is neither admin or employee!");
         }
 
+        /// <summary>API GET request to check if the user that's logged in is employee</summary>
+        /// <returns>Status 200 if true, otherwise status code 400</returns>
         [HttpGet]
         [Route("api/[controller]/employee")]
         public IActionResult IsEmployee()
@@ -82,6 +90,8 @@ namespace AintBnB.WebApi.Controllers
                 return BadRequest("User is not employee!");
         }
 
+        /// <summary>API GET request to check if the user that's logged in is admin</summary>
+        /// <returns>Status 200 if true, otherwise status code 400</returns>
         [HttpGet]
         [Route("api/[controller]/admin")]
         public IActionResult IsUserAdmin()
@@ -92,6 +102,8 @@ namespace AintBnB.WebApi.Controllers
                 return BadRequest("User is not admin!");
         }
 
+        /// <summary>API GET request to logout the user</summary>
+        /// <returns>Status 200 if successful, otherwise status code 400</returns>
         [HttpGet]
         [Route("api/[controller]/logout")]
         public IActionResult LogoutUser()
@@ -105,6 +117,9 @@ namespace AintBnB.WebApi.Controllers
         }
 
 
+        /// <summary>API POST request that logs in a user.</summary>
+        /// <param name="usernameAndPassword">An array with the username and password of the user that tries to log in.</param>
+        /// <returns>Status 200 if successful, otherwise status code 404</returns>
         [HttpPost]
         [Route("api/[controller]/login")]
         public async Task<IActionResult> LogInAsync([FromBody] string[] usernameAndPassword)
