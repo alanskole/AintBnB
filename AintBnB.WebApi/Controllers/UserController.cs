@@ -18,6 +18,9 @@ namespace AintBnB.WebApi.Controllers
             _deletionService = deletionService;
         }
 
+        /// <summary>API POST request to create a user.</summary>
+        /// <param name="user">The user to create.</param>
+        /// <returns>Status code 201 if successful, otherwise status 400</returns>
         [HttpPost]
         [Route("api/[controller]")]
         public async Task<IActionResult> CreateUserAsync([FromBody] User user)
@@ -33,6 +36,10 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
+        /// <summary>API PUT request to update a user.</summary>
+        /// <param name="id">The ID of the user to update.</param>
+        /// <param name="user">The updated user object.</param>
+        /// <returns>Status 200 and the updated user if successful, otherwise status code 400</returns>
         [HttpPut]
         [Route("api/[controller]/{id}")]
         public async Task<IActionResult> UpdateUserAsync([FromRoute] int id, [FromBody] User user)
@@ -48,6 +55,9 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
+        /// <summary>API POST request to change password of a user.</summary>
+        /// <param name="elements">An array containing the original password, the user-ID of the user to change the password of, the new password and a confirmation of the new password.</param>
+        /// <returns>Status 200 if successful, otherwise status code 400</returns>
         [HttpPost]
         [Route("api/[controller]/change")]
         public async Task<IActionResult> ChangePasswordAsync([FromBody] string[] elements)
@@ -64,6 +74,8 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
+        /// <summary>API GET request that gets all users.</summary>
+        /// <returns>Status 200 and all the users if successful, otherwise status code 404</returns>
         [HttpGet]
         [Route("api/[controller]")]
         public async Task<IActionResult> GetAllUsersAsync()
@@ -78,6 +90,8 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
+        /// <summary>API GET request that gets all users with usertype customer.</summary>
+        /// <returns>Status 200 and all the users with usertype customer if successful, otherwise status code 404</returns>
         [HttpGet]
         [Route("api/[controller]/allcustomers")]
         public async Task<IActionResult> GetAllCustomersAsync()
@@ -92,6 +106,8 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
+        /// <summary>API GET request that gets all users with usertype employeerequest.</summary>
+        /// <returns>Status 200 and all the users with usertype employeerequest if successful, otherwise status code 404</returns>
         [HttpGet]
         [Route("api/[controller]/requests")]
         public async Task<IActionResult> GetAllEmployeeRequestsAsync()
@@ -106,6 +122,9 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
+        /// <summary>API GET request to fetch a user from the database.</summary>
+        /// <param name="id">The ID of the user to get.</param>
+        /// <returns>Status 200 and the requested user if successful, otherwise status code 404</returns>
         [HttpGet]
         [Route("api/[controller]/{id}")]
         public async Task<IActionResult> GetUserAsync([FromRoute] int id)
@@ -120,6 +139,9 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
+        /// <summary>API DELETE request to delete a user from the database.</summary>
+        /// <param name="id">The ID of the user to delete.</param>
+        /// <returns>Status 200 if successful, otherwise status code 400</returns>
         [HttpDelete]
         [Route("api/[controller]/{id}")]
         public async Task<IActionResult> DeleteUserAsync([FromRoute] int id)
