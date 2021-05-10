@@ -2,7 +2,7 @@
 
 namespace AintBnB.Database.Migrations
 {
-    public partial class dbMigration : Migration
+    public partial class dbmig : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
