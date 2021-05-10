@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AintBnB.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210422230522_dbMigration")]
-    partial class dbMigration
+    [Migration("20210510232259_dbmig")]
+    partial class dbmig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
