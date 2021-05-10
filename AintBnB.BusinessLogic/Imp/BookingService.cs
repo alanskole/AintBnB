@@ -8,7 +8,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BusinessLogic.Helpers.DateHelper;
-using static AintBnB.BusinessLogic.Helpers.UpdateCancelledDatesInSchedule;
 
 namespace AintBnB.BusinessLogic.Imp
 {
@@ -21,6 +20,15 @@ namespace AintBnB.BusinessLogic.Imp
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>Books an accommodation.</summary>
+        /// <param name="startDate">The start date of the booking.</param>
+        /// <param name="booker">The booker.</param>
+        /// <param name="nights">The amount of nights to book for.</param>
+        /// <param name="accommodation">The accommodation to book.</param>
+        /// <returns>The booking object</returns>
+        /// <exception cref="ParameterException">Accommodation can't be booked by its owner
+        /// or
+        /// Nights can't be less than one</exception>
         public async Task<Booking> BookAsync(string startDate, User booker, int nights, Accommodation accommodation)
         {
             if (booker.Id == accommodation.Owner.Id)
@@ -40,6 +48,13 @@ namespace AintBnB.BusinessLogic.Imp
             return booking;
         }
 
+        /// <summary>Books if the dates are available and user is allowed to make the booking.</summary>
+        /// <param name="startDate">The start date of the booking.</param>
+        /// <param name="booker">The booker.</param>
+        /// <param name="nights">The amount of nights to book for.</param>
+        /// <param name="accommodation">The accommodation to book.</param>
+        /// <returns>The booking object</returns>
+        /// <exception cref="AccessException">If the user that wants to book isn't the booker or admin or employee booking on behalf of the booker</exception>
         private Booking BookIfAvailableAndUserHasPermission(string startDate, User booker, int nights, Accommodation accommodation)
         {
             if (CheckIfUserIsAllowedToPerformAction(booker))
@@ -50,6 +65,13 @@ namespace AintBnB.BusinessLogic.Imp
             throw new AccessException($"Must be performed by a customer with ID {booker.Id}, or by admin or an employee on behalf of a customer with ID {booker.Id}!");
         }
 
+        /// <summary>Makes the booking of all the dates are avaiable.</summary>
+        /// <param name="startDate">The start date of the booking.</param>
+        /// <param name="booker">The booker.</param>
+        /// <param name="nights">The amount of nights to book for.</param>
+        /// <param name="accommodation">The accommodation to book.</param>
+        /// <returns>The booking object</returns>
+        /// <exception cref="DateException">If all the dates aren't available</exception>
         private Booking TryToBookIfAllDatesAvailable(string startDate, User booker, int nights, Accommodation accommodation)
         {
             if (AreAllDatesAvailable(accommodation.Schedule, startDate, nights))
@@ -67,6 +89,10 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new DateException("Dates aren't available");
         }
 
+        /// <summary>Adds the booked dates to the list dates the booking consists of.</summary>
+        /// <param name="datesBooked">A list that will be filled with all the dates of the booking.</param>
+        /// <param name="startDate">The start date of the booking.</param>
+        /// <param name="nights">The amount of nights to book for.</param>
         private void AddDatesToList(List<string> datesBooked, string startDate, int nights)
         {
             for (int i = 0; i < nights; i++)
@@ -76,12 +102,22 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Marks the booked dates as unavaiable in the schedule.</summary>
+        /// <param name="accommodation">The accommodation that was booked.</param>
+        /// <param name="datesBooked">The list with the dates that were booked and must be marked as unavailable.</param>
         private void SetStatusToUnavailable(Accommodation accommodation, List<string> datesBooked)
         {
             for (int i = 0; i < datesBooked.Count; i++)
                 accommodation.Schedule[datesBooked[i]] = false;
         }
 
+        /// <summary>Updates the dates of an existing booking.</summary>
+        /// <param name="newStartDate">The new start date.</param>
+        /// <param name="nights">The amount of nights to book.</param>
+        /// <param name="bookingId">The booking-ID of the booking to update.</param>
+        /// <exception cref="DateException">Can't update a booking that has a checkout date that's in the past!
+        /// or
+        /// Not all dates new are available, can't update the booking dates!</exception>
         public async Task UpdateBookingAsync(string newStartDate, int nights, int bookingId)
         {
             var originalBooking = await _unitOfWork.BookingRepository.ReadAsync(bookingId);
@@ -137,6 +173,15 @@ namespace AintBnB.BusinessLogic.Imp
             await _unitOfWork.CommitAsync();
         }
 
+        /// <summary>Determines whether the booking can be updated.</summary>
+        /// <param name="newStartDate">The new start date.</param>
+        /// <param name="nights">The amount of nights to book.</param>
+        /// <param name="originalBooking">The original booking that needs to be updated.</param>
+        /// <exception cref="AccessException">Must be performed by the booker, or by admin or an employee on behalf of the booker!</exception>
+        /// <exception cref="ParameterException">Nights can't be less than one
+        /// or
+        /// Updated dates can't the same as original dates</exception>
+        /// <exception cref="CancelBookingException"></exception>
         private static void CanBookingBeUpdated(string newStartDate, int nights, Booking originalBooking)
         {
             if (!CheckIfUserIsAllowedToPerformAction(originalBooking.BookedBy))
@@ -157,6 +202,10 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Updateds the dates of the booking.</summary>
+        /// <param name="newStartDate">The new start date.</param>
+        /// <param name="nights">The amount of nights to book.</param>
+        /// <param name="newDates">The set of the new dates.</param>
         private static void UpdatedDates(string newStartDate, int nights, SortedSet<string> newDates)
         {
             for (int i = 0; i < nights; i++)
@@ -166,6 +215,15 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Dates from original booking that needs to be canceled.</summary>
+        /// <param name="newStartDate">The new start date.</param>
+        /// <param name="datesOriginal">The set of original dates that must be canceled.</param>
+        /// <param name="newDates">The new dates to be booked.</param>
+        /// <param name="originalBookingStartDate">The original booking start date.</param>
+        /// <param name="originalBookingEndDate">The original checkout date of the booking.</param>
+        /// <param name="newBookingStartDate">The updated booking start date.</param>
+        /// <param name="newBookingEndDate">The updated booking checkout date.</param>
+        /// <param name="datesToRemove">The set of dates that needs to be canceled and marked as available in the schedule of the accommodation.</param>
         private static void DatesFromOriginalBookingToCancel(string newStartDate, SortedSet<string> datesOriginal, SortedSet<string> newDates, DateTime originalBookingStartDate, DateTime originalBookingEndDate, DateTime newBookingStartDate, DateTime newBookingEndDate, SortedSet<string> datesToRemove)
         {
             if (newBookingStartDate >= originalBookingStartDate && newBookingStartDate <= originalBookingEndDate
@@ -185,6 +243,10 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>If the updated dates are within the range of the original start and checkout dates of the booking.</summary>
+        /// <param name="datesOriginal">The set of the original booking dates.</param>
+        /// <param name="newDates">The set of the updates dates.</param>
+        /// <param name="datesToRemove">The set of the dates to cancel.</param>
         private static void NewDatesAreBetweenOriginalDates(SortedSet<string> datesOriginal, SortedSet<string> newDates, SortedSet<string> datesToRemove)
         {
             foreach (var date in datesOriginal)
@@ -194,6 +256,10 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>If the start date of the updated dates is within the range of the original start and checkout date of the booking, but the new checkout date is after the original checkout date.</summary>
+        /// <param name="newStartDate">The new start date.</param>
+        /// <param name="datesOriginal">The set of the original booking dates.</param>
+        /// <param name="datesToRemove">The set of the dates to cancel.</param>
         private static void OnlyStartOfNewDatesAreBetweenOldDates(string newStartDate, SortedSet<string> datesOriginal, SortedSet<string> datesToRemove)
         {
             foreach (var date in datesOriginal)
@@ -205,6 +271,10 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>If the start date of the updated dates is before the original start but the new checkout date between the orignal start and checkout date.</summary>
+        /// <param name="datesOriginal">The set of the original booking dates.</param>
+        /// <param name="newDates">The set of the new dates.</param>
+        /// <param name="datesToRemove">The set of the dates to cancel.</param>
         private static void OnlyEndDateIsBetweenOldDates(SortedSet<string> datesOriginal, SortedSet<string> newDates, SortedSet<string> datesToRemove)
         {
             foreach (var date in datesOriginal)
@@ -214,6 +284,11 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Fetches a booking.</summary>
+        /// <param name="id">The ID of the booking to get.</param>
+        /// <returns>The booking object</returns>
+        /// <exception cref="IdNotFoundException">No bookings found with the booking-ID</exception>
+        /// <exception cref="AccessException">The user wants to get the booking isn't the booker, the owner of the accommodation that was booked, admin or employee</exception>
         public async Task<Booking> GetBookingAsync(int id)
         {
             var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
@@ -227,6 +302,11 @@ namespace AintBnB.BusinessLogic.Imp
             throw new AccessException();
         }
 
+        /// <summary>Gets all the bookings of a users accommodations.</summary>
+        /// <param name="userid">The user-ID of the owner of the accommoations.</param>
+        /// <returns>A list of all the booking objects</returns>
+        /// <exception cref="NoneFoundInDatabaseTableException">No bookings found</exception>
+        /// <exception cref="AccessException">The user that calls this method isn't the owner of the accommodations, admin or employee</exception>
         public async Task<List<Booking>> GetBookingsOfOwnedAccommodationAsync(int userid)
         {
             if (CorrectUserOrAdminOrEmployee(await _unitOfWork.UserRepository.ReadAsync(userid)))
@@ -243,6 +323,9 @@ namespace AintBnB.BusinessLogic.Imp
             throw new AccessException();
         }
 
+        /// <summary>Finds all bookings made of the accommodations of a user.</summary>
+        /// <param name="userid">The user-ID of the owner of the accommodations.</param>
+        /// <param name="bookingsOfOwnedAccommodation">The list to put the bookings that were found in.</param>
         private async Task FindAllBookingsOfOwnedAccommodationAsync(int userid, List<Booking> bookingsOfOwnedAccommodation)
         {
             foreach (var booking in await _unitOfWork.BookingRepository.GetAllAsync())
@@ -252,6 +335,8 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Gets all bookings in the database.</summary>
+        /// <returns>A list of all the bookings if method is called by admin or employee. If the method is called by a user it fetches all the bookings of the user</returns>
         public async Task<List<Booking>> GetAllBookingsAsync()
         {
             if (HasElevatedRights())
@@ -264,6 +349,9 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Gets all the bookings in the database.</summary>
+        /// <returns>A list of all the bookings</returns>
+        /// <exception cref="NoneFoundInDatabaseTableException">No bookings found in the database</exception>
         private async Task<List<Booking>> GetAllInSystemAsync()
         {
             var all = await _unitOfWork.BookingRepository.GetAllAsync();
@@ -274,6 +362,9 @@ namespace AintBnB.BusinessLogic.Imp
             return all;
         }
 
+        /// <summary>Gets all the bookings of a user.</summary>
+        /// <returns>A list of all the bookings of the user</returns>
+        /// <exception cref="NoneFoundInDatabaseTableException">No bookings belonging to the user found in the database</exception>
         private async Task<List<Booking>> GetOnlyOnesOwnedByUserAsync()
         {
             var bookingsOfLoggedInUser = new List<Booking>();
@@ -286,6 +377,8 @@ namespace AintBnB.BusinessLogic.Imp
             return bookingsOfLoggedInUser;
         }
 
+        /// <summary>Finds all bookings of the user.</summary>
+        /// <param name="bookingsOfLoggedInUser">The list to put the bookings of the user in.</param>
         private async Task FindAllBookingsOfLoggedInUserAsync(List<Booking> bookingsOfLoggedInUser)
         {
             foreach (var booking in await _unitOfWork.BookingRepository.GetAllAsync())
@@ -297,6 +390,9 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Rates the accommodation that was booked after a booking has ended.</summary>
+        /// <param name="bookingId">The booking-ID of the booking to leave the rating for.</param>
+        /// <param name="rating">A rating between 1-5.</param>
         public async Task RateAsync(int bookingId, int rating)
         {
             AnyoneLoggedIn();
@@ -318,6 +414,16 @@ namespace AintBnB.BusinessLogic.Imp
             await _unitOfWork.CommitAsync();
         }
 
+        /// <summary>Determines whether a rating can be given.</summary>
+        /// <param name="booking">The booking to leave the rating for.</param>
+        /// <param name="booker">The booker.</param>
+        /// <param name="rating">The rating between 1-5.</param>
+        /// <exception cref="AccessException">If any other user than the booker tries to rate</exception>
+        /// <exception cref="ParameterException">Rating can't be less than 1 or bigger than 5
+        /// or
+        /// Rating can't be given twice
+        /// or
+        /// Rating can't be given until after checking out</exception>
         private void CanRatingBeGiven(Booking booking, User booker, int rating)
         {
             if (booker.Id != LoggedInAs.Id)

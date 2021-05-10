@@ -2,7 +2,7 @@
 
 namespace AintBnB.CommonMethodsAndProperties
 {
-    public class HttpClientProvider
+    internal class HttpClientProvider
     {
         public string LocalHostAddress = "https://localhost:";
         public string LocalHostPort = "44342/";

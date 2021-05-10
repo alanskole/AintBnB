@@ -219,11 +219,11 @@ namespace Test.Unit
 
             LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id);
 
-            Assert.IsFalse(UnHashPassword(newPass, LoggedInAs.Password));
+            Assert.IsFalse(VerifyPasswordHash(newPass, LoggedInAs.Password));
 
             await userService.ChangePasswordAsync("aaaaaa", id, newPass, newPassConfirm);
 
-            Assert.IsTrue(UnHashPassword(newPass, LoggedInAs.Password));
+            Assert.IsTrue(VerifyPasswordHash(newPass, LoggedInAs.Password));
         }
 
         [DataRow(1, "<'newpassone'>", "<'newpassone'>")]

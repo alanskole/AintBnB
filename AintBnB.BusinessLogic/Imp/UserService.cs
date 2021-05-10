@@ -19,6 +19,13 @@ namespace AintBnB.BusinessLogic.Imp
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>Creates a new user.</summary>
+        /// <param name="userName">Username of the user.</param>
+        /// <param name="password">The password of the user.</param>
+        /// <param name="firstName">The first name of the user.</param>
+        /// <param name="lastName">The last name of the user.</param>
+        /// <param name="userType">The usertype (role) of the user.</param>
+        /// <returns>The new user object that was created</returns>
         public async Task<User> CreateUserAsync(string userName, string password, string firstName, string lastName, UserTypes userType)
         {
             userName = userName.Trim();
@@ -43,6 +50,9 @@ namespace AintBnB.BusinessLogic.Imp
             return user;
         }
 
+        /// <summary>Checks which usertype the new user should be.</summary>
+        /// <param name="userType">Usertype that was requested at creation time.</param>
+        /// <param name="user">The object of the user that will be created.</param>
         private async Task UserTypeCheckAsync(UserTypes userType, User user)
         {
             var all = await _unitOfWork.UserRepository.GetAllAsync();
@@ -55,6 +65,17 @@ namespace AintBnB.BusinessLogic.Imp
                 user.UserType = UserTypes.Customer;
         }
 
+        /// <summary>Validates the properties of the user to be created.</summary>
+        /// <param name="userName">Username of the user.</param>
+        /// <param name="firstName">The first name  of the user.</param>
+        /// <param name="lastName">The last name  of the user.</param>
+        /// <exception cref="ParameterException">
+        /// UserName can't empty
+        /// or
+        /// FirstName can't contain any other characters than letters and one space or dash between names
+        /// or
+        /// LastName can't contain any other characters than letters and one space or dash between names
+        /// </exception>
         public void ValidateUser(string userName, string firstName, string lastName)
         {
             if (userName == null || userName.Length == 0)
@@ -65,6 +86,9 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new ParameterException("LastName", "containing any other than letters and one space or dash between names");
         }
 
+        /// <summary>Checks if the desired username is available or already used by another user.</summary>
+        /// <param name="userName">The username to check.</param>
+        /// <exception cref="ParameterException">Username already taken by another user</exception>
         private async Task IsUserNameFreeAsync(string userName)
         {
             foreach (var user in await _unitOfWork.UserRepository.GetAllAsync())
@@ -76,6 +100,11 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Fetches a user.</summary>
+        /// <param name="id">The ID of the user to get.</param>
+        /// <returns>The user object</returns>
+        /// <exception cref="IdNotFoundException">No users found with the provided ID</exception>
+        /// <exception cref="AccessException">Only the owner of the account, admin or employee can get fetch the user account</exception>
         public async Task<User> GetUserAsync(int id)
         {
             var user = await _unitOfWork.UserRepository.ReadAsync(id);
@@ -91,6 +120,9 @@ namespace AintBnB.BusinessLogic.Imp
         }
 
 
+        /// <summary>Gets all users. Used when logging in.</summary>
+        /// <returns>A list with all the users</returns>
+        /// <exception cref="AlreadyLoggedInException">If the user that tries to get the list already is logged in</exception>
         public async Task<List<User>> GetAllUsersForLoginAsync()
         {
             if (LoggedInAs != null)
@@ -107,6 +139,8 @@ namespace AintBnB.BusinessLogic.Imp
 
         }
 
+        /// <summary>Gets all users.</summary>
+        /// <returns>A list of all the users</returns>
         public async Task<List<User>> GetAllUsersAsync()
         {
             if (AdminChecker())
@@ -119,6 +153,8 @@ namespace AintBnB.BusinessLogic.Imp
             return allCustomersPlusLoggedinEmployee;
         }
 
+        /// <summary>Returns a list of all the users in the database for admin.</summary>
+        /// <returns>A list of all the users from the database</returns>
         private async Task<List<User>> AdminCanGetAllUsersAsync()
         {
             var all = await _unitOfWork.UserRepository.GetAllAsync();
@@ -126,6 +162,9 @@ namespace AintBnB.BusinessLogic.Imp
             return all;
         }
 
+        /// <summary>Gets all users with usertype customer.</summary>
+        /// <returns>A list of all the users with usertype customer</returns>
+        /// <exception cref="AccessException">Only admin and employee can do this</exception>
         public async Task<List<User>> GetAllUsersWithTypeCustomerAsync()
         {
             if (!HasElevatedRights())
@@ -143,6 +182,10 @@ namespace AintBnB.BusinessLogic.Imp
             return all;
         }
 
+        /// <summary>Gets all the users that has requested an employee account.</summary>
+        /// <returns>A list with all the users that has requested an employee account</returns>
+        /// <exception cref="AccessException">Only admin can do this</exception>
+        /// <exception cref="NoneFoundInDatabaseTableException">No requests to become employee found</exception>
         public async Task<List<User>> GetAllEmployeeRequestsAsync()
         {
 
@@ -169,6 +212,10 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new NoneFoundInDatabaseTableException("users");
         }
 
+        /// <summary>Updates a user.</summary>
+        /// <param name="id">The ID of the user to update.</param>
+        /// <param name="updatedUser">The updated user object.</param>
+        /// <exception cref="AccessException">Only the owner of the account, admin or employee can update a user</exception>
         public async Task UpdateUserAsync(int id, User updatedUser)
         {
             var old = await GetUserAsync(id);
@@ -189,12 +236,23 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new AccessException();
         }
 
+        /// <summary>Determines whether the user can be updated.</summary>
+        /// <exception cref="AccessException">Only admin can change the usertype of a user</exception>
         private static void CanUserTypeBeUpdated()
         {
             if (!AdminChecker())
                 throw new AccessException("Only admin can change usertype!");
         }
 
+        /// <summary>Changes the password of a user.</summary>
+        /// <param name="old">The original password.</param>
+        /// <param name="userId">The ID of the user to change the password of.</param>
+        /// <param name="new1">The new password.</param>
+        /// <param name="new2">The new password confirmed.</param>
+        /// <exception cref="PasswordChangeException">new
+        /// or
+        /// old</exception>
+        /// <exception cref="AccessException">Only the owner of the account can change their password!</exception>
         public async Task ChangePasswordAsync(string old, int userId, string new1, string new2)
         {
             var user = await _unitOfWork.UserRepository.ReadAsync(userId);
@@ -211,7 +269,7 @@ namespace AintBnB.BusinessLogic.Imp
 
                 ValidatePassword(new1);
 
-                if (UnHashPassword(old, hashedOriginalPassword))
+                if (VerifyPasswordHash(old, hashedOriginalPassword))
                 {
                     user.Password = HashPassword(new1);
                     await _unitOfWork.CommitAsync();

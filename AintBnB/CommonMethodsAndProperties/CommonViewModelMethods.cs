@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace AintBnB.CommonMethodsAndProperties
 {
-    public static class CommonViewModelMethods
+    internal static class CommonViewModelMethods
     {
         public static async Task PostAsync(string uri, object objJson, HttpClientProvider clientProvider)
         {

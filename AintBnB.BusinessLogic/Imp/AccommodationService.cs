@@ -22,6 +22,20 @@ namespace AintBnB.BusinessLogic.Imp
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>Creates a new accommodation.</summary>
+        /// <param name="owner">The owner of the accommodation.</param>
+        /// <param name="address">The address of the accommodation.</param>
+        /// <param name="squareMeters">How many square meters the accommodation is.</param>
+        /// <param name="amountOfBedroooms">The amount of bedroooms the accommodation has.</param>
+        /// <param name="kilometersFromCenter">The distance to the city center in kilometers.</param>
+        /// <param name="description">A description of the accommodation.</param>
+        /// <param name="pricePerNight">The nightly price.</param>
+        /// <param name="cancellationDeadlineInDays">The cancellation deadline in days.</param>
+        /// <param name="picture">A list of bytes of the pictures.</param>
+        /// <param name="daysToCreateScheduleFor">How many days to create the schedule for.</param>
+        /// <returns>The newly created accommodation object</returns>
+        /// <exception cref="ParameterException">If the days to create the schedule for is less than one</exception>
+        /// <exception cref="AccessException">If a non admin or employee user tries to create an accommodation for another user than themselves</exception>
         public async Task<Accommodation> CreateAccommodationAsync(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, List<byte[]> picture, int daysToCreateScheduleFor)
         {
             if (daysToCreateScheduleFor < 1)
@@ -43,6 +57,27 @@ namespace AintBnB.BusinessLogic.Imp
             throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
         }
 
+        /// <summary>Validates the properties of an accommodation.</summary>
+        /// <param name="accommodation">The accommodation object to validate.</param>
+        /// <exception cref="ParameterException">
+        /// Id is zero
+        /// or
+        /// Streetname contains any other characters than letters or numbers with a space or dash betwwen them
+        /// or
+        /// Number contains any other characters other than numbers, where the first number is larger than zero, ending by one optional letter
+        /// or
+        /// Zip contains any other characters than numbers, letters, space or dash between the numbers and letters
+        /// or
+        /// Area contains any other characters than letters or numbers with a space or dash betwwen them
+        /// or
+        /// SquareMeters is zero
+        /// or
+        /// Description is empty
+        /// or
+        /// PricePerNight is zero
+        /// or
+        /// Cancellation deadline is less than one day
+        /// </exception>
         public async Task ValidateAccommodationAsync(Accommodation accommodation)
         {
             accommodation.Description = accommodation.Description.Trim();
@@ -73,6 +108,9 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new ParameterException("Cancellation deadline", "less than one day");
         }
 
+        /// <summary>Creates the schedule for x amount of days for an accommodation.</summary>
+        /// <param name="accommodation">The accommodation to create the schedule for.</param>
+        /// <param name="days">The amount of days to create the schedule for.</param>
         private void CreateScheduleForXAmountOfDays(Accommodation accommodation, int days)
         {
             var todaysDate = DateTime.Today;
@@ -81,6 +119,10 @@ namespace AintBnB.BusinessLogic.Imp
             accommodation.Schedule = dateAndStatus;
         }
 
+        /// <summary>Adds x amount of days from a date to the schedule.</summary>
+        /// <param name="days">The amount of days to add.</param>
+        /// <param name="date">The start date that amount of days must be added to.</param>
+        /// <param name="dateAndStatus">The sorted dictionary (schedule) with the dates and availability status.</param>
         private void AddDaysToDateAndAddToSchedule(int days, DateTime date, SortedDictionary<string, bool> dateAndStatus)
         {
             DateTime newDate;
@@ -92,6 +134,10 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Fetches an accommodation from the database.</summary>
+        /// <param name="id">The ID of the accommodation to fetch.</param>
+        /// <returns>The accommodation object.</returns>
+        /// <exception cref="IdNotFoundException">If the ID doesn't match any accommodation-IDs from the database</exception>
         public async Task<Accommodation> GetAccommodationAsync(int id)
         {
             AnyoneLoggedIn();
@@ -104,6 +150,9 @@ namespace AintBnB.BusinessLogic.Imp
             return acc;
         }
 
+        /// <summary>Gets a list of all the accommodations.</summary>
+        /// <returns>A list with all the accommodation objects</returns>
+        /// <exception cref="NoneFoundInDatabaseTableException">No accommodations found in the database</exception>
         public async Task<List<Accommodation>> GetAllAccommodationsAsync()
         {
             AnyoneLoggedIn();
@@ -116,6 +165,10 @@ namespace AintBnB.BusinessLogic.Imp
             return all;
         }
 
+        /// <summary>Gets all accommodations of a user.</summary>
+        /// <param name="userid">The user-ID to get the accommodations of.</param>
+        /// <returns>A list with all the accommodations of the user</returns>
+        /// <exception cref="NoneFoundInDatabaseTableException">The user doesn't have any accommodations</exception>
         public async Task<List<Accommodation>> GetAllOwnedAccommodationsAsync(int userid)
         {
             AnyoneLoggedIn();
@@ -130,6 +183,9 @@ namespace AintBnB.BusinessLogic.Imp
             return all;
         }
 
+        /// <summary>Finds all accommodations of a user.</summary>
+        /// <param name="all">The list that will be filled with the accommodations of the user.</param>
+        /// <param name="userid">The user-ID of the owner of the accommodations.</param>
         private async Task FindAllAccommodationsOfAUserAsync(List<Accommodation> all, int userid)
         {
             foreach (var acc in await GetAllAccommodationsAsync())
@@ -139,6 +195,10 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Updates an accommodation.</summary>
+        /// <param name="id">The ID of the accommodation to update.</param>
+        /// <param name="accommodation">The accommodation object with the updated values.</param>
+        /// <exception cref="AccessException">If the user that tries to update the accommodation isn't the owner, admin or employee</exception>
         public async Task UpdateAccommodationAsync(int id, Accommodation accommodation)
         {
             var acc = await _unitOfWork.AccommodationRepository.ReadAsync(id);
@@ -162,6 +222,18 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
         }
 
+        /// <summary>Validates the updated accommodation properties.</summary>
+        /// <param name="squareMeters">How many square meters the accommodation is.</param>
+        /// <param name="description">The description of the accommodation.</param>
+        /// <param name="pricePerNight">The nightly price.</param>
+        /// <param name="cancellationDeadlineInDays">The cancellation deadline in days.</param>
+        /// <exception cref="ParameterException">SquareMeters is zero
+        /// or
+        /// Description is empty
+        /// or
+        /// PricePerNight is zero
+        /// or
+        /// Cancellation deadline is less than one day</exception>
         private static void ValidateUpdatedFields(int squareMeters, string description, int pricePerNight, int cancellationDeadlineInDays)
         {
             if (squareMeters == 0)
@@ -174,6 +246,11 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new ParameterException("Cancellation deadline", "less than one day");
         }
 
+        /// <summary>Expands the existing schedule of an accommodation with x amount of days.</summary>
+        /// <param name="id">The ID of the accommodation.</param>
+        /// <param name="days">The amount of days to expand the schedule by.</param>
+        /// <exception cref="ParameterException">Days is less than one</exception>
+        /// <exception cref="AccessException">If the user that calls this method isn't the owner of the accommodation, admin or employee</exception>
         public async Task ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(int id, int days)
         {
             if (days < 1)
@@ -200,6 +277,9 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
         }
 
+        /// <summary>Merges a newly created sorted dictionarie with the orignal one to exapnd the schedule of an accommodation.</summary>
+        /// <param name="dateAndStatusOriginal">The original sorted dictionary (schedule) that must be expanded.</param>
+        /// <param name="dateAndStatus">The new sorted dictionary (schedule) that must be added to the original one.</param>
         private static void MergeTwoSortedDictionaries(SortedDictionary<string, bool> dateAndStatusOriginal, SortedDictionary<string, bool> dateAndStatus)
         {
             foreach (var values in dateAndStatus)
@@ -208,6 +288,13 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Finds the available accommodations in a city for a set of given dates.</summary>
+        /// <param name="country">The country the accommodations must be located in.</param>
+        /// <param name="city">The city the accommodations must be located in.</param>
+        /// <param name="startdate">The startdate for the search.</param>
+        /// <param name="nights">The amount of nights to search for.</param>
+        /// <returns>A list with all the accommodations that satisfy the search criteria</returns>
+        /// <exception cref="DateException">No available accommodations found that satisfy the search</exception>
         public async Task<List<Accommodation>> FindAvailableAsync(string country, string city, string startdate, int nights)
         {
             AnyoneLoggedIn();
@@ -222,6 +309,12 @@ namespace AintBnB.BusinessLogic.Imp
             return available;
         }
 
+        /// <summary>Searches the in country and city for accommodations.</summary>
+        /// <param name="country">The country the accommodations must be located in.</param>
+        /// <param name="city">The city the accommodations must be located in.</param>
+        /// <param name="startdate">The startdate for the search.</param>
+        /// <param name="nights">The amount of nights to search for.</param>
+        /// <param name="available">The list to add available accommodations that match the search criteria to.</param>
         private async Task SearchInCountryAndCityAsync(string country, string city, string startdate, int nights, List<Accommodation> available)
         {
             foreach (var accommodation in await _unitOfWork.AccommodationRepository.GetAllAsync())
@@ -232,12 +325,23 @@ namespace AintBnB.BusinessLogic.Imp
             }
         }
 
+        /// <summary>Ares the dates that are searched for within range of schedule of the accommodation.</summary>
+        /// <param name="availableOnes">The list to add available accommodations that match the search criteria to.</param>
+        /// <param name="acm">The accommodation to check the schedule of.</param>
+        /// <param name="startDate">The start date to search for.</param>
+        /// <param name="nights">The amount of nights to search for.</param>
         private void AreDatesWithinRangeOfScheduleOfTheAccommodation(List<Accommodation> availableOnes, Accommodation acm, string startDate, int nights)
         {
             if (AreAllDatesAvailable(acm.Schedule, startDate, nights))
                 availableOnes.Add(acm);
         }
 
+        /// <summary>Sorts a list of accommodations.</summary>
+        /// <param name="available">The list with the accommodations to sort.</param>
+        /// <param name="sortBy">What to sort by; can be sorted by: Price, Distance, Size or Rating.</param>
+        /// <param name="ascOrDesc">Sort in ascending or descending order.</param>
+        /// <returns>A list with the accommodations that are sorted in the desired order</returns>
+        /// <exception cref="NoneFoundInDatabaseTableException">If the list of accommodations are empty</exception>
         public List<Accommodation> SortListOfAccommodations(List<Accommodation> available, string sortBy, string ascOrDesc)
         {
             if (available == null || available.Count == 0)
