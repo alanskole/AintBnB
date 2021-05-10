@@ -3,7 +3,7 @@ using AintBnB.Core.Models;
 using AintBnB.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static AintBnB.CommonMethodsAndProperties.CommonViewModelMethods;
+using static AintBnB.CommonMethodsAndProperties.ApiCalls;
 
 namespace AintBnB.ViewModels
 {
