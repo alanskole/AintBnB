@@ -38,11 +38,6 @@ namespace AintBnB.Database.DbCtx
                     v => JsonConvert.DeserializeObject<SortedDictionary<string, bool>>(v));
 
             modelBuilder.Entity<Accommodation>()
-                .HasMany(a => a.Picture)
-                .WithOne(a => a.Accommodation);
-
-
-            modelBuilder.Entity<Accommodation>()
                 .HasOne(b => b.Owner)
                 .WithMany()
                 .HasForeignKey("OwnerId")
