@@ -7,7 +7,8 @@ namespace AintBnB.Repository.Interfaces
     public interface IImageRepository
     {
         Task CreateAsync(Image img);
-        Task DeleteAsync(int imageId);
+        void Delete(Image img);
         List<Image> GetAll(int accommodationId);
+        Task<Image> ReadAsync(int imageId);
     }
 }
