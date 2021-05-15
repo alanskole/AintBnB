@@ -56,7 +56,7 @@ namespace Test.Integration
                 PricePerNight = 500,
                 CancellationDeadlineInDays = 1,
                 Schedule = _factory.accommodation1.Schedule,
-                Picture = new List<byte[]>()
+                Picture = new List<Image>()
             };
 
             var response = await _client.PostAsync("api/accommodation/10/6",

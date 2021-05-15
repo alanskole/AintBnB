@@ -13,6 +13,7 @@ namespace AintBnB.Views
     public sealed partial class SearchPage : Page
     {
         public AccommodationViewModel AccommodationViewModel { get; } = new AccommodationViewModel();
+        public ImageViewModel ImageViewModel { get; } = new ImageViewModel();
         public UserViewModel UserViewModel { get; } = new UserViewModel();
         public WorldViewModel WorldViewModel { get; } = new WorldViewModel();
         public BookingViewModel BookingViewModel { get; } = new BookingViewModel();
@@ -99,7 +100,18 @@ namespace AintBnB.Views
 
             var index = listView.SelectedIndex;
 
-            await ConvertBytesToBitmapImageList(AccommodationViewModel.AvailableAccommodations[index].Picture, bmimg);
+            var pics = new List<byte[]>();
+
+            ImageViewModel.AccommodationId = AccommodationViewModel.AvailableAccommodations[index].Id;
+
+            await ImageViewModel.GetAllPicturesAsync();
+
+            foreach (var pic in ImageViewModel.AllImages)
+            {
+                pics.Add(pic.Img);
+            }
+
+            await ConvertBytesToBitmapImageList(pics, bmimg);
 
             listViewPicture.ItemsSource = bmimg;
 

@@ -147,7 +147,6 @@ namespace Test
                     PricePerNight = 500,
                     CancellationDeadlineInDays = 1,
                     Schedule = schedule,
-                    Picture = new List<byte[]>()
                 };
 
                 accommodation2 = new Accommodation
@@ -161,7 +160,6 @@ namespace Test
                     PricePerNight = 900,
                     CancellationDeadlineInDays = 1,
                     Schedule = new SortedDictionary<string, bool>(schedule),
-                    Picture = new List<byte[]>()
                 };
 
                 accommodation3 = new Accommodation
@@ -175,7 +173,6 @@ namespace Test
                     PricePerNight = 1400,
                     CancellationDeadlineInDays = 1,
                     Schedule = new SortedDictionary<string, bool>(schedule),
-                    Picture = new List<byte[]>()
                 };
 
                 db.Add(accommodation1);

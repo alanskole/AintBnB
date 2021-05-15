@@ -14,6 +14,7 @@ namespace AintBnB.Views
     public sealed partial class AccommodationInfoPage : Page
     {
         public AccommodationViewModel AccommodationViewModel { get; } = new AccommodationViewModel();
+        public ImageViewModel ImageViewModel { get; } = new ImageViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
         private bool _skipSelectionChanged;
 
@@ -92,6 +93,10 @@ namespace AintBnB.Views
                 AccommodationViewModel.Accommodation.Id = int.Parse(ComboBoxAccommodations.SelectedValue.ToString());
 
                 await AccommodationViewModel.GetAccommodationAsync();
+
+                ImageViewModel.AccommodationId = AccommodationViewModel.Accommodation.Id;
+
+                await ImageViewModel.GetAllPicturesAsync();
             }
             catch (Exception ex)
             {
@@ -179,7 +184,14 @@ namespace AintBnB.Views
         {
             var bmimg = new List<BitmapImage>();
 
-            await ConvertBytesToBitmapImageList(AccommodationViewModel.Accommodation.Picture, bmimg);
+            var pics = new List<byte[]>();
+
+            foreach (var pic in ImageViewModel.AllImages)
+            {
+                pics.Add(pic.Img);
+            }
+
+            await ConvertBytesToBitmapImageList(pics, bmimg);
 
             listViewPicture.ItemsSource = bmimg;
         }
@@ -226,22 +238,31 @@ namespace AintBnB.Views
 
             var index = listViewPicture.SelectedIndex;
 
-            AccommodationViewModel.Accommodation.Picture.Remove(AccommodationViewModel.Accommodation.Picture[index]);
+            ImageViewModel.ImageId = ImageViewModel.AllImages[index].Id;
 
-            await AccommodationViewModel.UpdateAccommodationAsync();
+            await ImageViewModel.DeleteAPictureAsync();
 
             Refresh();
         }
 
         private async void Button_Click_Upload(object sender, RoutedEventArgs e)
         {
-            var sizeBeforeUploading = AccommodationViewModel.Accommodation.Picture.Count;
+            var sizeBeforeUploading = ImageViewModel.AllImages.Count;
 
-            await PhotoUpload(AccommodationViewModel.Accommodation.Picture);
+            var pics = new List<byte[]>();
 
-            if (sizeBeforeUploading != AccommodationViewModel.Accommodation.Picture.Count)
+            foreach (var pic in ImageViewModel.AllImages)
             {
-                await AccommodationViewModel.UpdateAccommodationAsync();
+                pics.Add(pic.Img);
+            }
+
+            await PhotoUpload(pics);
+
+            if (sizeBeforeUploading + 1 == pics.Count)
+            {
+                ImageViewModel.Image.Accommodation = AccommodationViewModel.Accommodation;
+                ImageViewModel.Image.Img = pics[pics.Count - 1];
+                await ImageViewModel.CreatePictureAsync();
                 Refresh();
             }
         }

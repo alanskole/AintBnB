@@ -106,7 +106,14 @@ namespace AintBnB.Views
 
         private async void Upload_Click(object sender, RoutedEventArgs e)
         {
-            await PhotoUpload(AccommodationViewModel.Accommodation.Picture);
+            var pics = new List<byte[]>();
+
+            foreach (var pic in AccommodationViewModel.Accommodation.Picture)
+            {
+                pics.Add(pic.Img);
+            }
+
+            await PhotoUpload(pics);
         }
     }
 }

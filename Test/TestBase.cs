@@ -166,7 +166,6 @@ namespace Test
                 PricePerNight = 500,
                 CancellationDeadlineInDays = 1,
                 Schedule = schedule,
-                Picture = new List<byte[]>()
             };
 
             accommodation2 = new Accommodation
@@ -180,7 +179,6 @@ namespace Test
                 PricePerNight = 900,
                 CancellationDeadlineInDays = 5,
                 Schedule = new SortedDictionary<string, bool>(schedule),
-                Picture = new List<byte[]>()
             };
 
             accommodation3 = new Accommodation
@@ -194,7 +192,6 @@ namespace Test
                 PricePerNight = 1400,
                 CancellationDeadlineInDays = 3,
                 Schedule = new SortedDictionary<string, bool>(schedule),
-                Picture = new List<byte[]>()
             };
 
             accommodation4 = new Accommodation
@@ -208,7 +205,6 @@ namespace Test
                 PricePerNight = 590,
                 CancellationDeadlineInDays = 1,
                 Schedule = new SortedDictionary<string, bool>(schedule),
-                Picture = new List<byte[]>()
             };
 
             await unitOfWork.AccommodationRepository.CreateAsync(accommodation1);

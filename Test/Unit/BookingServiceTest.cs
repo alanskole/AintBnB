@@ -3,7 +3,6 @@ using AintBnB.BusinessLogic.Imp;
 using AintBnB.Core.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -481,7 +480,7 @@ namespace Test.Unit
 
             adr1.Id = 100;
 
-            await accommodationService.CreateAccommodationAsync(userRequestToBecomeEmployee, adr1, 1, 2, 1, "d", 1, 1, new List<byte[]>(), 10);
+            await accommodationService.CreateAccommodationAsync(userRequestToBecomeEmployee, adr1, 1, 2, 1, "d", 1, 1, 10);
 
             var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
                 => await bookingService.GetBookingsOfOwnedAccommodationAsync(3));

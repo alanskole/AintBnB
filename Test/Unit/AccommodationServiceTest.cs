@@ -34,7 +34,7 @@ namespace Test.Unit
         {
             LoggedInAs = userCustomer1;
 
-            var acc = await accommodationService.CreateAccommodationAsync(userCustomer1, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, new List<byte[]>(), 100);
+            var acc = await accommodationService.CreateAccommodationAsync(userCustomer1, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100);
 
             Assert.AreEqual(1, acc.Id);
             Assert.AreEqual(userCustomer1.Id, acc.Owner.Id);
@@ -46,7 +46,7 @@ namespace Test.Unit
         {
             LoggedInAs = userAdmin;
 
-            var acc = await accommodationService.CreateAccommodationAsync(userCustomer1, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, new List<byte[]>(), 100);
+            var acc = await accommodationService.CreateAccommodationAsync(userCustomer1, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100);
 
             Assert.AreEqual(1, acc.Id);
             Assert.AreEqual(userCustomer1.Id, acc.Owner.Id);
@@ -58,7 +58,7 @@ namespace Test.Unit
         {
             LoggedInAs = userEmployee1;
 
-            var acc = await accommodationService.CreateAccommodationAsync(userCustomer1, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, new List<byte[]>(), 100);
+            var acc = await accommodationService.CreateAccommodationAsync(userCustomer1, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100);
 
             Assert.AreEqual(1, acc.Id);
             Assert.AreEqual(userCustomer1.Id, acc.Owner.Id);
@@ -71,7 +71,7 @@ namespace Test.Unit
             LoggedInAs = userCustomer1;
 
             var ex = await Assert.ThrowsExceptionAsync<ParameterException>(async ()
-                => await accommodationService.CreateAccommodationAsync(userCustomer2, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, new List<byte[]>(), 0));
+                => await accommodationService.CreateAccommodationAsync(userCustomer2, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 0));
 
             Assert.AreEqual("Days to create the schedule for cannot be less than one!", ex.Message);
         }
@@ -82,14 +82,14 @@ namespace Test.Unit
             LoggedInAs = userAdmin;
 
             var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await accommodationService.CreateAccommodationAsync(userAdmin, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, new List<byte[]>(), 100));
+                => await accommodationService.CreateAccommodationAsync(userAdmin, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100));
 
             Assert.AreEqual(ex.Message, $"Must be performed by a customer with ID {userAdmin.Id}, or by admin or an employee on behalf of a customer with ID {userAdmin.Id}!");
 
             LoggedInAs = userEmployee1;
 
             ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await accommodationService.CreateAccommodationAsync(userEmployee1, adr2, 50, 2, 2.3, "mmm mmm", 600, 2, new List<byte[]>(), 100));
+                => await accommodationService.CreateAccommodationAsync(userEmployee1, adr2, 50, 2, 2.3, "mmm mmm", 600, 2, 100));
 
             Assert.AreEqual(ex.Message, $"Must be performed by a customer with ID {userEmployee1.Id}, or by admin or an employee on behalf of a customer with ID {userEmployee1.Id}!");
         }
@@ -100,7 +100,7 @@ namespace Test.Unit
             LoggedInAs = userCustomer1;
 
             var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await accommodationService.CreateAccommodationAsync(userCustomer2, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, new List<byte[]>(), 100));
+                => await accommodationService.CreateAccommodationAsync(userCustomer2, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100));
 
             Assert.AreEqual(ex.Message, $"Must be performed by a customer with ID {userCustomer2.Id}, or by admin or an employee on behalf of a customer with ID {userCustomer2.Id}!");
         }

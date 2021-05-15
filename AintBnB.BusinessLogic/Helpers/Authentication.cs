@@ -2,8 +2,8 @@ using AintBnB.BusinessLogic.CustomExceptions;
 using AintBnB.Core.Models;
 using System;
 using System.Collections.Generic;
-using static AintBnB.BusinessLogic.Helpers.PasswordHashing;
 using System.Runtime.CompilerServices;
+using static AintBnB.BusinessLogic.Helpers.PasswordHashing;
 
 [assembly: InternalsVisibleToAttribute("AintBnB.WebApi")]
 namespace AintBnB.BusinessLogic.Helpers

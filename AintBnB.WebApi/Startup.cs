@@ -34,6 +34,7 @@ namespace AintBnB.WebApi
             services.AddTransient<IBookingService, BookingService>();
             services.AddTransient<IDeletionService, DeletionService>();
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IImageService, ImageService>();
             services.AddControllers();
         }
 
