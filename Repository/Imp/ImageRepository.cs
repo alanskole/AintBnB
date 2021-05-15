@@ -21,9 +21,9 @@ namespace AintBnB.Repository.Imp
             await _databaseContext.Image.AddAsync(img);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int imageId)
         {
-            _databaseContext.Image.Remove(await _databaseContext.Image.FindAsync(id));
+            _databaseContext.Image.Remove(await _databaseContext.Image.FindAsync(imageId));
         }
 
         public List<Image> GetAll(int accommodationId)
