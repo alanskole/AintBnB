@@ -16,7 +16,6 @@ namespace AintBnB.Core.Models
         private int _pricePerNight;
         private int _cancellationDeadlineInDays;
         private SortedDictionary<string, bool> _schedule;
-        private List<byte[]> _picture;
         private double _averageRating;
         private int _amountOfRatings;
 
@@ -108,15 +107,6 @@ namespace AintBnB.Core.Models
             set
             {
                 _schedule = value;
-            }
-        }
-
-        public List<byte[]> Picture
-        {
-            get { return _picture; }
-            set
-            {
-                _picture = value;
             }
         }
 

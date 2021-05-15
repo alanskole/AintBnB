@@ -31,12 +31,11 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="description">A description of the accommodation.</param>
         /// <param name="pricePerNight">The nightly price.</param>
         /// <param name="cancellationDeadlineInDays">The cancellation deadline in days.</param>
-        /// <param name="picture">A list of bytes of the pictures.</param>
         /// <param name="daysToCreateScheduleFor">How many days to create the schedule for.</param>
         /// <returns>The newly created accommodation object</returns>
         /// <exception cref="ParameterException">If the days to create the schedule for is less than one</exception>
         /// <exception cref="AccessException">If a non admin or employee user tries to create an accommodation for another user than themselves</exception>
-        public async Task<Accommodation> CreateAccommodationAsync(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, List<byte[]> picture, int daysToCreateScheduleFor)
+        public async Task<Accommodation> CreateAccommodationAsync(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, int daysToCreateScheduleFor)
         {
             if (daysToCreateScheduleFor < 1)
                 throw new ParameterException("Days to create the schedule for", "less than one");
@@ -44,8 +43,6 @@ namespace AintBnB.BusinessLogic.Imp
             if (CheckIfUserIsAllowedToPerformAction(owner))
             {
                 var accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight, cancellationDeadlineInDays);
-
-                accommodation.Picture = picture;
 
                 await ValidateAccommodationAsync(accommodation);
 

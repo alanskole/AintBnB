@@ -19,10 +19,9 @@ namespace AintBnB.BusinessLogic.Interfaces
         /// <param name="description">A description of the accommodation.</param>
         /// <param name="pricePerNight">The nightly price.</param>
         /// <param name="cancellationDeadlineInDays">The cancellation deadline in days.</param>
-        /// <param name="picture">A list of bytes of the pictures.</param>
         /// <param name="daysToCreateScheduleFor">How many days to create the schedule for.</param>
         /// <returns>The newly created accommodation object</returns>
-        Task<Accommodation> CreateAccommodationAsync(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, List<byte[]> picture, int daysToCreateScheduleFor);
+        Task<Accommodation> CreateAccommodationAsync(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, int daysToCreateScheduleFor);
 
         /// <summary>Fetches an accommodation from the database.</summary>
         /// <param name="id">The ID of the accommodation to fetch.</param>

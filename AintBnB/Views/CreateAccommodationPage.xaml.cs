@@ -11,6 +11,7 @@ namespace AintBnB.Views
 {
     public sealed partial class CreateAccommodationPage : Page
     {
+        public ImageViewModel ImageViewModel { get; } = new ImageViewModel();
         public AccommodationViewModel AccommodationViewModel { get; } = new AccommodationViewModel();
         public UserViewModel UserViewModel { get; } = new UserViewModel();
         public WorldViewModel WorldViewModel { get; } = new WorldViewModel();
@@ -102,11 +103,6 @@ namespace AintBnB.Views
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
-        }
-
-        private async void Upload_Click(object sender, RoutedEventArgs e)
-        {
-            await PhotoUpload(AccommodationViewModel.Accommodation.Picture);
         }
     }
 }

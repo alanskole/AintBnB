@@ -7,6 +7,8 @@ namespace AintBnB.Repository.Interfaces
     {
         IRepository<Accommodation> AccommodationRepository { get; }
         IRepository<Booking> BookingRepository { get; }
+        IImageRepository ImageRepository { get; }
+
         IRepository<User> UserRepository { get; }
         Task CommitAsync();
     }

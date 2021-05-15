@@ -13,7 +13,7 @@ namespace AintBnB.ViewModels
         private string _uri;
         private string _uniquePartOfUri;
         private int _userId;
-        private Accommodation _accommodation = new Accommodation { Address = new Address(), Picture = new List<byte[]>() };
+        private Accommodation _accommodation = new Accommodation { Address = new Address() };
         private int _daysSchedule;
         private int _expandScheduleByDays;
         private string _fromDate;

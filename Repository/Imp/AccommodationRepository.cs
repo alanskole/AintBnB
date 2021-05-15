@@ -46,7 +46,6 @@ namespace AintBnB.Repository.Imp
             acc.AmountOfBedrooms = accommodation.AmountOfBedrooms;
             acc.Description = accommodation.Description;
             acc.PricePerNight = accommodation.PricePerNight;
-            acc.Picture = accommodation.Picture;
             acc.CancellationDeadlineInDays = accommodation.CancellationDeadlineInDays;
             if (accommodation.Schedule != null)
                 acc.Schedule = new SortedDictionary<string, bool>(accommodation.Schedule);

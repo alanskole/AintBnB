@@ -84,7 +84,16 @@ namespace AintBnB.BusinessLogic.Imp
             }
 
             foreach (var acc in accommodationsToBeDeleted)
+            {
                 await _unitOfWork.AccommodationRepository.DeleteAsync(acc.Id);
+                await DeletePicturesOfAccommodation(acc.Id);
+            }
+        }
+
+        private async Task DeletePicturesOfAccommodation(int accommodationId)
+        {
+            foreach (var pic in _unitOfWork.ImageRepository.GetAll(accommodationId))
+                await _unitOfWork.ImageRepository.DeleteAsync(pic.Id);
         }
 
         /// <summary>Deletes the bookings of the user to be deleted.</summary>
@@ -126,6 +135,7 @@ namespace AintBnB.BusinessLogic.Imp
             await CanAccommodationBookingsBeDeletedAsync(accommodation.Id);
 
             await _unitOfWork.AccommodationRepository.DeleteAsync(id);
+            await DeletePicturesOfAccommodation(id);
             await _unitOfWork.CommitAsync();
         }
 

@@ -10,6 +10,7 @@ namespace AintBnB.Repository.Imp
         private DatabaseContext _databaseContext;
         private IRepository<Accommodation> _accommodationRepository;
         private IRepository<Booking> _bookingRepository;
+        private IImageRepository _imageRepository;
         private IRepository<User> _userRepository;
 
         public IRepository<Accommodation> AccommodationRepository
@@ -42,6 +43,17 @@ namespace AintBnB.Repository.Imp
                     _userRepository = new UserRepository(_databaseContext);
 
                 return _userRepository;
+            }
+        }
+
+        public IImageRepository ImageRepository
+        {
+            get
+            {
+                if (_imageRepository == null)
+                    _imageRepository = new ImageRepository(_databaseContext);
+
+                return _imageRepository;
             }
         }
 

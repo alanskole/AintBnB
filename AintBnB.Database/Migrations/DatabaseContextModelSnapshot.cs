@@ -16,7 +16,7 @@ namespace AintBnB.Database.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.5")
+                .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("AintBnB.Core.Models.Accommodation", b =>
@@ -49,9 +49,6 @@ namespace AintBnB.Database.Migrations
 
                     b.Property<int?>("OwnerId")
                         .HasColumnType("int");
-
-                    b.Property<string>("Picture")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PricePerNight")
                         .HasColumnType("int");
@@ -132,6 +129,26 @@ namespace AintBnB.Database.Migrations
                     b.ToTable("Booking");
                 });
 
+            modelBuilder.Entity("AintBnB.Core.Models.Image", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("AccommodationId")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("Img")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccommodationId");
+
+                    b.ToTable("Image");
+                });
+
             modelBuilder.Entity("AintBnB.Core.Models.User", b =>
                 {
                     b.Property<int>("Id")
@@ -192,6 +209,20 @@ namespace AintBnB.Database.Migrations
                     b.Navigation("Accommodation");
 
                     b.Navigation("BookedBy");
+                });
+
+            modelBuilder.Entity("AintBnB.Core.Models.Image", b =>
+                {
+                    b.HasOne("AintBnB.Core.Models.Accommodation", "Accommodation")
+                        .WithMany("Picture")
+                        .HasForeignKey("AccommodationId");
+
+                    b.Navigation("Accommodation");
+                });
+
+            modelBuilder.Entity("AintBnB.Core.Models.Accommodation", b =>
+                {
+                    b.Navigation("Picture");
                 });
 #pragma warning restore 612, 618
         }

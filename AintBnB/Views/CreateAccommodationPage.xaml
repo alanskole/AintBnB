@@ -19,7 +19,6 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -161,17 +160,8 @@
 
             <Button
                 Grid.Row="7"
+                Grid.ColumnSpan="1"
                 Grid.Column="2"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                x:Name="Upload"
-                Click="Upload_Click"
-                Content="Upload Photo"/>
-
-            <Button
-                Grid.Row="8"
-                Grid.ColumnSpan="2"
-                Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Click="Button_Click_Create_Accommadtion"
