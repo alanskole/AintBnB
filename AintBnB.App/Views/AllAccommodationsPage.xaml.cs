@@ -20,8 +20,6 @@ namespace AintBnB.App.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await CheckIfAnyoneIsLoggedInAsync();
-
             var normalUserLoggedIn = false;
 
             try
@@ -49,18 +47,6 @@ namespace AintBnB.App.Views
                         await new MessageDialog(ex.Message).ShowAsync();
                     }
                 }
-            }
-        }
-
-        private async Task CheckIfAnyoneIsLoggedInAsync()
-        {
-            try
-            {
-                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.Message).ShowAsync();
             }
         }
 

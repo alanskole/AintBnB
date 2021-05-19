@@ -33,22 +33,9 @@ namespace AintBnB.App.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            try
-            {
-                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.Message).ShowAsync();
-            }
+            var ids = new List<int>();
 
             var normalUserLoggedIn = false;
-            await FindUserTypeOfLoggedInUser(normalUserLoggedIn);
-        }
-
-        private async Task FindUserTypeOfLoggedInUser(bool normalUserLoggedIn)
-        {
-            var ids = new List<int>();
 
             try
             {

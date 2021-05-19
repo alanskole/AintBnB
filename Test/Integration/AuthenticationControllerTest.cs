@@ -28,27 +28,6 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task AnyoneLoggedIn_ShouldReturn_SuccessStatus()
-        {
-            LoggedInAs = _factory.userAdmin;
-
-            var response = await _client.GetAsync("api/authentication/anyoneloggedin");
-
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [TestMethod]
-        public async Task AnyoneLoggedIn_ShouldReturn_BadRequestIfError()
-        {
-            LoggedInAs = null;
-
-            var response = await _client.GetAsync("api/authentication/anyoneloggedin");
-
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-        }
-
-        [TestMethod]
         public async Task GetLoggedInUser_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;

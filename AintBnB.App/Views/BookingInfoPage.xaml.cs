@@ -29,7 +29,6 @@ namespace AintBnB.App.Views
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
                 await AuthenticationViewModel.IdOfLoggedInUserAsync();
                 BookingViewModel.UserId = AuthenticationViewModel.IdOfLoggedInUser;
 

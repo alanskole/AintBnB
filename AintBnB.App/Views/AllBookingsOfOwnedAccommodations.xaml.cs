@@ -24,8 +24,6 @@ namespace AintBnB.App.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await CheckIfAnyoneIsLoggedInAsync();
-
             try
             {
                 await AuthenticationViewModel.IsEmployeeOrAdminAsync();
@@ -36,18 +34,6 @@ namespace AintBnB.App.Views
             {
                 await AuthenticationViewModel.IdOfLoggedInUserAsync();
                 await FillListWithBookingsAsync(AuthenticationViewModel.IdOfLoggedInUser);
-            }
-        }
-
-        private async Task CheckIfAnyoneIsLoggedInAsync()
-        {
-            try
-            {
-                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.Message).ShowAsync();
             }
         }
 

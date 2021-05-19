@@ -52,13 +52,6 @@ namespace AintBnB.App.ViewModels
             await PostAsync(_uri + _uniquePartOfUri, userAndPass, _clientProvider);
         }
 
-
-        public async Task IsAnyoneLoggedInAsync()
-        {
-            _uniquePartOfUri = "anyoneloggedin";
-            await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
-        }
-
         private void CheckForEmptyFields()
         {
             if (User.UserName == null || User.Password == null || User.UserName.Trim().Length == 0 || User.Password.Trim().Length == 0)

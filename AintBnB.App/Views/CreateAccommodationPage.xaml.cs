@@ -23,23 +23,9 @@ namespace AintBnB.App.Views
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            await CheckIfAnyoneIsLoggedInAsync();
-
             await FindUserTypeAsync();
 
             await WorldViewModel.GetAllCountriesInTheWorldAsync();
-        }
-
-        private async Task CheckIfAnyoneIsLoggedInAsync()
-        {
-            try
-            {
-                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.Message).ShowAsync();
-            }
         }
 
         private async Task FindUserTypeAsync()

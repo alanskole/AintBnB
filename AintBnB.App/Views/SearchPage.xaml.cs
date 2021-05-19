@@ -27,8 +27,6 @@ namespace AintBnB.App.Views
         {
             try
             {
-                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
-
                 await WorldViewModel.GetAllCountriesInTheWorldAsync();
 
             }

@@ -32,19 +32,5 @@ namespace AintBnB.App.Views
         {
             Frame.Navigate(typeof(CreateUserPage));
         }
-
-        private async void Page_Loaded(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                await AuthenticationViewModel.IsAnyoneLoggedInAsync();
-            }
-            catch (Exception)
-            {
-                return;
-            }
-            await new MessageDialog("Already logged in").ShowAsync();
-            Frame.Navigate(typeof(SearchPage));
-        }
     }
 }
