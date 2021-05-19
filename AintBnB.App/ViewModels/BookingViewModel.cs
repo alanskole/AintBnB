@@ -1,6 +1,6 @@
 ﻿using AintBnB.App.CommonMethodsAndProperties;
-using AintBnB.Core.Models;
 using AintBnB.App.Helpers;
+using AintBnB.Core.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
@@ -16,7 +16,7 @@ namespace AintBnB.App.ViewModels
         private string _uniquePartOfUri;
         private Booking _booking = new Booking { BookedBy = new User(), Accommodation = new Accommodation(), Dates = new List<string>() };
         private int _userId;
-        List<Booking> _allBookingsOfOwnedAccommodations;
+        List<Booking> _allBookings;
 
         public string StartDate
         {
@@ -58,13 +58,13 @@ namespace AintBnB.App.ViewModels
             }
         }
 
-        public List<Booking> AllBookingsOfOwnedAccommodations
+        public List<Booking> AllBookings
         {
-            get { return _allBookingsOfOwnedAccommodations; }
+            get { return _allBookings; }
             set
             {
-                _allBookingsOfOwnedAccommodations = value;
-                NotifyPropertyChanged("AllBookingsOfOwnedAccommodations");
+                _allBookings = value;
+                NotifyPropertyChanged("AllBookings");
             }
         }
 
@@ -79,8 +79,6 @@ namespace AintBnB.App.ViewModels
             _uniquePartOfUri = StartDate + "/" + Booking.BookedBy.Id + "/" + Nights + "/" + Booking.Accommodation.Id;
 
             Booking = await GetAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
-
-            NotifyPropertyChanged("Booking");
         }
 
         public async Task UpdateBookingAsync()
@@ -88,8 +86,6 @@ namespace AintBnB.App.ViewModels
             _uniquePartOfUri = StartDate + "/" + Nights + "/" + Booking.Id;
 
             Booking = await GetAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
-
-            NotifyPropertyChanged("Booking");
         }
 
         public async Task RateAsync()
@@ -104,22 +100,18 @@ namespace AintBnB.App.ViewModels
             _uniquePartOfUri = Booking.Id.ToString();
 
             Booking = await GetAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
-
-            NotifyPropertyChanged("Booking");
         }
 
-        public async Task<List<Booking>> GetAllBookingsAsync()
+        public async Task GetAllBookingsAsync()
         {
-            return await GetAllAsync<Booking>(_uri, _clientProvider);
+            AllBookings = await GetAllAsync<Booking>(_uri, _clientProvider);
         }
 
-        public async Task<List<Booking>> GetAllBookingsOfOwnedAccommodationsAsync()
+        public async Task GetAllBookingsOfOwnedAccommodationsAsync()
         {
             _uniquePartOfUri = UserId + "/" + "bookingsownaccommodation";
 
-            AllBookingsOfOwnedAccommodations = await GetAllAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
-
-            return AllBookingsOfOwnedAccommodations;
+            AllBookings = await GetAllAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task DeleteABookingAsync()

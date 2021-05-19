@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AintBnB.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20210515135923_dbmigra")]
-    partial class dbmigra
+    [Migration("20210519141516_dbMig")]
+    partial class dbMig
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -216,15 +216,10 @@ namespace AintBnB.Database.Migrations
             modelBuilder.Entity("AintBnB.Core.Models.Image", b =>
                 {
                     b.HasOne("AintBnB.Core.Models.Accommodation", "Accommodation")
-                        .WithMany("Picture")
+                        .WithMany()
                         .HasForeignKey("AccommodationId");
 
                     b.Navigation("Accommodation");
-                });
-
-            modelBuilder.Entity("AintBnB.Core.Models.Accommodation", b =>
-                {
-                    b.Navigation("Picture");
                 });
 #pragma warning restore 612, 618
         }

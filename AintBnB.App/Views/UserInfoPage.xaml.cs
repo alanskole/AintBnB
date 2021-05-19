@@ -17,6 +17,9 @@ namespace AintBnB.App.Views
         public PasswordChangerViewModel PasswordChangerViewModel { get; } = new PasswordChangerViewModel();
 
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
+
+        private string _usertype = "";
+
         public UserInfoPage()
         {
             this.InitializeComponent();
@@ -33,7 +36,8 @@ namespace AintBnB.App.Views
         {
             try
             {
-                var userid = await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                var userid = AuthenticationViewModel.IdOfLoggedInUser;
                 await FindUserTypeAsync(userid);
             }
             catch (Exception ex)
@@ -66,7 +70,9 @@ namespace AintBnB.App.Views
         {
             var ids = new List<int>();
 
-            foreach (var user in await UserViewModel.GetAllUsersAsync())
+            await UserViewModel.GetAllUsersAsync();
+
+            foreach (var user in UserViewModel.AllUsers)
                 ids.Add(user.Id);
 
             ComboBoxUsers.ItemsSource = ids;
@@ -91,7 +97,9 @@ namespace AintBnB.App.Views
 
                 await UserViewModel.GetAUserAsync();
 
-                if (await AuthenticationViewModel.IdOfLoggedInUserAsync() != UserViewModel.User.Id)
+                _usertype = UserViewModel.User.UserType.ToString();
+
+                if (AuthenticationViewModel.IdOfLoggedInUser != UserViewModel.User.Id)
                     ChangePasswordButton.Visibility = Visibility.Collapsed;
                 else
                     ChangePasswordButton.Visibility = Visibility.Visible;
@@ -125,7 +133,7 @@ namespace AintBnB.App.Views
         private void ShowDeleteButtonIfAdminIsLoggedIn()
         {
 
-            if (userType.Text != "Admin")
+            if (_usertype != "Admin")
                 DeleteButton.Visibility = Visibility.Visible;
             else
                 DeleteButton.Visibility = Visibility.Collapsed;
@@ -155,7 +163,7 @@ namespace AintBnB.App.Views
             {
                 await AuthenticationViewModel.IsAdminAsync();
 
-                if (userType.Text == "RequestToBeEmployee")
+                if (_usertype == "RequestToBeEmployee")
                     EmployeeButton.Visibility = Visibility.Visible;
                 else
                     EmployeeButton.Visibility = Visibility.Collapsed;

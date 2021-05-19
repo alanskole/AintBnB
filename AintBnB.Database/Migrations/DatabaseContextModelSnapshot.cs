@@ -214,15 +214,10 @@ namespace AintBnB.Database.Migrations
             modelBuilder.Entity("AintBnB.Core.Models.Image", b =>
                 {
                     b.HasOne("AintBnB.Core.Models.Accommodation", "Accommodation")
-                        .WithMany("Picture")
+                        .WithMany()
                         .HasForeignKey("AccommodationId");
 
                     b.Navigation("Accommodation");
-                });
-
-            modelBuilder.Entity("AintBnB.Core.Models.Accommodation", b =>
-                {
-                    b.Navigation("Picture");
                 });
 #pragma warning restore 612, 618
         }

@@ -246,8 +246,9 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 x:Name="listView"
-                IsItemClickEnabled="True"
-                SelectionMode="Single"/>
+                IsItemClickEnabled="False"
+                SelectionMode="Single"
+                ItemsSource="{x:Bind BookingViewModel.Booking.Dates, Mode=OneWay}"/>
 
             <ContentDialog
                 Grid.ColumnSpan="4"

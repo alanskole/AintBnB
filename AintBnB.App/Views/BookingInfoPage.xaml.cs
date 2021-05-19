@@ -30,8 +30,8 @@ namespace AintBnB.App.Views
             try
             {
                 await AuthenticationViewModel.IsAnyoneLoggedInAsync();
-
-                BookingViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                BookingViewModel.UserId = AuthenticationViewModel.IdOfLoggedInUser;
 
                 await FillComboboxWithAllBookingsAsync();
             }
@@ -45,7 +45,9 @@ namespace AintBnB.App.Views
         {
             var ids = new List<int>();
 
-            foreach (var booking in await BookingViewModel.GetAllBookingsAsync())
+            await BookingViewModel.GetAllBookingsAsync();
+
+            foreach (var booking in BookingViewModel.AllBookings)
                 ids.Add(booking.Id);
 
             ComboBoxBookings.ItemsSource = ids;
@@ -74,7 +76,6 @@ namespace AintBnB.App.Views
             {
                 await BookingViewModel.UpdateBookingAsync();
                 await new MessageDialog("Update ok!").ShowAsync();
-                listView.ItemsSource = BookingViewModel.Booking.Dates;
             }
             catch (Exception ex)
             {
@@ -144,8 +145,6 @@ namespace AintBnB.App.Views
                 BookingViewModel.Booking.Id = int.Parse(ComboBoxBookings.SelectedValue.ToString());
 
                 await BookingViewModel.GetABookingAsync();
-
-                listView.ItemsSource = BookingViewModel.Booking.Dates;
             }
             catch (Exception ex)
             {

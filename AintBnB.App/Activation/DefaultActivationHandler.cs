@@ -1,8 +1,6 @@
-﻿using System;
+﻿using AintBnB.App.Services;
+using System;
 using System.Threading.Tasks;
-
-using AintBnB.App.Services;
-
 using Windows.ApplicationModel.Activation;
 
 namespace AintBnB.App.Activation

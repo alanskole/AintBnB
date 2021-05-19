@@ -26,7 +26,7 @@ namespace AintBnB.App.Views
             {
                 await AuthenticationViewModel.IsAdminAsync();
 
-                listView.ItemsSource = await UserViewModel.GetAllEmployeeRequestsAsync();
+                await UserViewModel.GetAllEmployeeRequestsAsync();
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace AintBnB.App.Views
                 return;
             }
 
-            UserViewModel.User.Id = UserViewModel.AllEmployeeRequests[listView.SelectedIndex].Id;
+            UserViewModel.User.Id = UserViewModel.AllUsers[listView.SelectedIndex].Id;
 
             contentDialog.Visibility = Visibility.Visible;
 

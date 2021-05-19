@@ -27,7 +27,7 @@ namespace AintBnB.App.Views
 
             await FindUserTypeAsync();
 
-            ComboBoxCountries.ItemsSource = await WorldViewModel.GetAllCountriesInTheWorldAsync();
+            await WorldViewModel.GetAllCountriesInTheWorldAsync();
         }
 
         private async Task CheckIfAnyoneIsLoggedInAsync()
@@ -52,7 +52,8 @@ namespace AintBnB.App.Views
             }
             catch (Exception)
             {
-                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                AccommodationViewModel.UserId = AuthenticationViewModel.IdOfLoggedInUser;
             }
         }
 
@@ -61,8 +62,9 @@ namespace AintBnB.App.Views
             ComboBoxUsers.Visibility = Visibility.Visible;
 
             var ids = new List<int>();
+            await UserViewModel.GetAllCustomersAsync();
 
-            foreach (var user in await UserViewModel.GetAllCustomersAsync())
+            foreach (var user in UserViewModel.AllUsers)
                 ids.Add(user.Id);
 
             ComboBoxUsers.ItemsSource = ids;
@@ -79,7 +81,7 @@ namespace AintBnB.App.Views
 
             WorldViewModel.Country = ComboBoxCountries.SelectedValue.ToString();
 
-            ComboBoxCities.ItemsSource = await WorldViewModel.GetAllCitiesOfACountryAsync();
+            await WorldViewModel.GetAllCitiesOfACountryAsync();
 
             AccommodationViewModel.Accommodation.Address.Country = ComboBoxCountries.SelectedValue.ToString();
         }

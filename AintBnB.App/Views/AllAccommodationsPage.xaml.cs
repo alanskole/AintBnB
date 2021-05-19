@@ -28,11 +28,12 @@ namespace AintBnB.App.Views
             {
                 await AuthenticationViewModel.IsEmployeeOrAdminAsync();
 
-                listView.ItemsSource = await AccommodationViewMode.GetAllAccommodationsAsync();
+                await AccommodationViewMode.GetAllAccommodationsAsync();
             }
             catch (Exception)
             {
-                AccommodationViewMode.UserId = await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                AccommodationViewMode.UserId = AuthenticationViewModel.IdOfLoggedInUser;
                 normalUserLoggedIn = true;
             }
             finally
@@ -41,7 +42,7 @@ namespace AintBnB.App.Views
                 {
                     try
                     {
-                        listView.ItemsSource = await AccommodationViewMode.GetAllAccommodationsOfAUserAsync();
+                        await AccommodationViewMode.GetAllAccommodationsOfAUserAsync();
                     }
                     catch (Exception ex)
                     {

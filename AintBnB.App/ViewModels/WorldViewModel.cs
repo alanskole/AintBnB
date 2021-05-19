@@ -13,6 +13,9 @@ namespace AintBnB.App.ViewModels
         private string _uniquePartOfUri;
         private string _country;
         private string _city;
+        private List<string> _allCountries;
+        private List<string> _allCitiesOfACountry;
+
 
         public string Country
         {
@@ -31,8 +34,26 @@ namespace AintBnB.App.ViewModels
             {
                 _city = value;
                 NotifyPropertyChanged("City");
+            }
+        }
 
+        public List<string> AllCountries
+        {
+            get { return _allCountries; }
+            set
+            {
+                _allCountries = value;
+                NotifyPropertyChanged("AllCountries");
+            }
+        }
 
+        public List<string> AllCitiesOfACountry
+        {
+            get { return _allCitiesOfACountry; }
+            set
+            {
+                _allCitiesOfACountry = value;
+                NotifyPropertyChanged("AllCitiesOfACountry");
             }
         }
 
@@ -42,18 +63,18 @@ namespace AintBnB.App.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task<List<string>> GetAllCountriesInTheWorldAsync()
+        public async Task GetAllCountriesInTheWorldAsync()
         {
             _uniquePartOfUri = "countries";
 
-            return await GetAllAsync<string>(_uri + _uniquePartOfUri, _clientProvider);
+            AllCountries = await GetAllAsync<string>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
-        public async Task<List<string>> GetAllCitiesOfACountryAsync()
+        public async Task GetAllCitiesOfACountryAsync()
         {
             _uniquePartOfUri = "cities/" + Country;
 
-            return await GetAllAsync<string>(_uri + _uniquePartOfUri, _clientProvider);
+            AllCitiesOfACountry = await GetAllAsync<string>(_uri + _uniquePartOfUri, _clientProvider);
         }
     }
 }

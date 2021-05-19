@@ -82,7 +82,8 @@
                 HorizontalAlignment="Center"
                 x:Name="ComboBoxCountries" 
                 Header="Select a country"
-                SelectionChanged="ComboBoxCountries_SelectionChanged"/>
+                SelectionChanged="ComboBoxCountries_SelectionChanged"
+                ItemsSource="{x:Bind WorldViewModel.AllCountries, Mode=OneWay}"/>
 
             <ComboBox
                 Grid.Row="3"
@@ -91,7 +92,9 @@
                 HorizontalAlignment="Center"
                 x:Name="ComboBoxCities" 
                 Header="Select a city"
-                SelectionChanged="ComboBoxCities_SelectionChanged"/>
+                SelectionChanged="ComboBoxCities_SelectionChanged"
+                ItemsSource="{x:Bind WorldViewModel.AllCitiesOfACountry, Mode=OneWay}"/>
+
 
             <TextBox
                 Grid.Row="4"

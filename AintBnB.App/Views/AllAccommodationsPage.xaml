@@ -14,7 +14,8 @@
                 x:Name="listView"
                 IsItemClickEnabled="True"
                 SelectionMode="Single"
-                SelectionChanged="ListView_SelectionChanged">
+                SelectionChanged="ListView_SelectionChanged"
+                ItemsSource="{x:Bind AccommodationViewMode.AllAccommodations, Mode=OneWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding}" TextWrapping="Wrap"/>

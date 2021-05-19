@@ -34,7 +34,8 @@ namespace AintBnB.App.Views
             }
             catch (Exception)
             {
-                await FillListWithBookingsAsync(await AuthenticationViewModel.IdOfLoggedInUserAsync());
+                await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                await FillListWithBookingsAsync(AuthenticationViewModel.IdOfLoggedInUser);
             }
         }
 
@@ -54,7 +55,9 @@ namespace AintBnB.App.Views
         {
             var ids = new List<int>();
 
-            foreach (var user in await UserViewModel.GetAllCustomersAsync())
+            await UserViewModel.GetAllCustomersAsync();
+
+            foreach (var user in UserViewModel.AllUsers)
                 ids.Add(user.Id);
 
             ComboBoxUsers.ItemsSource = ids;
@@ -81,7 +84,7 @@ namespace AintBnB.App.Views
 
             try
             {
-                listView.ItemsSource = await BookingViewModel.GetAllBookingsOfOwnedAccommodationsAsync();
+                await BookingViewModel.GetAllBookingsOfOwnedAccommodationsAsync();
             }
             catch (Exception ex)
             {
@@ -98,7 +101,7 @@ namespace AintBnB.App.Views
                 return;
             }
 
-            BookingViewModel.Booking.Id = BookingViewModel.AllBookingsOfOwnedAccommodations[listView.SelectedIndex].Id;
+            BookingViewModel.Booking.Id = BookingViewModel.AllBookings[listView.SelectedIndex].Id;
 
             contentDialog.Visibility = Visibility.Visible;
 

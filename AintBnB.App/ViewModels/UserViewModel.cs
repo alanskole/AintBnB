@@ -1,6 +1,6 @@
 ﻿using AintBnB.App.CommonMethodsAndProperties;
-using AintBnB.Core.Models;
 using AintBnB.App.Helpers;
+using AintBnB.Core.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,7 +15,8 @@ namespace AintBnB.App.ViewModels
         private string _uri;
         private string _uniquePartOfUri;
         private string _passwordConfirm;
-        private List<User> _allEmployeeRequests;
+        private List<User> _allUsers;
+
         public User User
         {
             get { return _user; }
@@ -36,13 +37,13 @@ namespace AintBnB.App.ViewModels
             }
         }
 
-        public List<User> AllEmployeeRequests
+        public List<User> AllUsers
         {
-            get { return _allEmployeeRequests; }
+            get { return _allUsers; }
             set
             {
-                _allEmployeeRequests = value;
-                NotifyPropertyChanged("AllEmployeeRequests");
+                _allUsers = value;
+                NotifyPropertyChanged("AllUsers");
             }
         }
 
@@ -75,30 +76,26 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = User.Id.ToString();
 
-            _user = await GetAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
-
-            NotifyPropertyChanged("User");
+            User = await GetAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
-        public async Task<List<User>> GetAllUsersAsync()
+        public async Task GetAllUsersAsync()
         {
-            return await GetAllAsync<User>(_uri, _clientProvider);
+            AllUsers = await GetAllAsync<User>(_uri, _clientProvider);
         }
 
-        public async Task<List<User>> GetAllCustomersAsync()
+        public async Task GetAllCustomersAsync()
         {
             _uniquePartOfUri = "allcustomers";
 
-            return await GetAllAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
+            AllUsers = await GetAllAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
-        public async Task<List<User>> GetAllEmployeeRequestsAsync()
+        public async Task GetAllEmployeeRequestsAsync()
         {
             _uniquePartOfUri = "requests";
 
-            AllEmployeeRequests = await GetAllAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
-
-            return AllEmployeeRequests;
+            AllUsers = await GetAllAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task DeleteAUserAsync()

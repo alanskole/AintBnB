@@ -43,7 +43,8 @@
                 HorizontalAlignment="Center"
                 x:Name="ComboBoxCountries" 
                 Header="Select a country"
-                SelectionChanged="ComboBoxCountries_SelectionChanged"/>
+                SelectionChanged="ComboBoxCountries_SelectionChanged"
+                ItemsSource="{x:Bind WorldViewModel.AllCountries, Mode=OneWay}"/>
 
             <ComboBox
                 Grid.Row="0"
@@ -52,7 +53,8 @@
                 HorizontalAlignment="Center"
                 x:Name="ComboBoxCities" 
                 Header="Select a city"
-                SelectionChanged="ComboBoxCities_SelectionChanged"/>
+                SelectionChanged="ComboBoxCities_SelectionChanged"
+                ItemsSource="{x:Bind WorldViewModel.AllCitiesOfACountry, Mode=OneWay}"/>
 
             <CalendarDatePicker
                 Grid.Row="0"
@@ -172,7 +174,8 @@
                 x:Name="listView"
                 IsItemClickEnabled="True"
                 SelectionMode="Single"
-                SelectionChanged="ListView_SelectionChanged">
+                SelectionChanged="ListView_SelectionChanged"
+                ItemsSource="{x:Bind AccommodationViewModel.AllAccommodations, Mode=OneWay}">
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
@@ -190,7 +193,9 @@
                 Title="Book Accommodation"
                 PrimaryButtonText="Book"
                 CloseButtonText="Cancel">
-                    <ListView Name="listViewPicture">
+                    <ListView
+                        Name="listViewPicture"
+                        ItemsSource="{x:Bind ImageViewModel.AllImagesConverted, Mode=OneWay}">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <Grid>

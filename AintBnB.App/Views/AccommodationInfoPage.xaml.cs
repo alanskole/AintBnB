@@ -16,6 +16,7 @@ namespace AintBnB.App.Views
         public AccommodationViewModel AccommodationViewModel { get; } = new AccommodationViewModel();
         public ImageViewModel ImageViewModel { get; } = new ImageViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
+
         private bool _skipSelectionChanged;
 
         public AccommodationInfoPage()
@@ -53,7 +54,9 @@ namespace AintBnB.App.Views
             {
                 await AuthenticationViewModel.IsEmployeeOrAdminAsync();
 
-                foreach (var acc in await AccommodationViewModel.GetAllAccommodationsAsync())
+                await AccommodationViewModel.GetAllAccommodationsAsync();
+
+                foreach (var acc in AccommodationViewModel.AllAccommodations)
                     ids.Add(acc.Id);
             }
             catch (Exception)
@@ -70,11 +73,13 @@ namespace AintBnB.App.Views
         {
             if (normalUserLoggedIn)
             {
-                AccommodationViewModel.UserId = await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                AccommodationViewModel.UserId = AuthenticationViewModel.IdOfLoggedInUser;
 
                 try
                 {
-                    foreach (var acc in await AccommodationViewModel.GetAllAccommodationsOfAUserAsync())
+                    await AccommodationViewModel.GetAllAccommodationsOfAUserAsync();
+                    foreach (var acc in AccommodationViewModel.AllAccommodations)
                         ids.Add(acc.Id);
                 }
                 catch (Exception ex)
@@ -94,7 +99,7 @@ namespace AintBnB.App.Views
 
                 await AccommodationViewModel.GetAccommodationAsync();
 
-                ImageViewModel.AccommodationId = AccommodationViewModel.Accommodation.Id;
+                ImageViewModel.Image.Accommodation = AccommodationViewModel.Accommodation;
 
                 await ImageViewModel.GetAllPicturesAsync();
             }
@@ -103,7 +108,8 @@ namespace AintBnB.App.Views
                 await new MessageDialog(ex.Message).ShowAsync();
             }
             ShowButtons();
-            GetPhotos();
+
+            await ImageViewModel.GetAllPicturesAsync();
         }
 
         private void ShowButtons()
@@ -180,22 +186,6 @@ namespace AintBnB.App.Views
             }
         }
 
-        private async void GetPhotos()
-        {
-            var bmimg = new List<BitmapImage>();
-
-            var pics = new List<byte[]>();
-
-            foreach (var pic in ImageViewModel.AllImages)
-            {
-                pics.Add(pic.Img);
-            }
-
-            await ConvertBytesToBitmapImageList(pics, bmimg);
-
-            listViewPicture.ItemsSource = bmimg;
-        }
-
         private async void ListViewPicture_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (_skipSelectionChanged)
@@ -247,24 +237,8 @@ namespace AintBnB.App.Views
 
         private async void Button_Click_Upload(object sender, RoutedEventArgs e)
         {
-            var sizeBeforeUploading = ImageViewModel.AllImages.Count;
-
-            var pics = new List<byte[]>();
-
-            foreach (var pic in ImageViewModel.AllImages)
-            {
-                pics.Add(pic.Img);
-            }
-
-            await PhotoUpload(pics);
-
-            if (sizeBeforeUploading + 1 == pics.Count)
-            {
-                ImageViewModel.Image.Accommodation = AccommodationViewModel.Accommodation;
-                ImageViewModel.Image.Img = pics[pics.Count - 1];
-                await ImageViewModel.CreatePictureAsync();
+            if (await ImageViewModel.PhotoUploadAsync())
                 Refresh();
-            }
         }
 
         private void Refresh()

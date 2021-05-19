@@ -22,7 +22,6 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -90,18 +89,8 @@
                 Text="{x:Bind UserViewModel.User.LastName, Mode=TwoWay}"
                 Name="lastName"/>
 
-            <TextBox
-                Grid.Row="6"
-                Grid.Column="1"
-                IsReadOnly="True"
-                Header="Usertype"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                Text="{x:Bind UserViewModel.User.UserType, Mode=TwoWay}"
-                Name="userType"/>
-
             <Button
-                Grid.Row="7"
+                Grid.Row="6"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -111,7 +100,7 @@
                 Visibility="Collapsed"/>
 
             <Button
-                Grid.Row="8"
+                Grid.Row="7"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -120,7 +109,7 @@
                 Name="UpdateUserButton"/>
 
             <Button
-                Grid.Row="9"
+                Grid.Row="8"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -129,7 +118,7 @@
                 Name="ChangePasswordButton"/>
 
             <Button
-                Grid.Row="10"
+                Grid.Row="9"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -138,7 +127,7 @@
                 Name="DeleteButton"/>
 
             <ContentDialog
-                Grid.ColumnSpan="12"
+                Grid.ColumnSpan="11"
                 Grid.RowSpan="3"
                 Grid.Row="4"
                 VerticalAlignment="Center"

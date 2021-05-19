@@ -253,7 +253,8 @@
                 Name="listViewPicture"
                 IsItemClickEnabled="True"
                 SelectionMode="Single"
-                SelectionChanged="ListViewPicture_SelectionChanged">
+                SelectionChanged="ListViewPicture_SelectionChanged"
+                ItemsSource="{x:Bind ImageViewModel.AllImagesConverted, Mode=OneWay}">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>

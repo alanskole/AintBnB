@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media.Imaging;
 using static AintBnB.App.CommonMethodsAndProperties.CommonViewMethods;
 
 namespace AintBnB.App.Views
@@ -30,7 +29,7 @@ namespace AintBnB.App.Views
             {
                 await AuthenticationViewModel.IsAnyoneLoggedInAsync();
 
-                ComboBoxCountries.ItemsSource = await WorldViewModel.GetAllCountriesInTheWorldAsync();
+                await WorldViewModel.GetAllCountriesInTheWorldAsync();
 
             }
             catch (Exception ex)
@@ -60,7 +59,9 @@ namespace AintBnB.App.Views
 
             var ids = new List<int>();
 
-            foreach (var user in await UserViewModel.GetAllCustomersAsync())
+            await UserViewModel.GetAllCustomersAsync();
+
+            foreach (var user in UserViewModel.AllUsers)
                 ids.Add(user.Id);
 
             ComboBoxUsers.ItemsSource = ids;
@@ -77,8 +78,7 @@ namespace AintBnB.App.Views
 
             WorldViewModel.Country = ComboBoxCountries.SelectedValue.ToString();
 
-            ComboBoxCities.ItemsSource = await WorldViewModel.GetAllCitiesOfACountryAsync();
-
+            await WorldViewModel.GetAllCitiesOfACountryAsync();
         }
 
         private void ComboBoxCities_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -96,24 +96,13 @@ namespace AintBnB.App.Views
                 return;
             }
 
-            var bmimg = new List<BitmapImage>();
 
             var index = listView.SelectedIndex;
 
-            var pics = new List<byte[]>();
 
-            ImageViewModel.AccommodationId = AccommodationViewModel.AvailableAccommodations[index].Id;
+            ImageViewModel.Image.Accommodation = AccommodationViewModel.AllAccommodations[index];
 
             await ImageViewModel.GetAllPicturesAsync();
-
-            foreach (var pic in ImageViewModel.AllImages)
-            {
-                pics.Add(pic.Img);
-            }
-
-            await ConvertBytesToBitmapImageList(pics, bmimg);
-
-            listViewPicture.ItemsSource = bmimg;
 
             contentDialog.Visibility = Visibility.Visible;
 
@@ -133,7 +122,7 @@ namespace AintBnB.App.Views
             await IfNotAdminOrEmployeeGetIdOfLoggedInCustomerAsync();
 
             BookingViewModel.Nights = int.Parse(nights.Text);
-            BookingViewModel.Booking.Accommodation.Id = AccommodationViewModel.AvailableAccommodations[index].Id;
+            BookingViewModel.Booking.Accommodation.Id = AccommodationViewModel.AllAccommodations[index].Id;
 
             var res = await DialogeMessageAsync($"Are you sure you want to submit the booking?", "Book");
 
@@ -151,7 +140,8 @@ namespace AintBnB.App.Views
             }
             catch (Exception)
             {
-                BookingViewModel.Booking.BookedBy.Id = await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                BookingViewModel.Booking.BookedBy.Id = AuthenticationViewModel.IdOfLoggedInUser;
             }
         }
 
@@ -182,7 +172,7 @@ namespace AintBnB.App.Views
         {
             try
             {
-                listView.ItemsSource = await AccommodationViewModel.GetAvailableAsync();
+                await AccommodationViewModel.GetAvailableAsync();
 
                 RatingAsc.Visibility = Visibility.Visible;
                 PriceAsc.Visibility = Visibility.Visible;
@@ -239,7 +229,7 @@ namespace AintBnB.App.Views
 
             await AccommodationViewModel.SortAvailableListAsync();
 
-            listView.ItemsSource = AccommodationViewModel.AvailableAccommodations;
+            listView.ItemsSource = AccommodationViewModel.AllAccommodations;
 
             hide.Visibility = Visibility.Collapsed;
             show.Visibility = Visibility.Visible;

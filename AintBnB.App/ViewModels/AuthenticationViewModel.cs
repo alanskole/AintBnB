@@ -1,6 +1,6 @@
 ﻿using AintBnB.App.CommonMethodsAndProperties;
-using AintBnB.Core.Models;
 using AintBnB.App.Helpers;
+using AintBnB.Core.Models;
 using System;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
@@ -9,10 +9,21 @@ namespace AintBnB.App.ViewModels
 {
     public class AuthenticationViewModel : Observable
     {
+        private int _idOfLoggedInUser;
         private User _user = new User();
         private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
         private string _uniquePartOfUri;
+
+        public int IdOfLoggedInUser
+        {
+            get { return _idOfLoggedInUser; }
+            set
+            {
+                _idOfLoggedInUser = value;
+                NotifyPropertyChanged("IdOfLoggedInUser");
+            }
+        }
 
         public User User
         {
@@ -54,12 +65,13 @@ namespace AintBnB.App.ViewModels
                 throw new ArgumentException("None of the fields can be empty");
         }
 
-        public async Task<int> IdOfLoggedInUserAsync()
+        public async Task IdOfLoggedInUserAsync()
         {
             _uniquePartOfUri = "loggedin";
 
             var user = await GetAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
-            return user.Id;
+
+            IdOfLoggedInUser = user.Id;
         }
 
         public async Task IsAdminAsync()

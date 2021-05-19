@@ -1,6 +1,6 @@
 ﻿using AintBnB.App.CommonMethodsAndProperties;
-using AintBnB.Core.Models;
 using AintBnB.App.Helpers;
+using AintBnB.Core.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
@@ -18,7 +18,7 @@ namespace AintBnB.App.ViewModels
         private int _expandScheduleByDays;
         private string _fromDate;
         private int _nights;
-        private List<Accommodation> _availableAccommodations;
+        private List<Accommodation> _allAccommodations;
         private string _sortBy = "";
         private string _ascOrDesc = "";
         public int UserId
@@ -81,13 +81,13 @@ namespace AintBnB.App.ViewModels
             }
         }
 
-        public List<Accommodation> AvailableAccommodations
+        public List<Accommodation> AllAccommodations
         {
-            get { return _availableAccommodations; }
+            get { return _allAccommodations; }
             set
             {
-                _availableAccommodations = value;
-                NotifyPropertyChanged("AvailableAccommodations");
+                _allAccommodations = value;
+                NotifyPropertyChanged("AllAccommodations");
             }
         }
 
@@ -127,35 +127,32 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = Accommodation.Id.ToString();
 
-            _accommodation = await GetAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
-
-            NotifyPropertyChanged("Accommodation");
+            Accommodation = await GetAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
-        public async Task<List<Accommodation>> GetAllAccommodationsAsync()
+        public async Task GetAllAccommodationsAsync()
         {
-            return await GetAllAsync<Accommodation>(_uri, _clientProvider);
+            AllAccommodations = await GetAllAsync<Accommodation>(_uri, _clientProvider);
         }
 
-        public async Task<List<Accommodation>> GetAllAccommodationsOfAUserAsync()
+        public async Task GetAllAccommodationsOfAUserAsync()
         {
             _uniquePartOfUri = UserId.ToString() + "/allaccommodations";
 
-            return await GetAllAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
+            AllAccommodations = await GetAllAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
-        public async Task<List<Accommodation>> GetAvailableAsync()
+        public async Task GetAvailableAsync()
         {
             _uniquePartOfUri = _accommodation.Address.Country + "/" + _accommodation.Address.City + "/" + FromDate + "/" + Nights.ToString();
-            AvailableAccommodations = await GetAllAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
-            return AvailableAccommodations;
+            AllAccommodations = await GetAllAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task SortAvailableListAsync()
         {
             _uniquePartOfUri = "sort/" + SortBy + "/" + AscOrDesc;
 
-            AvailableAccommodations = await SortListAsync(_uri + _uniquePartOfUri, AvailableAccommodations, _clientProvider);
+            AllAccommodations = await SortListAsync(_uri + _uniquePartOfUri, AllAccommodations, _clientProvider);
         }
 
         public async Task DeleteAccommodationAsync()

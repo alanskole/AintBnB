@@ -21,7 +21,7 @@ namespace AintBnB.App.Views
         {
             try
             {
-                listView.ItemsSource = await UserViewModel.GetAllUsersAsync();
+                await UserViewModel.GetAllUsersAsync();
             }
             catch (Exception ex)
             {
