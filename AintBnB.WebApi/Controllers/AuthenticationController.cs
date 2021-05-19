@@ -17,23 +17,6 @@ namespace AintBnB.WebApi.Controllers
             _userService = userService;
         }
 
-        /// <summary>API GET request that checks if anyone is logged in</summary>
-        /// <returns>Status 200 if true, otherwise status code 400</returns>
-        [HttpGet]
-        [Route("api/[controller]/anyoneloggedin")]
-        public IActionResult IsAnyoneLoggedIn()
-        {
-            try
-            {
-                AnyoneLoggedIn();
-                return Ok();
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         /// <summary>API GET request to get the user that's logged in.</summary>
         /// <returns>Status 200 and the user if successful, otherwise status code 404</returns>
         [HttpGet]

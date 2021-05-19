@@ -1,0 +1,53 @@
+﻿<Page
+    x:Class="AintBnB.App.Views.AllBookingsOfOwnedAccommodations"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Loaded="Page_Loaded"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <ComboBox
+                Visibility="Collapsed"
+                Grid.Row="0"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                x:Name="ComboBoxUsers"
+                x:FieldModifier="public"
+                Header="User ID"
+                SelectionChanged="ComboBoxUsers_SelectionChanged"/>
+
+            <ListView
+                Grid.Row="1"
+                x:Name="listView"
+                IsItemClickEnabled="True"
+                SelectionMode="Single"
+                SelectionChanged="ListView_SelectionChanged"
+                ItemsSource="{x:Bind BookingViewModel.AllBookings, Mode=OneWay}">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+            <ContentDialog
+                Grid.Row="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Visibility="Collapsed"
+                x:Name="contentDialog"
+                Title="Delete Booking"
+                PrimaryButtonText="Delete"
+                CloseButtonText="Cancel"/>
+        </Grid>
+    </ScrollViewer>
+</Page>

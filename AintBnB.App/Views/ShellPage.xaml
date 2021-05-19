@@ -1,0 +1,60 @@
+﻿<Page
+    x:Class="AintBnB.App.Views.ShellPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:behaviors="using:AintBnB.App.Behaviors"
+    xmlns:winui="using:Microsoft.UI.Xaml.Controls"
+    xmlns:helpers="using:AintBnB.App.Helpers"
+    xmlns:views="using:AintBnB.App.Views"
+    xmlns:ic="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:i="using:Microsoft.Xaml.Interactivity"
+    mc:Ignorable="d" >
+
+    <i:Interaction.Behaviors>
+        <ic:EventTriggerBehavior EventName="Loaded">
+            <ic:InvokeCommandAction Command="{x:Bind ViewModel.LoadedCommand}" />
+        </ic:EventTriggerBehavior>
+    </i:Interaction.Behaviors>
+    <winui:NavigationView
+        x:Name="navigationView"
+        IsBackButtonVisible="Visible"
+        IsBackEnabled="{x:Bind ViewModel.IsBackEnabled, Mode=OneWay}"
+        SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
+        IsSettingsVisible="False"
+        Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
+        <winui:NavigationView.MenuItems>
+            <winui:NavigationViewItem x:Uid="Shell_UserInfo" Icon="Document" helpers:NavHelper.NavigateTo="views:UserInfoPage" Content="User Info"/>
+            <winui:NavigationViewItem x:Uid="Shell_CreateAccommodation" Icon="Document" helpers:NavHelper.NavigateTo="views:CreateAccommodationPage" Content="Create Accommodation"/>
+            <winui:NavigationViewItem x:Uid="Shell_AccommodationInfo" Icon="Document" helpers:NavHelper.NavigateTo="views:AccommodationInfoPage" Content="Accommodation Info"/>
+            <winui:NavigationViewItem x:Uid="Shell_AllAccommodations" Icon="Document" helpers:NavHelper.NavigateTo="views:AllAccommodationsPage" Content="All Accommodations"/>
+            <winui:NavigationViewItem x:Uid="Shell_Search" Icon="Document" helpers:NavHelper.NavigateTo="views:SearchPage" Content="Search"/>
+            <winui:NavigationViewItem x:Uid="Shell_BookingInfo" Icon="Document" helpers:NavHelper.NavigateTo="views:BookingInfoPage" Content="Booking Info"/>
+            <winui:NavigationViewItem x:Uid="Shell_AllBookings" Icon="Document" helpers:NavHelper.NavigateTo="views:AllBookingsPage" Content="All Bookings"/>
+            <winui:NavigationViewItem x:Uid="Shell_BookingOfOwnAccommodation" Icon="Document" helpers:NavHelper.NavigateTo="views:AllBookingsOfOwnedAccommodations" Content="All Bookings Of Owned Accommodations"/>
+            <winui:NavigationViewItem x:Uid="Shell_Logout" Icon="Document" helpers:NavHelper.NavigateTo="views:LogoutPage" Content="Logout"/>
+        </winui:NavigationView.MenuItems>
+        <i:Interaction.Behaviors>
+            <behaviors:NavigationViewHeaderBehavior
+                DefaultHeader="{x:Bind ViewModel.Selected.Content, Mode=OneWay}">
+                <behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <TextBlock
+                                Text="{Binding}"
+                                Style="{ThemeResource TitleTextBlockStyle}"
+                                Margin="{StaticResource SmallLeftRightMargin}" />
+                        </Grid>
+                    </DataTemplate>
+                </behaviors:NavigationViewHeaderBehavior.DefaultHeaderTemplate>
+            </behaviors:NavigationViewHeaderBehavior>
+            <ic:EventTriggerBehavior EventName="ItemInvoked">
+                <ic:InvokeCommandAction Command="{x:Bind ViewModel.ItemInvokedCommand}" />
+            </ic:EventTriggerBehavior>
+        </i:Interaction.Behaviors>
+        <Grid>
+            <Frame x:Name="shellFrame" Navigated="Frame_Navigated" />
+        </Grid>
+    </winui:NavigationView>
+</Page>

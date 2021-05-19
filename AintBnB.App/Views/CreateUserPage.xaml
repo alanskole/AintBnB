@@ -1,0 +1,101 @@
+﻿<Page
+    x:Class="AintBnB.App.Views.CreateUserPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="2*"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="2*"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="0.5*"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Button
+                Grid.Row="1"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_Login"
+                Content="Login"/>
+
+            <TextBox
+                Grid.Row="2"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Header="Username"
+                Text="{x:Bind UserViewModel.User.UserName, Mode=TwoWay}"
+                Name="userName"/>
+
+            <PasswordBox
+                Grid.Row="3"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Header="Password"
+                Password="{x:Bind UserViewModel.User.Password, Mode=TwoWay}"
+                Name="password"/>
+
+            <PasswordBox
+                Grid.Row="4"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Header="Confirm password"
+                Password="{x:Bind UserViewModel.PasswordConfirm, Mode=TwoWay}"
+                x:Name="passwordConfirm"/>
+
+            <TextBox
+                Grid.Row="5"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Header="Firstname"
+                Text="{x:Bind UserViewModel.User.FirstName, Mode=TwoWay}"
+                Name="firstName"/>
+
+            <TextBox
+                Grid.Row="6"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Header="Lastname"
+                Text="{x:Bind UserViewModel.User.LastName, Mode=TwoWay}"
+                Name="lastName"/>
+
+            <CheckBox
+                Grid.Row="7"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                x:Name="EmpReq">
+                Request to become employee
+            </CheckBox>
+
+            <Button
+                Grid.Row="8"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Click="Button_Click_CreateUser"
+                Content="Create User"/>
+        </Grid>
+    </ScrollViewer>
+</Page>
