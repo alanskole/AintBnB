@@ -26,7 +26,6 @@
         Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
         <winui:NavigationView.MenuItems>
             <winui:NavigationViewItem x:Uid="Shell_UserInfo" Icon="Document" helpers:NavHelper.NavigateTo="views:UserInfoPage" Content="User Info"/>
-            <winui:NavigationViewItem x:Uid="Shell_AllUsers" Icon="Document" helpers:NavHelper.NavigateTo="views:AllUsersPage" Content="All Users"/>
             <winui:NavigationViewItem x:Uid="Shell_CreateAccommodation" Icon="Document" helpers:NavHelper.NavigateTo="views:CreateAccommodationPage" Content="Create Accommodation"/>
             <winui:NavigationViewItem x:Uid="Shell_AccommodationInfo" Icon="Document" helpers:NavHelper.NavigateTo="views:AccommodationInfoPage" Content="Accommodation Info"/>
             <winui:NavigationViewItem x:Uid="Shell_AllAccommodations" Icon="Document" helpers:NavHelper.NavigateTo="views:AllAccommodationsPage" Content="All Accommodations"/>

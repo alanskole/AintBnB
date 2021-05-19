@@ -22,6 +22,7 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
+                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -30,8 +31,18 @@
                 <ColumnDefinition Width="0.5*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
-            <ComboBox
+            <Button
                 Grid.Row="1"
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                x:Name="AllUsersButton"
+                Content="All Users"
+                Click="Button_Click_AllUsers"
+                Visibility="Collapsed"/>
+
+            <ComboBox
+                Grid.Row="2"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -41,7 +52,7 @@
                 SelectionChanged="ComboBoxUsers_SelectionChanged"/>
 
             <TextBox
-                Grid.Row="1"
+                Grid.Row="2"
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="User ID"
@@ -52,7 +63,7 @@
                 Name="userIdTextBox"/>
 
             <TextBox
-                Grid.Row="2"
+                Grid.Row="3"
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="Username"
@@ -62,7 +73,7 @@
                 Name="userName"/>
 
             <TextBox
-                Grid.Row="3"
+                Grid.Row="4"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -71,7 +82,7 @@
                 Name="firstName"/>
 
             <TextBox
-                Grid.Row="4"
+                Grid.Row="5"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -80,7 +91,7 @@
                 Name="lastName"/>
 
             <TextBox
-                Grid.Row="5"
+                Grid.Row="6"
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="Usertype"
@@ -90,7 +101,7 @@
                 Name="userType"/>
 
             <Button
-                Grid.Row="6"
+                Grid.Row="7"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -100,7 +111,7 @@
                 Visibility="Collapsed"/>
 
             <Button
-                Grid.Row="7"
+                Grid.Row="8"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -109,7 +120,7 @@
                 Name="UpdateUserButton"/>
 
             <Button
-                Grid.Row="8"
+                Grid.Row="9"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -118,7 +129,7 @@
                 Name="ChangePasswordButton"/>
 
             <Button
-                Grid.Row="9"
+                Grid.Row="10"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -127,7 +138,7 @@
                 Name="DeleteButton"/>
 
             <ContentDialog
-                Grid.ColumnSpan="11"
+                Grid.ColumnSpan="12"
                 Grid.RowSpan="3"
                 Grid.Row="4"
                 VerticalAlignment="Center"

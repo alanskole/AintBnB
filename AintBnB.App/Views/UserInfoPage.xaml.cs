@@ -49,6 +49,8 @@ namespace AintBnB.App.Views
             {
                 await AuthenticationViewModel.IsEmployeeOrAdminAsync();
 
+                AllUsersButton.Visibility = Visibility.Visible;
+
                 await FillComboBoxWithUserIdsAsync();
 
                 if (ComboBoxUsers.SelectedIndex == -1)
@@ -162,6 +164,11 @@ namespace AintBnB.App.Views
             {
 
             }
+        }
+
+        private void Button_Click_AllUsers(object sender, RoutedEventArgs e)
+        {
+            Frame.Navigate(typeof(AllUsersPage));
         }
 
         private async void Button_Click_UpdateUser(object sender, RoutedEventArgs e)
