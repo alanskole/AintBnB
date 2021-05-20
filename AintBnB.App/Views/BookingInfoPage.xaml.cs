@@ -167,6 +167,12 @@ namespace AintBnB.App.Views
                 ComboBoxRating.Visibility = Visibility.Collapsed;
                 RateButton.Visibility = Visibility.Collapsed;
             }
+            else
+            {
+                Rating.Visibility = Visibility.Collapsed;
+                ComboBoxRating.Visibility = Visibility.Visible;
+                RateButton.Visibility = Visibility.Visible;
+            }
         }
 
         private void ShowButtons()

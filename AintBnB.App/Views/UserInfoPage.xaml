@@ -58,7 +58,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Visibility="Collapsed"
-                Text="{x:Bind UserViewModel.User.Id, Mode=TwoWay}"
+                Text="{x:Bind UserViewModel.User.Id, Mode=OneWay}"
                 Name="userIdTextBox"/>
 
             <TextBox
@@ -68,7 +68,7 @@
                 Header="Username"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind UserViewModel.User.UserName, Mode=TwoWay}"
+                Text="{x:Bind UserViewModel.User.UserName, Mode=OneWay}"
                 Name="userName"/>
 
             <TextBox

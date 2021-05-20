@@ -50,7 +50,7 @@
                 Header="Id of the booker"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.BookedBy.Id, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.BookedBy.Id, Mode=OneWay}"
                 Name="bookedById"/>
 
             <TextBox
@@ -61,7 +61,7 @@
                 Header="Username of the booker"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.BookedBy.UserName, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.BookedBy.UserName, Mode=OneWay}"
                 Name="bookedByUsername"/>
 
             <TextBox
@@ -72,7 +72,7 @@
                 Header="First name of the booker"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.BookedBy.FirstName, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.BookedBy.FirstName, Mode=OneWay}"
                 Name="bookedByFirstname"/>
 
             <TextBox
@@ -83,7 +83,7 @@
                 Header="Last name of the booker"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.BookedBy.LastName, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.BookedBy.LastName, Mode=OneWay}"
                 Name="bookedByLastname"/>
 
             <TextBox
@@ -94,7 +94,7 @@
                 Header="Streetaddress"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Street, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Street, Mode=OneWay}"
                 Name="streetOfAccommodation"/>
 
             <TextBox
@@ -105,7 +105,7 @@
                 Header="Number of the building"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Number, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Number, Mode=OneWay}"
                 Name="numberOfAccommodation"/>
 
             <TextBox
@@ -116,7 +116,7 @@
                 Header="Zip"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Zip, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Zip, Mode=OneWay}"
                 Name="zipOfAccommodation"/>
 
             <TextBox
@@ -127,7 +127,7 @@
                 Header="Area"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Area, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Area, Mode=OneWay}"
                 Name="areaOfAccommodation"/>
 
             <TextBox
@@ -138,7 +138,7 @@
                 Header="City"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.City, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.City, Mode=OneWay}"
                 Name="cityOfAccommodation"/>
 
             <TextBox
@@ -149,7 +149,7 @@
                 Header="Country"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Country, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.Accommodation.Address.Country, Mode=OneWay}"
                 Name="countryOfAccommodation"/>
 
             <TextBox
@@ -160,7 +160,7 @@
                 Header="Price of the booking"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.Price, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.Price, Mode=OneWay}"
                 Name="priceOfBooking"/>
 
             <TextBox
@@ -171,7 +171,7 @@
                 Header="Cancellation deadline in days"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind BookingViewModel.Booking.Accommodation.CancellationDeadlineInDays, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.Accommodation.CancellationDeadlineInDays, Mode=OneWay}"
                 Name="cancellationDeadline"/>
 
             <Button
@@ -201,7 +201,7 @@
                 HorizontalAlignment="Center"
                 Header="Rating"
                 Name="Rating"
-                Text="{x:Bind BookingViewModel.Booking.Rating, Mode=TwoWay}"
+                Text="{x:Bind BookingViewModel.Booking.Rating, Mode=OneWay}"
                 Visibility="Collapsed"
                 IsReadOnly="True"/>
 

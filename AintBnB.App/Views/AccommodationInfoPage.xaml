@@ -49,7 +49,7 @@
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="Street"
-                Text="{x:Bind AccommodationViewModel.Accommodation.Address.Street, Mode=TwoWay}"
+                Text="{x:Bind AccommodationViewModel.Accommodation.Address.Street, Mode=OneWay}"
                 Name="street"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
@@ -60,7 +60,7 @@
                 Grid.Column="2"
                 IsReadOnly="True"
                 Header="Number"
-                Text="{x:Bind AccommodationViewModel.Accommodation.Address.Number, Mode=TwoWay}"
+                Text="{x:Bind AccommodationViewModel.Accommodation.Address.Number, Mode=OneWay}"
                 Name="number"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
@@ -71,7 +71,7 @@
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="Zip"
-                Text="{x:Bind AccommodationViewModel.Accommodation.Address.Zip, Mode=TwoWay}"
+                Text="{x:Bind AccommodationViewModel.Accommodation.Address.Zip, Mode=OneWay}"
                 Name="zip"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
@@ -82,7 +82,7 @@
                 Grid.Column="2"
                 IsReadOnly="True"
                 Header="Area"
-                Text="{x:Bind AccommodationViewModel.Accommodation.Address.Area, Mode=TwoWay}"
+                Text="{x:Bind AccommodationViewModel.Accommodation.Address.Area, Mode=OneWay}"
                 Name="area"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
@@ -93,7 +93,7 @@
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="City"
-                Text="{x:Bind AccommodationViewModel.Accommodation.Address.City, Mode=TwoWay}"
+                Text="{x:Bind AccommodationViewModel.Accommodation.Address.City, Mode=OneWay}"
                 Name="city"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
@@ -104,7 +104,7 @@
                 Grid.Column="2"
                 IsReadOnly="True"
                 Header="Country"
-                Text="{x:Bind AccommodationViewModel.Accommodation.Address.Country, Mode=TwoWay}"
+                Text="{x:Bind AccommodationViewModel.Accommodation.Address.Country, Mode=OneWay}"
                 Name="country"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
@@ -135,7 +135,7 @@
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="Kilometers from center"
-                Text="{x:Bind AccommodationViewModel.Accommodation.KilometersFromCenter, Mode=TwoWay}"
+                Text="{x:Bind AccommodationViewModel.Accommodation.KilometersFromCenter, Mode=OneWay}"
                 Name="kmFromCenter"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
@@ -196,7 +196,7 @@
                 Grid.Column="1"
                 IsReadOnly="True"
                 Header="Average rating"
-                Text="{x:Bind AccommodationViewModel.Accommodation.AverageRating, Mode=TwoWay}"
+                Text="{x:Bind AccommodationViewModel.Accommodation.AverageRating, Mode=OneWay}"
                 Name="avgRating"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
@@ -207,7 +207,7 @@
                 Grid.Column="2"
                 IsReadOnly="True"
                 Header="Amount of ratings"
-                Text="{x:Bind AccommodationViewModel.Accommodation.AmountOfRatings, Mode=TwoWay}"
+                Text="{x:Bind AccommodationViewModel.Accommodation.AmountOfRatings, Mode=OneWay}"
                 Name="amountOfRatings"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"/>
