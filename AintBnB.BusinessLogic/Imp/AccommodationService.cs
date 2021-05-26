@@ -34,7 +34,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="daysToCreateScheduleFor">How many days to create the schedule for.</param>
         /// <returns>The newly created accommodation object</returns>
         /// <exception cref="ParameterException">If the days to create the schedule for is less than one</exception>
-        /// <exception cref="AccessException">If a non admin or employee user tries to create an accommodation for another user than themselves</exception>
+        /// <exception cref="AccessException">If a non admin user tries to create an accommodation for another user than themselves</exception>
         public async Task<Accommodation> CreateAccommodationAsync(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, int daysToCreateScheduleFor)
         {
             if (daysToCreateScheduleFor < 1)
@@ -51,7 +51,7 @@ namespace AintBnB.BusinessLogic.Imp
                 await _unitOfWork.CommitAsync();
                 return accommodation;
             }
-            throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
+            throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin on behalf of a customer with ID {owner.Id}!");
         }
 
         /// <summary>Validates the properties of an accommodation.</summary>
@@ -195,14 +195,14 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Updates an accommodation.</summary>
         /// <param name="id">The ID of the accommodation to update.</param>
         /// <param name="accommodation">The accommodation object with the updated values.</param>
-        /// <exception cref="AccessException">If the user that tries to update the accommodation isn't the owner, admin or employee</exception>
+        /// <exception cref="AccessException">If the user that tries to update the accommodation isn't the owner or admin</exception>
         public async Task UpdateAccommodationAsync(int id, Accommodation accommodation)
         {
             var acc = await _unitOfWork.AccommodationRepository.ReadAsync(id);
 
             var owner = acc.Owner;
 
-            if (CorrectUserOrAdminOrEmployee(owner))
+            if (CorrectUserOrAdmin(owner.Id))
             {
                 await GetAccommodationAsync(id);
 
@@ -216,7 +216,7 @@ namespace AintBnB.BusinessLogic.Imp
                 await _unitOfWork.CommitAsync();
             }
             else
-                throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
+                throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin on behalf of a customer with ID {owner.Id}!");
         }
 
         /// <summary>Validates the updated accommodation properties.</summary>
@@ -247,7 +247,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="id">The ID of the accommodation.</param>
         /// <param name="days">The amount of days to expand the schedule by.</param>
         /// <exception cref="ParameterException">Days is less than one</exception>
-        /// <exception cref="AccessException">If the user that calls this method isn't the owner of the accommodation, admin or employee</exception>
+        /// <exception cref="AccessException">If the user that calls this method isn't the owner of the accommodation or admin</exception>
         public async Task ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(int id, int days)
         {
             if (days < 1)
@@ -256,7 +256,7 @@ namespace AintBnB.BusinessLogic.Imp
             var acc = await GetAccommodationAsync(id);
             var owner = acc.Owner;
 
-            if (CorrectUserOrAdminOrEmployee(owner))
+            if (CorrectUserOrAdmin(owner.Id))
             {
                 var dateAndStatus = new SortedDictionary<string, bool>();
 
@@ -271,7 +271,7 @@ namespace AintBnB.BusinessLogic.Imp
                 await _unitOfWork.CommitAsync();
             }
             else
-                throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin or an employee on behalf of a customer with ID {owner.Id}!");
+                throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin on behalf of a customer with ID {owner.Id}!");
         }
 
         /// <summary>Merges a newly created sorted dictionarie with the orignal one to exapnd the schedule of an accommodation.</summary>

@@ -22,26 +22,6 @@ namespace Test.Unit
             UserType = UserTypes.Admin
         };
 
-        private User employee1 = new User
-        {
-            Id = 2,
-            UserName = "emp",
-            Password = HashPassword("aaaaaa"),
-            FirstName = "Em",
-            LastName = "Pl",
-            UserType = UserTypes.Employee
-        };
-
-        private User employeeRequester = new User
-        {
-            Id = 3,
-            UserName = "empreq",
-            Password = HashPassword("aaaaaa"),
-            FirstName = "Req",
-            LastName = "Emp",
-            UserType = UserTypes.RequestToBeEmployee
-        };
-
         private User customer1 = new User
         {
             Id = 4,
@@ -60,16 +40,6 @@ namespace Test.Unit
             FirstName = "Second",
             LastName = "Cust",
             UserType = UserTypes.Customer
-        };
-
-        private User employee2 = new User
-        {
-            Id = 6,
-            UserName = "emp2",
-            Password = HashPassword("aaaaaa"),
-            FirstName = "Second",
-            LastName = "Emp",
-            UserType = UserTypes.Employee
         };
 
         private User customer3 = new User
@@ -96,14 +66,6 @@ namespace Test.Unit
             LoggedInAs = customer1;
 
             Assert.IsFalse(AdminChecker());
-
-            LoggedInAs = employee1;
-
-            Assert.IsFalse(AdminChecker());
-
-            LoggedInAs = employeeRequester;
-
-            Assert.IsFalse(AdminChecker());
         }
 
         [TestMethod]
@@ -118,122 +80,7 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public void EmployeeChecker_ShouldReturn_TrueIfEmployeeIsLoggedIn()
-        {
-            LoggedInAs = employee1;
-
-            Assert.IsTrue(EmployeeChecker());
-        }
-
-        [TestMethod]
-        public void EmployeeChecker_ShouldReturn_FalseIfLoggedInUserIsNotEmployee()
-        {
-            LoggedInAs = customer1;
-
-            Assert.IsFalse(EmployeeChecker());
-
-            LoggedInAs = admin;
-
-            Assert.IsFalse(EmployeeChecker());
-
-            LoggedInAs = employeeRequester;
-
-            Assert.IsFalse(EmployeeChecker());
-        }
-
-        [TestMethod]
-        public void EmployeeChecker_ShouldFail_IfNoOneIsLoggedIn()
-        {
-            LoggedInAs = null;
-
-            var ex = Assert.ThrowsException<LoginException>(()
-                => EmployeeChecker());
-
-            Assert.AreEqual("Not logged in!", ex.Message);
-        }
-
-        [TestMethod]
-        public void CorrectUserOrAdminOrEmployee_ShouldReturn_TrueIfLoggedInUserIsAdminOrEmployeeOrTheUserBeingChecked()
-        {
-            LoggedInAs = customer1;
-
-            Assert.IsTrue(CorrectUserOrAdminOrEmployee(customer1));
-
-            LoggedInAs = admin;
-
-            Assert.IsTrue(CorrectUserOrAdminOrEmployee(customer1));
-
-            LoggedInAs = employee1;
-
-            Assert.IsTrue(CorrectUserOrAdminOrEmployee(customer1));
-        }
-
-        [TestMethod]
-        public void CorrectUserOrAdminOrEmployee_ShouldReturn_FalseIfLoggedInUserIsCustomerButUserInMethodParameterIsNotTheLoggedInCustomer()
-        {
-            LoggedInAs = customer1;
-
-            Assert.IsFalse(CorrectUserOrAdminOrEmployee(customer2));
-        }
-
-        [TestMethod]
-        public void CorrectUserOrAdminOrEmployee_ShouldReturn_FalseIfLoggedInUserIsEmployeeButUserInMethodParameterIsNotTheLoggedInEmployeeOrACustomer()
-        {
-            LoggedInAs = employee1;
-
-            Assert.IsFalse(CorrectUserOrAdminOrEmployee(admin));
-            Assert.IsFalse(CorrectUserOrAdminOrEmployee(employee2));
-            Assert.IsFalse(CorrectUserOrAdminOrEmployee(employeeRequester));
-        }
-
-        [TestMethod]
-        public void CorrectUserOrAdminOrEmployee_ShouldFail_NoOneLoggedIn()
-        {
-            LoggedInAs = null;
-
-            var ex = Assert.ThrowsException<LoginException>(()
-                => CorrectUserOrAdminOrEmployee(customer1));
-
-            Assert.AreEqual("Not logged in!", ex.Message);
-        }
-
-        [TestMethod]
-        public void HasElevatedRights_ShouldReturn_TrueIfLoggedInUserIsAdminOrEmployee()
-        {
-            LoggedInAs = employee1;
-
-            Assert.IsTrue(HasElevatedRights());
-
-            LoggedInAs = admin;
-
-            Assert.IsTrue(HasElevatedRights());
-        }
-
-        [TestMethod]
-        public void HasElevatedRights_ShouldReturn_FalseIfLoggedInUserIsNotAdminOrEmployee()
-        {
-            LoggedInAs = customer1;
-
-            Assert.IsFalse(HasElevatedRights());
-
-            LoggedInAs = employeeRequester;
-
-            Assert.IsFalse(HasElevatedRights());
-        }
-
-        [TestMethod]
-        public void HasElevatedRights_ShouldFail_NoOneLoggedIn()
-        {
-            LoggedInAs = null;
-
-            var ex = Assert.ThrowsException<LoginException>(()
-                => HasElevatedRights());
-
-            Assert.AreEqual("Not logged in!", ex.Message);
-        }
-
-        [TestMethod]
-        public void CorrectUserOrAdmin_ShouldReturn_TrueIfLoggedInUserIsAdminOrTheUserBeingChecked()
+        public void CorrectUserOrAdmin_ShouldReturn_TrueIfLoggedInUserIsAdminOrOrTheUserBeingChecked()
         {
             LoggedInAs = customer1;
 
@@ -242,22 +89,14 @@ namespace Test.Unit
             LoggedInAs = admin;
 
             Assert.IsTrue(CorrectUserOrAdmin(customer1.Id));
-        }
-
-        [TestMethod]
-        public void CorrectUserOrAdmin_ShouldReturn_FalseIfLoggedInUserIsEmployee()
-        {
-            LoggedInAs = employee1;
-
-            Assert.IsFalse(CorrectUserOrAdmin(customer2.Id));
         }
 
         [TestMethod]
         public void CorrectUserOrAdmin_ShouldReturn_FalseIfLoggedInUserIsCustomerButUserInMethodParameterIsNotTheLoggedInCustomer()
         {
-            LoggedInAs = customer2;
+            LoggedInAs = customer1;
 
-            Assert.IsFalse(CorrectUserOrAdmin(customer1.Id));
+            Assert.IsFalse(CorrectUserOrAdmin(customer2.Id));
         }
 
         [TestMethod]
@@ -272,48 +111,67 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public void CorrectUserOrOwnerOrAdminOrEmployee_ShouldReturn_TrueIfLoggedInUserIsTheSameAsAnyOfTheMethodParameters()
-        {
-            LoggedInAs = customer1;
-
-            Assert.IsTrue(CorrectUserOrOwnerOrAdminOrEmployee(customer1.Id, customer2));
-
-            LoggedInAs = customer2;
-
-            Assert.IsTrue(CorrectUserOrOwnerOrAdminOrEmployee(customer1.Id, customer2));
-        }
-
-        [TestMethod]
-        public void CorrectUserOrOwnerOrAdminOrEmployee_ShouldReturn_TrueIfLoggedInUserIsAdmin()
+        public void AdminChecker_ShouldReturn_TrueIfLoggedInUserIsAdminOr()
         {
             LoggedInAs = admin;
 
-            Assert.IsTrue(CorrectUserOrOwnerOrAdminOrEmployee(customer1.Id, customer2));
+            Assert.IsTrue(AdminChecker());
         }
 
         [TestMethod]
-        public void CorrectUserOrOwnerOrAdminOrEmployee_ShouldReturn_TrueIfLoggedInUserIsEmployeeAndTheUsersInTheParametersAreCustomers()
+        public void AdminChecker_ShouldReturn_FalseIfLoggedInUserIsNotAdminOr()
         {
-            LoggedInAs = employee1;
+            LoggedInAs = customer1;
 
-            Assert.IsTrue(CorrectUserOrOwnerOrAdminOrEmployee(customer1.Id, customer2));
+            Assert.IsFalse(AdminChecker());
         }
 
         [TestMethod]
-        public void CorrectUserOrOwnerOrAdminOrEmployee_ShouldReturn_FalseIfLoggedInUserIsNotTheSameAsAnyOfTheMethodParameters()
-        {
-            LoggedInAs = customer2;
-
-            Assert.IsFalse(CorrectUserOrOwnerOrAdminOrEmployee(customer1.Id, customer3));
-        }
-
-        [TestMethod]
-        public void CorrectUserOrOwnerOrAdminOrEmployee_ShouldFail_NoOneLoggedIn()
+        public void AdminChecker_ShouldFail_NoOneLoggedIn()
         {
             LoggedInAs = null;
 
             var ex = Assert.ThrowsException<LoginException>(()
-                => CorrectUserOrOwnerOrAdminOrEmployee(customer2.Id, customer1));
+                => AdminChecker());
+
+            Assert.AreEqual("Not logged in!", ex.Message);
+        }
+
+        [TestMethod]
+        public void CorrectUserOrOwnerOrAdmin_ShouldReturn_TrueIfLoggedInUserIsTheSameAsAnyOfTheMethodParameters()
+        {
+            LoggedInAs = customer1;
+
+            Assert.IsTrue(CorrectUserOrOwnerOrAdmin(customer1.Id, customer2));
+
+            LoggedInAs = customer2;
+
+            Assert.IsTrue(CorrectUserOrOwnerOrAdmin(customer1.Id, customer2));
+        }
+
+        [TestMethod]
+        public void CorrectUserOrOwnerOrAdmin_ShouldReturn_TrueIfLoggedInUserIsAdmin()
+        {
+            LoggedInAs = admin;
+
+            Assert.IsTrue(CorrectUserOrOwnerOrAdmin(customer1.Id, customer2));
+        }
+
+        [TestMethod]
+        public void CorrectUserOrOwnerOrAdmin_ShouldReturn_FalseIfLoggedInUserIsNotTheSameAsAnyOfTheMethodParameters()
+        {
+            LoggedInAs = customer2;
+
+            Assert.IsFalse(CorrectUserOrOwnerOrAdmin(customer1.Id, customer3));
+        }
+
+        [TestMethod]
+        public void CorrectUserOrOwnerOrAdmin_ShouldFail_NoOneLoggedIn()
+        {
+            LoggedInAs = null;
+
+            var ex = Assert.ThrowsException<LoginException>(()
+                => CorrectUserOrOwnerOrAdmin(customer2.Id, customer1));
 
             Assert.AreEqual("Not logged in!", ex.Message);
         }
@@ -323,14 +181,6 @@ namespace Test.Unit
         public void CheckIfUserIsAllowedToPerformAction_ShouldReturn_TrueIfLoggedInUserIsAdminAndUserInMethodParameterIsCustomer()
         {
             LoggedInAs = admin;
-
-            Assert.IsTrue(CheckIfUserIsAllowedToPerformAction(customer2));
-        }
-
-        [TestMethod]
-        public void CheckIfUserIsAllowedToPerformAction_ShouldReturn_TrueIfLoggedInUserIsEmployeeAndUserInMethodParameterIsCustomer()
-        {
-            LoggedInAs = employee1;
 
             Assert.IsTrue(CheckIfUserIsAllowedToPerformAction(customer2));
         }
@@ -349,8 +199,6 @@ namespace Test.Unit
             LoggedInAs = admin;
 
             Assert.IsFalse(CheckIfUserIsAllowedToPerformAction(admin));
-            Assert.IsFalse(CheckIfUserIsAllowedToPerformAction(employee1));
-            Assert.IsFalse(CheckIfUserIsAllowedToPerformAction(employeeRequester));
         }
 
         [TestMethod]
@@ -446,26 +294,6 @@ namespace Test.Unit
             Assert.AreEqual(ex.InnerException.GetType(), typeof(LoginException));
 
             Assert.AreEqual("Username and/or password not correct!", ex.InnerException.Message);
-        }
-
-        [TestMethod]
-        public async Task LoginUser_ShouldFail_IfTheUserTryingToLoginIsOfUsertypeRequestToBeEmployee()
-        {
-            LoggedInAs = null;
-            await SetupDatabaseForTestingAsync();
-            SetupTestClasses();
-            await CreateDummyUsersAsync();
-
-            var result = typeof(Authentication)
-                .GetMethod("LoginUser", BindingFlags.NonPublic | BindingFlags.Static);
-
-            var ex = await Assert.ThrowsExceptionAsync<TargetInvocationException>(async ()
-                => await (Task)result.Invoke(null, new object[] { employeeRequester.UserName, "aaaaaa", await userService.GetAllUsersForLoginAsync() }));
-
-
-            Assert.AreEqual(ex.InnerException.GetType(), typeof(LoginException));
-
-            Assert.AreEqual("The request to have an employee account must be approved by admin before it can be used!", ex.InnerException.Message);
         }
 
         [TestMethod]

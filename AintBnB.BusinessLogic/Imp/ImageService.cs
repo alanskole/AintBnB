@@ -22,13 +22,13 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="accommoationId">The Id of the accommodation the image will be added to.</param>
         /// <param name="img">The byte array representing the image to add.</param>
         /// <returns>The newly created image object</returns>
-        /// <exception cref="AccessException">Only the accommodation's owner, admin or employee can upload photos to an accommodation!</exception>
+        /// <exception cref="AccessException">Only the accommodation's owner or admin can upload photos to an accommodation!</exception>
         public async Task<Image> AddPictureAsync(int accommoationId, byte[] img)
         {
             var acc = await _unitOfWork.AccommodationRepository.ReadAsync(accommoationId);
 
-            if (!CorrectUserOrAdminOrEmployee(acc.Owner))
-                throw new AccessException("Only the accommodation's owner, admin or employee can upload photos to an accommodation!");
+            if (!CorrectUserOrAdmin(acc.Owner.Id))
+                throw new AccessException("Only the accommodation's owner or admin can upload photos to an accommodation!");
 
             var newImage = new Image(acc, img);
             await _unitOfWork.ImageRepository.CreateAsync(newImage);
@@ -46,13 +46,13 @@ namespace AintBnB.BusinessLogic.Imp
 
         /// <summary>Deletes an image from the list of images of an accommodation.</summary>
         /// <param name="imageId">The Id of the image to delete.</param>
-        /// <exception cref="AccessException">Only the accommodation's owner, admin or employee can remove photos from an accommodation!</exception>
+        /// <exception cref="AccessException">Only the accommodation's owner or admin can remove photos from an accommodation!</exception>
         public async Task RemovePictureAsync(int imageId)
         {
             var img = await _unitOfWork.ImageRepository.ReadAsync(imageId);
 
-            if (!CorrectUserOrAdminOrEmployee(img.Accommodation.Owner))
-                throw new AccessException("Only the accommodation's owner, admin or employee can remove photos from an accommodation!");
+            if (!CorrectUserOrAdmin(img.Accommodation.Owner.Id))
+                throw new AccessException("Only the accommodation's owner or admin can remove photos from an accommodation!");
 
             _unitOfWork.ImageRepository.Delete(img);
             await _unitOfWork.CommitAsync();

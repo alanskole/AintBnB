@@ -15,9 +15,6 @@ namespace Test
     public class CustomWebApplicationFactory : WebApplicationFactory<Startup>
     {
         public User userAdmin;
-        public User userEmployee1;
-        public User userRequestToBecomeEmployee;
-        public User userRequestToBecomeEmployee2;
         public User userCustomer1;
         public User userCustomer2;
         public Address adr = new Address("str", "1", "1111", "ar", "Fredrikstad", "Norway");
@@ -64,33 +61,6 @@ namespace Test
                     UserType = UserTypes.Admin
                 };
 
-                userEmployee1 = new User
-                {
-                    UserName = "employee1",
-                    Password = HashPassword("aaaaaa"),
-                    FirstName = "Emp",
-                    LastName = "Loyee",
-                    UserType = UserTypes.Employee
-                };
-
-                userRequestToBecomeEmployee = new User
-                {
-                    UserName = "empreq",
-                    Password = HashPassword("aaaaaa"),
-                    FirstName = "Wannabe",
-                    LastName = "Employee",
-                    UserType = UserTypes.RequestToBeEmployee
-                };
-
-                userRequestToBecomeEmployee2 = new User
-                {
-                    UserName = "anotherempreq",
-                    Password = HashPassword("aaaaaa"),
-                    FirstName = "Letmebe",
-                    LastName = "Loyeeemp",
-                    UserType = UserTypes.RequestToBeEmployee
-                };
-
                 userCustomer1 = new User
                 {
                     UserName = "customer1",
@@ -111,11 +81,6 @@ namespace Test
 
                 db.Add(userAdmin);
                 db.SaveChanges();
-                db.Add(userEmployee1);
-                db.SaveChanges();
-                db.Add(userRequestToBecomeEmployee);
-                db.SaveChanges();
-                db.Add(userRequestToBecomeEmployee2);
                 db.SaveChanges();
                 db.Add(userCustomer1);
                 db.SaveChanges();

@@ -51,7 +51,7 @@ namespace AintBnB.App.Views
         {
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
+                await AuthenticationViewModel.IsAdminAsync();
 
                 AllUsersButton.Visibility = Visibility.Visible;
 
@@ -110,8 +110,6 @@ namespace AintBnB.App.Views
             }
 
             await VisibilityDeleteButtonAsync();
-
-            await VisibilityOfMakeEmployeeButtonAsync();
         }
 
         private async Task VisibilityDeleteButtonAsync()
@@ -126,7 +124,6 @@ namespace AintBnB.App.Views
             }
             catch (Exception)
             {
-                HideDeleteButtonIfEmployeeIsLoggedIn();
             }
         }
 
@@ -137,41 +134,6 @@ namespace AintBnB.App.Views
                 DeleteButton.Visibility = Visibility.Visible;
             else
                 DeleteButton.Visibility = Visibility.Collapsed;
-        }
-
-        private void HideDeleteButtonIfEmployeeIsLoggedIn()
-        {
-            DeleteButton.Visibility = Visibility.Collapsed;
-        }
-
-        private async void Button_Click_MakeEmployee(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                await UserViewModel.MakeEmployeeAsync();
-                await VisibilityOfMakeEmployeeButtonAsync();
-            }
-            catch (Exception ex)
-            {
-                await new MessageDialog(ex.Message).ShowAsync();
-            }
-        }
-
-        private async Task VisibilityOfMakeEmployeeButtonAsync()
-        {
-            try
-            {
-                await AuthenticationViewModel.IsAdminAsync();
-
-                if (_usertype == "RequestToBeEmployee")
-                    EmployeeButton.Visibility = Visibility.Visible;
-                else
-                    EmployeeButton.Visibility = Visibility.Collapsed;
-            }
-            catch (Exception)
-            {
-
-            }
         }
 
         private void Button_Click_AllUsers(object sender, RoutedEventArgs e)

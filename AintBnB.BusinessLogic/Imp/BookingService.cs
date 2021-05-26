@@ -54,7 +54,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="nights">The amount of nights to book for.</param>
         /// <param name="accommodation">The accommodation to book.</param>
         /// <returns>The booking object</returns>
-        /// <exception cref="AccessException">If the user that wants to book isn't the booker or admin or employee booking on behalf of the booker</exception>
+        /// <exception cref="AccessException">If the user that wants to book isn't the booker or admin booking on behalf of the booker</exception>
         private Booking BookIfAvailableAndUserHasPermission(string startDate, User booker, int nights, Accommodation accommodation)
         {
             if (CheckIfUserIsAllowedToPerformAction(booker))
@@ -62,7 +62,7 @@ namespace AintBnB.BusinessLogic.Imp
                 startDate = startDate.Trim();
                 return TryToBookIfAllDatesAvailable(startDate, booker, nights, accommodation);
             }
-            throw new AccessException($"Must be performed by a customer with ID {booker.Id}, or by admin or an employee on behalf of a customer with ID {booker.Id}!");
+            throw new AccessException($"Must be performed by a customer with ID {booker.Id}, or by admin on behalf of a customer with ID {booker.Id}!");
         }
 
         /// <summary>Makes the booking of all the dates are avaiable.</summary>
@@ -177,7 +177,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="newStartDate">The new start date.</param>
         /// <param name="nights">The amount of nights to book.</param>
         /// <param name="originalBooking">The original booking that needs to be updated.</param>
-        /// <exception cref="AccessException">Must be performed by the booker, or by admin or an employee on behalf of the booker!</exception>
+        /// <exception cref="AccessException">Must be performed by the booker, or by admin on behalf of the booker!</exception>
         /// <exception cref="ParameterException">Nights can't be less than one
         /// or
         /// Updated dates can't the same as original dates</exception>
@@ -185,7 +185,7 @@ namespace AintBnB.BusinessLogic.Imp
         private static void CanBookingBeUpdated(string newStartDate, int nights, Booking originalBooking)
         {
             if (!CheckIfUserIsAllowedToPerformAction(originalBooking.BookedBy))
-                throw new AccessException($"Must be performed by the booker, or by admin or an employee on behalf of the booker!");
+                throw new AccessException($"Must be performed by the booker, or by admin on behalf of the booker!");
 
             if (nights < 1)
                 throw new ParameterException("Nights", "less than one");
@@ -288,7 +288,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="id">The ID of the booking to get.</param>
         /// <returns>The booking object</returns>
         /// <exception cref="IdNotFoundException">No bookings found with the booking-ID</exception>
-        /// <exception cref="AccessException">The user wants to get the booking isn't the booker, the owner of the accommodation that was booked, admin or employee</exception>
+        /// <exception cref="AccessException">The user wants to get the booking isn't the booker, the owner of the accommodation that was booked or admin</exception>
         public async Task<Booking> GetBookingAsync(int id)
         {
             var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
@@ -296,7 +296,7 @@ namespace AintBnB.BusinessLogic.Imp
             if (booking == null)
                 throw new IdNotFoundException("Booking", id);
 
-            if (CorrectUserOrOwnerOrAdminOrEmployee(booking.Accommodation.Owner.Id, booking.BookedBy))
+            if (CorrectUserOrOwnerOrAdmin(booking.Accommodation.Owner.Id, booking.BookedBy))
                 return booking;
 
             throw new AccessException();
@@ -306,10 +306,11 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="userid">The user-ID of the owner of the accommoations.</param>
         /// <returns>A list of all the booking objects</returns>
         /// <exception cref="NoneFoundInDatabaseTableException">No bookings found</exception>
-        /// <exception cref="AccessException">The user that calls this method isn't the owner of the accommodations, admin or employee</exception>
+        /// <exception cref="AccessException">The user that calls this method isn't the owner of the accommodations or admin</exception>
         public async Task<List<Booking>> GetBookingsOfOwnedAccommodationAsync(int userid)
         {
-            if (CorrectUserOrAdminOrEmployee(await _unitOfWork.UserRepository.ReadAsync(userid)))
+            var user = await _unitOfWork.UserRepository.ReadAsync(userid);
+            if (CorrectUserOrAdmin(user.Id))
             {
                 var bookingsOfOwnedAccommodation = new List<Booking>();
 
@@ -336,10 +337,10 @@ namespace AintBnB.BusinessLogic.Imp
         }
 
         /// <summary>Gets all bookings in the database.</summary>
-        /// <returns>A list of all the bookings if method is called by admin or employee. If the method is called by a user it fetches all the bookings of the user</returns>
+        /// <returns>A list of all the bookings if method is called by admin. If the method is called by a customer it fetches all the bookings of the customer</returns>
         public async Task<List<Booking>> GetAllBookingsAsync()
         {
-            if (HasElevatedRights())
+            if (AdminChecker())
             {
                 return await GetAllInSystemAsync();
             }

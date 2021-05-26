@@ -54,18 +54,6 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task CreateAccommodationAsync_ShouldReturn_NewAccommodationWhenEmployeeCreatesOnBehalfOfCustomer()
-        {
-            LoggedInAs = userEmployee1;
-
-            var acc = await accommodationService.CreateAccommodationAsync(userCustomer1, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100);
-
-            Assert.AreEqual(1, acc.Id);
-            Assert.AreEqual(userCustomer1.Id, acc.Owner.Id);
-            Assert.AreEqual(adr1, acc.Address);
-        }
-
-        [TestMethod]
         public async Task CreateAccommodationAsync_ShouldFail_IfDaysToCreateScheduleForIsLessThanOneAsync()
         {
             LoggedInAs = userCustomer1;
@@ -84,14 +72,7 @@ namespace Test.Unit
             var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await accommodationService.CreateAccommodationAsync(userAdmin, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100));
 
-            Assert.AreEqual(ex.Message, $"Must be performed by a customer with ID {userAdmin.Id}, or by admin or an employee on behalf of a customer with ID {userAdmin.Id}!");
-
-            LoggedInAs = userEmployee1;
-
-            ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await accommodationService.CreateAccommodationAsync(userEmployee1, adr2, 50, 2, 2.3, "mmm mmm", 600, 2, 100));
-
-            Assert.AreEqual(ex.Message, $"Must be performed by a customer with ID {userEmployee1.Id}, or by admin or an employee on behalf of a customer with ID {userEmployee1.Id}!");
+            Assert.AreEqual(ex.Message, $"Must be performed by a customer with ID {userAdmin.Id}, or by admin on behalf of a customer with ID {userAdmin.Id}!");
         }
 
         [TestMethod]
@@ -102,7 +83,7 @@ namespace Test.Unit
             var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await accommodationService.CreateAccommodationAsync(userCustomer2, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100));
 
-            Assert.AreEqual(ex.Message, $"Must be performed by a customer with ID {userCustomer2.Id}, or by admin or an employee on behalf of a customer with ID {userCustomer2.Id}!");
+            Assert.AreEqual(ex.Message, $"Must be performed by a customer with ID {userCustomer2.Id}, or by admin on behalf of a customer with ID {userCustomer2.Id}!");
         }
 
         [DataRow(0, "ss", "3f", "23", "ss", "Fredrikstad", "Norway", 10, "ss", 10, 1)]
@@ -379,11 +360,11 @@ namespace Test.Unit
             var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await accommodationService.UpdateAccommodationAsync(accommodation1.Id, upd));
 
-            Assert.AreEqual($"Must be performed by a customer with ID {accommodation1.Owner.Id}, or by admin or an employee on behalf of a customer with ID {accommodation1.Owner.Id}!", ex.Message);
+            Assert.AreEqual($"Must be performed by a customer with ID {accommodation1.Owner.Id}, or by admin on behalf of a customer with ID {accommodation1.Owner.Id}!", ex.Message);
         }
 
         [TestMethod]
-        public async Task UpdateAccommodationAsync_ShouldSucceed_IfDoneByEmployeeOnBehalfOfTheOwner()
+        public async Task UpdateAccommodationAsync_ShouldSucceed_IfDoneByOnBehalfOfTheOwner()
         {
             await CreateDummyAccommodationAsync();
 
@@ -454,7 +435,7 @@ namespace Test.Unit
             var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(accommodation1.Id, 10));
 
-            Assert.AreEqual($"Must be performed by a customer with ID {accommodation1.Owner.Id}, or by admin or an employee on behalf of a customer with ID {accommodation1.Owner.Id}!", ex.Message);
+            Assert.AreEqual($"Must be performed by a customer with ID {accommodation1.Owner.Id}, or by admin on behalf of a customer with ID {accommodation1.Owner.Id}!", ex.Message);
         }
 
         [TestMethod]

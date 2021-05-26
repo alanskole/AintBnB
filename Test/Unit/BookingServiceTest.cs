@@ -90,26 +90,7 @@ namespace Test.Unit
 
             Assert.AreEqual(ex.InnerException.GetType(), typeof(AccessException));
 
-            Assert.AreEqual($"Must be performed by a customer with ID {userAdmin.Id}, or by admin or an employee on behalf of a customer with ID {userAdmin.Id}!", ex.InnerException.Message);
-        }
-
-        [TestMethod]
-        public void BookIfAvailableAndUserHasPermission_ShouldFail_IfEmployeeWantsToBookForOwnAccount()
-        {
-            LoggedInAs = userEmployee1;
-
-            var startDate = DateTime.Today.ToString("yyyy-MM-dd");
-            var nights = 2;
-
-            var result = typeof(BookingService)
-                .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var ex = Assert.ThrowsException<TargetInvocationException>(()
-                => result.Invoke(bookingService, new object[] { startDate, userEmployee1, nights, accommodation1 }));
-
-            Assert.AreEqual(ex.InnerException.GetType(), typeof(AccessException));
-
-            Assert.AreEqual($"Must be performed by a customer with ID {userEmployee1.Id}, or by admin or an employee on behalf of a customer with ID {userEmployee1.Id}!", ex.InnerException.Message);
+            Assert.AreEqual($"Must be performed by a customer with ID {userAdmin.Id}, or by admin on behalf of a customer with ID {userAdmin.Id}!", ex.InnerException.Message);
         }
 
         [TestMethod]
@@ -128,27 +109,13 @@ namespace Test.Unit
 
             Assert.AreEqual(ex.InnerException.GetType(), typeof(AccessException));
 
-            Assert.AreEqual($"Must be performed by a customer with ID {userCustomer2.Id}, or by admin or an employee on behalf of a customer with ID {userCustomer2.Id}!", ex.InnerException.Message);
+            Assert.AreEqual($"Must be performed by a customer with ID {userCustomer2.Id}, or by admin on behalf of a customer with ID {userCustomer2.Id}!", ex.InnerException.Message);
         }
 
         [TestMethod]
         public void BookIfAvailableAndUserHasPermission_ShouldPass_IfAdminTriesToBookForACustomer()
         {
             LoggedInAs = userAdmin;
-
-            var startDate = DateTime.Today.ToString("yyyy-MM-dd");
-            var nights = 2;
-
-            var result = typeof(BookingService)
-                .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            result.Invoke(bookingService, new object[] { startDate, userCustomer2, nights, accommodation1 });
-        }
-
-        [TestMethod]
-        public void BookIfAvailableAndUserHasPermission_ShouldPass_IfEmployeeTriesToBookForACustomer()
-        {
-            LoggedInAs = userEmployee1;
 
             var startDate = DateTime.Today.ToString("yyyy-MM-dd");
             var nights = 2;
@@ -441,26 +408,13 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task GetBookingAsync_ShouldFail_IfUserThatIsNotOwnerOfAccommodationOrAdminOrEmployeeTriesToGetBookingOfAnotherUser()
-        {
-            await CreateDummyBookingAsync();
-
-            LoggedInAs = userRequestToBecomeEmployee;
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await bookingService.GetBookingAsync(1));
-
-            Assert.AreEqual("Restricted access!", ex.Message);
-        }
-
-        [TestMethod]
         public async Task GetBookingsOfOwnedAccommodationAsync_ShouldReturn_ListOfAllBookingsOnTheAccommodationOfTheUser()
         {
             await CreateDummyBookingAsync();
 
             LoggedInAs = userCustomer2;
 
-            var all = await bookingService.GetBookingsOfOwnedAccommodationAsync(6);
+            var all = await bookingService.GetBookingsOfOwnedAccommodationAsync(3);
 
             Assert.AreEqual(2, all.Count);
             Assert.AreEqual(booking2.Id, all[0].Id);
@@ -474,18 +428,20 @@ namespace Test.Unit
         {
             await CreateDummyBookingAsync();
 
-            LoggedInAs = userRequestToBecomeEmployee;
+            LoggedInAs = userAdmin;
 
-            userRequestToBecomeEmployee.UserType = UserTypes.Customer;
+            await userService.CreateUserAsync("usr", "aaaaaa", "fa", "sd", UserTypes.Customer);
 
             adr1.Id = 100;
 
-            await accommodationService.CreateAccommodationAsync(userRequestToBecomeEmployee, adr1, 1, 2, 1, "d", 1, 1, 10);
+            var user = await userService.GetUserAsync(5);
+
+            await accommodationService.CreateAccommodationAsync(user, adr1, 1, 2, 1, "d", 1, 1, 10);
 
             var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
-                => await bookingService.GetBookingsOfOwnedAccommodationAsync(3));
+                => await bookingService.GetBookingsOfOwnedAccommodationAsync(user.Id));
 
-            Assert.AreEqual($"User with Id {userRequestToBecomeEmployee.Id} doesn't have any bookings of owned accommodations!", ex.Message);
+            Assert.AreEqual($"User with Id {user.Id} doesn't have any bookings of owned accommodations!", ex.Message);
         }
 
         [TestMethod]
@@ -494,21 +450,6 @@ namespace Test.Unit
             await CreateDummyBookingAsync();
 
             LoggedInAs = userAdmin;
-
-            var allBookings = await bookingService.GetAllBookingsAsync();
-
-            Assert.AreEqual(6, allBookings.Count);
-            Assert.IsTrue(allBookings.Contains(booking1));
-            Assert.IsTrue(allBookings.Contains(booking2));
-            Assert.IsTrue(allBookings.Contains(booking3));
-        }
-
-        [TestMethod]
-        public async Task GetAllBookingsAsync_ShouldReturn_AllBookingsInTheSystemIfEmployee()
-        {
-            await CreateDummyBookingAsync();
-
-            LoggedInAs = userEmployee1;
 
             var allBookings = await bookingService.GetAllBookingsAsync();
 

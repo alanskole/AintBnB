@@ -59,8 +59,6 @@ namespace AintBnB.BusinessLogic.Imp
 
             if (all.Count == 0)
                 user.UserType = UserTypes.Admin;
-            else if (userType == UserTypes.RequestToBeEmployee)
-                user.UserType = UserTypes.RequestToBeEmployee;
             else
                 user.UserType = UserTypes.Customer;
         }
@@ -104,7 +102,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="id">The ID of the user to get.</param>
         /// <returns>The user object</returns>
         /// <exception cref="IdNotFoundException">No users found with the provided ID</exception>
-        /// <exception cref="AccessException">Only the owner of the account, admin or employee can get fetch the user account</exception>
+        /// <exception cref="AccessException">Only the owner of the account or admin can get fetch the user account</exception>
         public async Task<User> GetUserAsync(int id)
         {
             var user = await _unitOfWork.UserRepository.ReadAsync(id);
@@ -112,7 +110,7 @@ namespace AintBnB.BusinessLogic.Imp
             if (user == null)
                 throw new IdNotFoundException("User", id);
 
-            if (CorrectUserOrAdminOrEmployee(user))
+            if (CorrectUserOrAdmin(user.Id))
             {
                 return user;
             }
@@ -145,12 +143,8 @@ namespace AintBnB.BusinessLogic.Imp
         {
             if (AdminChecker())
                 return await AdminCanGetAllUsersAsync();
-
-            var allCustomersPlusLoggedinEmployee = await GetAllUsersWithTypeCustomerAsync();
-
-            allCustomersPlusLoggedinEmployee.Insert(0, LoggedInAs);
-
-            return allCustomersPlusLoggedinEmployee;
+            else
+                throw new AccessException();
         }
 
         /// <summary>Returns a list of all the users in the database for admin.</summary>
@@ -164,10 +158,10 @@ namespace AintBnB.BusinessLogic.Imp
 
         /// <summary>Gets all users with usertype customer.</summary>
         /// <returns>A list of all the users with usertype customer</returns>
-        /// <exception cref="AccessException">Only admin and employee can do this</exception>
+        /// <exception cref="AccessException">Only admin can do this</exception>
         public async Task<List<User>> GetAllUsersWithTypeCustomerAsync()
         {
-            if (!HasElevatedRights())
+            if (!AdminChecker())
                 throw new AccessException();
 
             var all = new List<User>();
@@ -182,30 +176,6 @@ namespace AintBnB.BusinessLogic.Imp
             return all;
         }
 
-        /// <summary>Gets all the users that has requested an employee account.</summary>
-        /// <returns>A list with all the users that has requested an employee account</returns>
-        /// <exception cref="AccessException">Only admin can do this</exception>
-        /// <exception cref="NoneFoundInDatabaseTableException">No requests to become employee found</exception>
-        public async Task<List<User>> GetAllEmployeeRequestsAsync()
-        {
-
-            if (!AdminChecker())
-                throw new AccessException("Admin only!");
-
-            var all = new List<User>();
-
-            foreach (var user in await _unitOfWork.UserRepository.GetAllAsync())
-            {
-                if (user.UserType == UserTypes.RequestToBeEmployee)
-                    all.Add(user);
-            }
-
-            if (all.Count == 0)
-                throw new NoneFoundInDatabaseTableException("requests to become employee");
-
-            return all;
-        }
-
         private static void IsListEmpty(List<User> all)
         {
             if (all.Count == 0)
@@ -215,12 +185,12 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Updates a user.</summary>
         /// <param name="id">The ID of the user to update.</param>
         /// <param name="updatedUser">The updated user object.</param>
-        /// <exception cref="AccessException">Only the owner of the account, admin or employee can update a user</exception>
+        /// <exception cref="AccessException">Only the owner of the account or admin ployee can update a user</exception>
         public async Task UpdateUserAsync(int id, User updatedUser)
         {
             var old = await GetUserAsync(id);
 
-            if (CorrectUserOrAdminOrEmployee(old))
+            if (CorrectUserOrAdmin(old.Id))
             {
                 ValidateUser(old.UserName, updatedUser.FirstName, updatedUser.LastName);
 

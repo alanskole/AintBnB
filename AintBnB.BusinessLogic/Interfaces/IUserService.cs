@@ -46,10 +46,6 @@ namespace AintBnB.BusinessLogic.Interfaces
         /// <returns>A list of all the users with usertype customer</returns>
         Task<List<User>> GetAllUsersWithTypeCustomerAsync();
 
-        /// <summary>Gets all the users that has requested an employee account.</summary>
-        /// <returns>A list with all the users that has requested an employee account</returns>
-        Task<List<User>> GetAllEmployeeRequestsAsync();
-
         /// <summary>Gets all users. Used when logging in.</summary>
         /// <returns>A list with all the users</returns> 
         Task<List<User>> GetAllUsersForLoginAsync();

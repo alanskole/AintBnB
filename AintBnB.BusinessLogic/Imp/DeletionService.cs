@@ -21,7 +21,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         /// <summary>Delete a user.</summary>
         /// <param name="id">The user-ID of the user to delete.</param>
-        /// <exception cref="AccessException">If an employee tries to delete an account.
+        /// <exception cref="AccessException">If a customer tries to delete the account of another customer.
         /// or
         /// Only an admin or the user can delete the user's account</exception>
         public async Task DeleteUserAsync(int id)
@@ -38,8 +38,6 @@ namespace AintBnB.BusinessLogic.Imp
                 if (!AdminChecker())
                     Logout();
             }
-            else if (user.UserType == UserTypes.Employee)
-                throw new AccessException("Employees cannot delete any accounts, even if it's their own accounts!");
             else
                 throw new AccessException($"Administrator or user with ID {id} only!");
         }
@@ -142,14 +140,14 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Determines whether the accommodation can be deleted.</summary>
         /// <param name="accommodation">The accommodation to be deleted.</param>
         /// <exception cref="IdNotFoundException">Accommodation not found in the database</exception>
-        /// <exception cref="AccessException">If the user that tries to delete the accommodation isn't the owner, admin or employee</exception>
+        /// <exception cref="AccessException">If the user that tries to delete the accommodation isn't the owner or admin</exception>
         private void CanAccommodationBeDeleted(Accommodation accommodation)
         {
             if (accommodation == null)
                 throw new IdNotFoundException("Accommodation", accommodation.Id);
 
-            if (!CorrectUserOrAdminOrEmployee(accommodation.Owner))
-                throw new AccessException($"Administrator, employee or user with ID {accommodation.Owner.Id} only!");
+            if (!CorrectUserOrAdmin(accommodation.Owner.Id))
+                throw new AccessException($"Administrator or user with ID {accommodation.Owner.Id} only!");
         }
 
         /// <summary>Determines whether the bookings of the accommodation to be deleted can be cancelled.</summary>
@@ -200,10 +198,10 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Determines whether the booking can be deleted.</summary>
         /// <param name="id">The ID of the booking to be deleted.</param>
         /// <param name="booking">The booking object.</param>
-        /// <exception cref="AccessException">If the user that tires to delete the booking isn't the booker, the owner of the accommodation that was booked, admin or employee</exception>
+        /// <exception cref="AccessException">If the user that tires to delete the booking isn't the booker, the owner of the accommodation that was booked or admin</exception>
         private async Task CanTheBookingBeDeletedAsync(int id, Booking booking)
         {
-            if (CorrectUserOrOwnerOrAdminOrEmployee(booking.Accommodation.Owner.Id, booking.BookedBy))
+            if (CorrectUserOrOwnerOrAdmin(booking.Accommodation.Owner.Id, booking.BookedBy))
                 await DeadLineExpirationAsync(id, booking.Accommodation.CancellationDeadlineInDays);
             else
                 throw new AccessException();

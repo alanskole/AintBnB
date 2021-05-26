@@ -74,13 +74,6 @@ namespace AintBnB.App.ViewModels
             await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
         }
 
-        public async Task IsEmployeeOrAdminAsync()
-        {
-            _uniquePartOfUri = "elevatedrights";
-
-            await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
-        }
-
         public async Task LogoutFromAppAsync()
         {
             _uniquePartOfUri = "logout";

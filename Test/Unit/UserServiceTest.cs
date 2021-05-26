@@ -33,7 +33,7 @@ namespace Test.Unit
 
             Logout();
             var all = await userService.GetAllUsersForLoginAsync();
-            Assert.AreEqual(7, all.Count);
+            Assert.AreEqual(4, all.Count);
             Assert.AreEqual(UserTypes.Admin, all[0].UserType);
         }
 
@@ -64,19 +64,14 @@ namespace Test.Unit
         [TestMethod]
         public async Task CreateUserAsync_ShouldReturn_NewlyCreatedUser()
         {
-            var first = await userService.CreateUserAsync("admin", "aaaaaa", "adminfirstname", "adminlastname", UserTypes.Employee);
-            var second = await userService.CreateUserAsync("empreq", "aaaaaa", "empreqfirstname", "empreqlastname", UserTypes.RequestToBeEmployee);
-            var third = await userService.CreateUserAsync("cust1", "aaaaaa", "customerfirstname", "customerlastname", UserTypes.Admin);
-            var fourth = await userService.CreateUserAsync("cust2", "aaaaaa", "anothercustomerfirstname", "anothercustomerlastname", UserTypes.Employee);
+            var first = await userService.CreateUserAsync("adm1", "aaaaaa", "adminfirstname", "adminlastname", UserTypes.Admin);
+            var second = await userService.CreateUserAsync("cust2", "aaaaaa", "anothercustomerfirstname", "anothercustomerlastname", UserTypes.Customer);
 
             Assert.AreEqual(1, first.Id);
-            Assert.AreEqual("admin", first.UserName);
-            Assert.AreEqual(UserTypes.RequestToBeEmployee, second.UserType);
-            Assert.AreEqual("empreq", second.UserName);
-            Assert.AreEqual(3, third.Id);
-            Assert.AreEqual("cust1", third.UserName);
-            Assert.AreEqual(4, fourth.Id);
-            Assert.AreEqual("cust2", fourth.UserName);
+            Assert.AreEqual("adm1", first.UserName);
+            Assert.AreEqual(UserTypes.Admin, first.UserType);
+            Assert.AreEqual("cust2", second.UserName);
+            Assert.AreEqual(UserTypes.Customer, second.UserType);
         }
 
         [TestMethod]
@@ -96,28 +91,22 @@ namespace Test.Unit
         [TestMethod]
         public async Task UserTypeCheckAsync_ShouldSetUserTypeToAdmin_IfFirstCreatedUser()
         {
-            var dummy = new User { UserType = UserTypes.Employee };
-            var dummy2 = new User { UserType = UserTypes.RequestToBeEmployee };
-            var dummy3 = new User { UserType = UserTypes.Customer };
+            var dummy = new User { UserType = UserTypes.Customer };
 
             var result = typeof(UserService)
                 .GetMethod("UserTypeCheckAsync", BindingFlags.NonPublic | BindingFlags.Instance);
 
             await (Task)result.Invoke(userService, new object[] { dummy.UserType, dummy });
-            await (Task)result.Invoke(userService, new object[] { dummy2.UserType, dummy2 });
-            await (Task)result.Invoke(userService, new object[] { dummy3.UserType, dummy3 });
 
             Assert.AreEqual(UserTypes.Admin, dummy.UserType);
-            Assert.AreEqual(UserTypes.Admin, dummy2.UserType);
-            Assert.AreEqual(UserTypes.Admin, dummy3.UserType);
         }
 
         [TestMethod]
-        public async Task UserTypeCheckAsync_ShouldSetUserTypeToCustomer_IfNotRequestToBeEmployeeOrFirstCreatedUser()
+        public async Task UserTypeCheckAsync_ShouldSetUserTypeToCustomer_IfNotRequestToBeOrFirstCreatedUser()
         {
             await CreateDummyUsersAsync();
 
-            var dummy = new User { UserType = UserTypes.Employee };
+            var dummy = new User { UserType = UserTypes.Admin };
 
             var result = typeof(UserService)
                 .GetMethod("UserTypeCheckAsync", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -125,21 +114,6 @@ namespace Test.Unit
             await (Task)result.Invoke(userService, new object[] { dummy.UserType, dummy });
 
             Assert.AreEqual(UserTypes.Customer, dummy.UserType);
-        }
-
-        [TestMethod]
-        public async Task UserTypeCheckAsync_ShouldSetUserTypeToRequestToBeEmployee_IfUserHasThatUserTypeAndNotFirstCreatedUser()
-        {
-            await CreateDummyUsersAsync();
-
-            User dummy = new User { UserType = UserTypes.RequestToBeEmployee };
-
-            var result = typeof(UserService)
-                .GetMethod("UserTypeCheckAsync", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            await (Task)result.Invoke(userService, new object[] { dummy.UserType, dummy });
-
-            Assert.AreEqual(UserTypes.RequestToBeEmployee, dummy.UserType);
         }
 
         [DataRow(1, "newfirstone", "newlastone")]
@@ -167,45 +141,6 @@ namespace Test.Unit
 
             Assert.AreEqual(user.FirstName, newFirstname);
             Assert.AreEqual(user.LastName, newLastname);
-        }
-
-        [TestMethod]
-        public async Task UpdateUserAsync_ShouldSucceed_WhenEmployeeUpdatesCustomerAccounts()
-        {
-            await CreateDummyUsersAsync();
-
-            LoggedInAs = userEmployee1;
-
-            string newFirstname = "blahb";
-            string newLastname = "lablah";
-
-            Assert.AreNotEqual(userCustomer1.FirstName, newFirstname);
-            Assert.AreNotEqual(userCustomer1.LastName, newLastname);
-
-            userCustomer1.FirstName = newFirstname;
-            userCustomer1.LastName = newLastname;
-
-            await userService.UpdateUserAsync(userCustomer1.Id, userCustomer1);
-
-            Assert.AreEqual(userCustomer1.FirstName, newFirstname);
-            Assert.AreEqual(userCustomer1.LastName, newLastname);
-        }
-
-        [TestMethod]
-        public async Task Admin_Can_Grant_Employee_Account_Request()
-        {
-            await CreateDummyUsersAsync();
-
-            LoggedInAs = userAdmin;
-
-            userRequestToBecomeEmployee.UserType = UserTypes.Employee;
-            userRequestToBecomeEmployee2.UserType = UserTypes.Employee;
-
-            await userService.UpdateUserAsync(userRequestToBecomeEmployee.Id, userRequestToBecomeEmployee);
-            await userService.UpdateUserAsync(userRequestToBecomeEmployee2.Id, userRequestToBecomeEmployee2);
-
-            Assert.AreEqual(UserTypes.Employee, userRequestToBecomeEmployee.UserType);
-            Assert.AreEqual(UserTypes.Employee, userRequestToBecomeEmployee2.UserType);
         }
 
         [DataRow(1, "<'newpassone'>", "<'newpassone'>")]
@@ -299,7 +234,7 @@ namespace Test.Unit
             LoggedInAs = userCustomer1;
 
             var exc = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await userService.GetUserAsync(6));
+                => await userService.GetUserAsync(3));
 
             Assert.AreEqual(exc.Message, "Restricted access!");
         }
@@ -326,23 +261,9 @@ namespace Test.Unit
 
             await userService.GetUserAsync(1);
 
-            LoggedInAs = userEmployee1;
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await userService.GetUserAsync(1));
-
-            Assert.AreEqual(ex.Message, "Restricted access!");
-
-            LoggedInAs = userRequestToBecomeEmployee;
-
-            ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await userService.GetUserAsync(1));
-
-            Assert.AreEqual(ex.Message, "Restricted access!");
-
             LoggedInAs = userCustomer1;
 
-            ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
                 => await userService.GetUserAsync(1));
 
             Assert.AreEqual(ex.Message, "Restricted access!");
@@ -357,22 +278,7 @@ namespace Test.Unit
 
             var all = await userService.GetAllUsersAsync();
 
-            Assert.AreEqual(7, all.Count);
-        }
-
-        [TestMethod]
-        public async Task GetAllUsersAsync_ShouldReturn_AllCustomers_And_TheirOwnAccount_WhenEmployee()
-        {
-            await CreateDummyUsersAsync();
-
-            LoggedInAs = userEmployee1;
-
-            var all = await userService.GetAllUsersAsync();
-
             Assert.AreEqual(4, all.Count);
-            Assert.AreEqual(2, all[0].Id);
-            Assert.AreEqual(UserTypes.Customer, all[1].UserType);
-            Assert.AreEqual(UserTypes.Customer, all[2].UserType);
         }
 
         [TestMethod]
@@ -386,30 +292,6 @@ namespace Test.Unit
                 => await userService.GetAllUsersAsync());
 
             Assert.AreEqual(ex.Message, "Restricted access!");
-        }
-
-        [TestMethod]
-        public async Task GetAllEmployeeRequestsAsync_ShouldReturn_AllEmployeeRequestsIfAdmin()
-        {
-            await CreateDummyUsersAsync();
-
-            LoggedInAs = userAdmin;
-
-            var all = await userService.GetAllEmployeeRequestsAsync();
-            Assert.AreEqual(2, all.Count);
-        }
-
-        [TestMethod]
-        public async Task GetAllEmployeeRequestsAsync_ShouldFail_IfNotAdmin()
-        {
-            await CreateDummyUsersAsync();
-
-            LoggedInAs = userEmployee1;
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await userService.GetAllEmployeeRequestsAsync());
-
-            Assert.AreEqual(ex.Message, "Admin only!");
         }
 
         [TestMethod]

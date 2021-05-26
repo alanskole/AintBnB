@@ -58,7 +58,7 @@ namespace Test.Integration
                 Schedule = _factory.accommodation1.Schedule,
             };
 
-            var response = await _client.PostAsync("api/accommodation/10/6",
+            var response = await _client.PostAsync("api/accommodation/10/3",
                 new StringContent(
                     JsonConvert.SerializeObject(ac),
                     Encoding.UTF8,
@@ -238,7 +238,7 @@ namespace Test.Integration
 
             LoggedInAs = _factory.userAdmin;
 
-            var response = await _client.GetAsync("api/accommodation/5/allaccommodations");
+            var response = await _client.GetAsync("api/accommodation/2/allaccommodations");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());

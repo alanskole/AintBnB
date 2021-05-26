@@ -66,7 +66,7 @@ namespace Test.Unit
             var allAcc = await accommodationService.GetAllAccommodationsAsync();
             var allBk = await bookingService.GetAllBookingsAsync();
 
-            Assert.AreEqual(7, allUsr.Count);
+            Assert.AreEqual(4, allUsr.Count);
             Assert.AreEqual(4, allAcc.Count);
             Assert.AreEqual(6, allBk.Count);
 
@@ -78,7 +78,7 @@ namespace Test.Unit
             allAcc = await accommodationService.GetAllAccommodationsAsync();
             allBk = await bookingService.GetAllBookingsAsync();
 
-            Assert.AreEqual(7, allUsr.Count);
+            Assert.AreEqual(4, allUsr.Count);
             Assert.AreEqual(4, allAcc.Count);
             Assert.AreEqual(6, allBk.Count);
         }
@@ -174,17 +174,6 @@ namespace Test.Unit
             Assert.AreEqual(countOfUsr - 1, allUsr.Count);
             Assert.AreEqual(countOfAcc - 1, allAcc.Count);
             Assert.AreEqual(countOfBk - 3, allBk.Count);
-        }
-
-        [TestMethod]
-        public async Task DeleteUserAsync_ShouldFail_IfEmployeeTriesToDeleteAccountAsync()
-        {
-            LoggedInAs = userEmployee1;
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await deletionService.DeleteUserAsync(userEmployee1.Id));
-
-            Assert.AreEqual("Employees cannot delete any accounts, even if it's their own accounts!", ex.Message);
         }
 
         [TestMethod]
@@ -398,17 +387,6 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public void CanAccommodationBeDeleted_ShouldSucceed_IfEmployee()
-        {
-            LoggedInAs = userEmployee1;
-
-            var result = typeof(DeletionService)
-                .GetMethod("CanAccommodationBeDeleted", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            result.Invoke(deletionService, new object[] { accommodation2 });
-        }
-
-        [TestMethod]
         public void CanAccommodationBeDeleted_ShouldSucceed_IfCustomerDeletingTheirOwnAccommodation()
         {
             LoggedInAs = userCustomer2;
@@ -432,7 +410,7 @@ namespace Test.Unit
 
             Assert.AreEqual(ex.InnerException.GetType(), typeof(AccessException));
 
-            Assert.AreEqual($"Administrator, employee or user with ID {accommodation2.Owner.Id} only!", ex.InnerException.Message);
+            Assert.AreEqual($"Administrator or user with ID {accommodation2.Owner.Id} only!", ex.InnerException.Message);
         }
 
         [TestMethod]

@@ -12,7 +12,7 @@ namespace AintBnB.BusinessLogic.Interfaces
         Task<Booking> GetBookingAsync(int id);
 
         /// <summary>Gets all bookings in the database.</summary>
-        /// <returns>A list of all the bookings if method is called by admin or employee. If the method is called by a user it fetches all the bookings of the user</returns>
+        /// <returns>A list of all the bookings if method is called by admin. If the method is called by a user it fetches all the bookings of the user</returns>
         Task<List<Booking>> GetAllBookingsAsync();
 
         /// <summary>Books an accommodation.</summary>

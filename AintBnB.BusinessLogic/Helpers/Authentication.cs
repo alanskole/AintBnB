@@ -35,56 +35,11 @@ namespace AintBnB.BusinessLogic.Helpers
             return false;
         }
 
-        /// <summary>Checks if the logged in user is an employee.</summary>
-        /// <returns>True if an employee is logged in, false otherwise</returns>
-        public static bool EmployeeChecker()
-        {
-            AnyoneLoggedIn();
-
-            if (LoggedInAs.UserType == UserTypes.Employee)
-                return true;
-
-            return false;
-        }
-
-        /// <summary>Checks if the logged in user matching the one in the parameter or is an admin or employee.</summary>
-        /// <returns>True if the user in the parameter is the one logged in, or admin or employee is logged in, false otherwise</returns>
-        /// <param name="user">The user that must be the one that's logged in.</param>
-        public static bool CorrectUserOrAdminOrEmployee(User user)
-        {
-            if (AdminChecker())
-                return true;
-
-            if (user.Id == LoggedInAs.Id)
-                return true;
-
-            if (EmployeeChecker())
-            {
-                if (user.UserType == UserTypes.Customer)
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>Checks if admin or employee is logged in.</summary>
-        /// <returns>True if admin or employee is logged in, false otherwise.</returns>
-        public static bool HasElevatedRights()
-        {
-            if (AdminChecker() || EmployeeChecker())
-                return true;
-
-            return false;
-        }
-
         /// <summary>Checks if the logged in user is admin or the user that matches the one from the parameter.</summary>
         /// <param name="id">The ID of the user to check.</param>
         /// <returns>True if the logged in user has the same ID as the one from the parameter or is admin, false otherwise</returns>
         public static bool CorrectUserOrAdmin(int id)
         {
-            if (EmployeeChecker())
-                return false;
-
             if (AdminChecker())
                 return true;
 
@@ -94,17 +49,17 @@ namespace AintBnB.BusinessLogic.Helpers
             return false;
         }
 
-        /// <summary>Checks if the logged in user is admin, employee, has the same ID as the parameter or the user that matches the user object from the parameter.</summary>
+        /// <summary>Checks if the logged in user is admin, has the same ID as the parameter or the user that matches the user object from the parameter.</summary>
         /// <param name="idOwner">The ID of the user to check.</param>
         /// <param name="user">The object of the user to check.</param>
-        /// <returns>True if the logged in user has the same ID as the one from the parameter, is the same as the user object from the parameter, is employee or admin, false otherwise</returns>
-        public static bool CorrectUserOrOwnerOrAdminOrEmployee(int idOwner, User user)
+        /// <returns>True if the logged in user has the same ID as the one from the parameter, is the same as the user object from the parameter or is admin, false otherwise</returns>
+        public static bool CorrectUserOrOwnerOrAdmin(int idOwner, User user)
         {
             AnyoneLoggedIn();
 
             if (idOwner != LoggedInAs.Id)
             {
-                if (!CorrectUserOrAdminOrEmployee(user))
+                if (!CorrectUserOrAdmin(user.Id))
                     return false;
             }
             return true;
@@ -119,7 +74,7 @@ namespace AintBnB.BusinessLogic.Helpers
 
             if (user.Id != LoggedInAs.Id)
             {
-                if (!HasElevatedRights())
+                if (!AdminChecker())
                     return false;
             }
             return true;
@@ -188,18 +143,13 @@ namespace AintBnB.BusinessLogic.Helpers
         /// <param name="userName">Username of the user that tries to login.</param>
         /// <param name="password">The password of the user that tries to login.</param>
         /// <param name="allUsers">A list of all the in the database.</param>
-        /// <exception cref="LoginException">If the account is of usertype employeerequest that hasn't been apporved yet
-        /// or
-        /// Username and/or password are incorrect</exception>
+        /// <exception cref="LoginException">Username and/or password are incorrect</exception>
         private static void LoginUser(string userName, string password, List<User> allUsers)
         {
             foreach (User user in allUsers)
             {
                 if (string.Equals(user.UserName, userName))
                 {
-                    if (user.UserType == UserTypes.RequestToBeEmployee)
-                        throw new LoginException("The request to have an employee account must be approved by admin before it can be used!");
-
                     if (VerifyPasswordHash(password, user.Password))
                     {
                         LoggedInAs = user;

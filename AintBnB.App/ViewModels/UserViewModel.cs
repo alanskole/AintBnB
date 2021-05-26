@@ -53,17 +53,6 @@ namespace AintBnB.App.ViewModels
             _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
         }
 
-        public async Task MakeEmployeeAsync()
-        {
-            User.UserType = UserTypes.Employee;
-            await UpdateAUserAsync();
-        }
-
-        public void RequestToBecomeEmployee()
-        {
-            User.UserType = UserTypes.RequestToBeEmployee;
-        }
-
         public async Task CreateTheUserAsync()
         {
             if (User.Password != PasswordConfirm)
@@ -87,13 +76,6 @@ namespace AintBnB.App.ViewModels
         public async Task GetAllCustomersAsync()
         {
             _uniquePartOfUri = "allcustomers";
-
-            AllUsers = await GetAllAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
-        }
-
-        public async Task GetAllEmployeeRequestsAsync()
-        {
-            _uniquePartOfUri = "requests";
 
             AllUsers = await GetAllAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
         }

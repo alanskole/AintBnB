@@ -106,22 +106,6 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
-        /// <summary>API GET request that gets all users with usertype employeerequest.</summary>
-        /// <returns>Status 200 and all the users with usertype employeerequest if successful, otherwise status code 404</returns>
-        [HttpGet]
-        [Route("api/[controller]/requests")]
-        public async Task<IActionResult> GetAllEmployeeRequestsAsync()
-        {
-            try
-            {
-                return Ok(await _userService.GetAllEmployeeRequestsAsync());
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
-        }
-
         /// <summary>API GET request to fetch a user from the database.</summary>
         /// <param name="id">The ID of the user to get.</param>
         /// <returns>Status 200 and the requested user if successful, otherwise status code 404</returns>

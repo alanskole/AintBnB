@@ -20,8 +20,6 @@ namespace AintBnB.App.Views
 
         private async void Button_Click_CreateUser(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            EmployeeRequestChecker();
-
             try
             {
                 await UserViewModel.CreateTheUserAsync();
@@ -34,12 +32,6 @@ namespace AintBnB.App.Views
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
-        }
-
-        private void EmployeeRequestChecker()
-        {
-            if (EmpReq.IsChecked == true)
-                UserViewModel.RequestToBecomeEmployee();
         }
     }
 }

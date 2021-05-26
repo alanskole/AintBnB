@@ -22,9 +22,6 @@ namespace Test
         protected IDeletionService deletionService;
         protected IUserService userService;
         protected User userAdmin;
-        protected User userEmployee1;
-        protected User userRequestToBecomeEmployee;
-        protected User userRequestToBecomeEmployee2;
         protected User userCustomer1;
         protected User userCustomer2;
         protected User userCustomer3;
@@ -76,33 +73,6 @@ namespace Test
                 UserType = UserTypes.Admin
             };
 
-            userEmployee1 = new User
-            {
-                UserName = "employee1",
-                Password = HashPassword("aaaaaa"),
-                FirstName = "Emp",
-                LastName = "Loyee",
-                UserType = UserTypes.Employee
-            };
-
-            userRequestToBecomeEmployee = new User
-            {
-                UserName = "empreq",
-                Password = HashPassword("aaaaaa"),
-                FirstName = "Wannabe",
-                LastName = "Employee",
-                UserType = UserTypes.RequestToBeEmployee
-            };
-
-            userRequestToBecomeEmployee2 = new User
-            {
-                UserName = "anotherempreq",
-                Password = HashPassword("aaaaaa"),
-                FirstName = "Letmebe",
-                LastName = "Loyeeemp",
-                UserType = UserTypes.RequestToBeEmployee
-            };
-
             userCustomer1 = new User
             {
                 UserName = "customer1",
@@ -132,11 +102,6 @@ namespace Test
 
             await unitOfWork.UserRepository.CreateAsync(userAdmin);
             await connection.SaveChangesAsync();
-            await unitOfWork.UserRepository.CreateAsync(userEmployee1);
-            await connection.SaveChangesAsync();
-            await unitOfWork.UserRepository.CreateAsync(userRequestToBecomeEmployee);
-            await connection.SaveChangesAsync();
-            await unitOfWork.UserRepository.CreateAsync(userRequestToBecomeEmployee2);
             await connection.SaveChangesAsync();
             await unitOfWork.UserRepository.CreateAsync(userCustomer1);
             await connection.SaveChangesAsync();

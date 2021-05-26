@@ -26,7 +26,7 @@ namespace AintBnB.App.Views
         {
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
+                await AuthenticationViewModel.IsAdminAsync();
 
                 await FillComboboxWithIdsOfAllTheCustomersAsync();
             }

@@ -43,34 +43,10 @@ namespace AintBnB.WebApi.Controllers
                 return BadRequest(ex.Message);
             }
 
-            if (CorrectUserOrAdminOrEmployee(user))
+            if (CorrectUserOrAdmin(user.Id))
                 return Ok("User can access");
             else
                 return BadRequest("Restricted access!");
-        }
-
-        /// <summary>API GET request to check if user that's logged in is admin or employee</summary>
-        /// <returns>Status 200  if true, otherwise status code 400</returns>
-        [HttpGet]
-        [Route("api/[controller]/elevatedrights")]
-        public IActionResult IsUserAdminOrEmployee()
-        {
-            if (HasElevatedRights())
-                return Ok("User can access");
-            else
-                return BadRequest("User is neither admin or employee!");
-        }
-
-        /// <summary>API GET request to check if the user that's logged in is employee</summary>
-        /// <returns>Status 200 if true, otherwise status code 400</returns>
-        [HttpGet]
-        [Route("api/[controller]/employee")]
-        public IActionResult IsEmployee()
-        {
-            if (EmployeeChecker())
-                return Ok("User is employee");
-            else
-                return BadRequest("User is not employee!");
         }
 
         /// <summary>API GET request to check if the user that's logged in is admin</summary>

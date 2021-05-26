@@ -99,7 +99,7 @@ namespace Test.Integration
                 UserType = UserTypes.Customer
             };
 
-            var response = await _client.PutAsync("api/user/6",
+            var response = await _client.PutAsync("api/user/3",
                 new StringContent(
                     JsonConvert.SerializeObject(usr),
                     Encoding.UTF8,
@@ -156,7 +156,7 @@ namespace Test.Integration
         public async Task GetAllCustomers_ShouldReturn_SuccessStatus()
         {
 
-            LoggedInAs = _factory.userEmployee1;
+            LoggedInAs = _factory.userAdmin;
 
             var response = await _client.GetAsync("api/user/allcustomers");
 
@@ -177,34 +177,11 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetAllRequestsToBecomeEmployee_ShouldReturn_SuccessStatus()
-        {
-
-            LoggedInAs = _factory.userAdmin;
-
-            var response = await _client.GetAsync("api/user/requests");
-
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-        }
-
-        [TestMethod]
-        public async Task GetAllRequestsToBecomeEmployee_ShouldReturn_NotFoundIfError()
-        {
-            LoggedInAs = _factory.userEmployee1;
-
-            var response = await _client.GetAsync("api/user/requests");
-
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-        }
-
-        [TestMethod]
         public async Task DeleteUser_ShouldReturn_SuccessStatus()
         {
             LoggedInAs = _factory.userAdmin;
 
-            var response = await _client.DeleteAsync("api/user/6");
+            var response = await _client.DeleteAsync("api/user/3");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());

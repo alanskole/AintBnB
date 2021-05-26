@@ -33,7 +33,7 @@ namespace Test.Integration
 
             string startDate = _factory.accommodation1.Schedule.Keys.Last();
 
-            var response = await _client.GetAsync("api/booking/" + startDate + "/6/1/1");
+            var response = await _client.GetAsync("api/booking/" + startDate + "/3/1/1");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
@@ -107,7 +107,7 @@ namespace Test.Integration
         {
             LoggedInAs = _factory.userCustomer2;
 
-            var response = await _client.GetAsync("api/booking/6/bookingsownaccommodation");
+            var response = await _client.GetAsync("api/booking/3/bookingsownaccommodation");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
