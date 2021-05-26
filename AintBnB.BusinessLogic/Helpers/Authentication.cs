@@ -27,7 +27,14 @@ namespace AintBnB.BusinessLogic.Helpers
         /// <returns>True if admin is logged in, false otherwise</returns>
         public static bool AdminChecker()
         {
-            AnyoneLoggedIn();
+            try
+            {
+                AnyoneLoggedIn();
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
             if (LoggedInAs.UserType == UserTypes.Admin)
                 return true;
@@ -43,7 +50,7 @@ namespace AintBnB.BusinessLogic.Helpers
             if (AdminChecker())
                 return true;
 
-            if (id == LoggedInAs.Id)
+            if (LoggedInAs != null && id == LoggedInAs.Id)
                 return true;
 
             return false;

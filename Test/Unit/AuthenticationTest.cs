@@ -69,14 +69,11 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public void AdminChecker_ShouldFail_IfNoOneIsLoggedIn()
+        public void AdminChecker_ShouldReturnFalse_IfNoOneIsLoggedIn()
         {
             LoggedInAs = null;
 
-            var ex = Assert.ThrowsException<LoginException>(()
-                => AdminChecker());
-
-            Assert.AreEqual("Not logged in!", ex.Message);
+            Assert.IsFalse(AdminChecker());
         }
 
         [TestMethod]
@@ -104,10 +101,7 @@ namespace Test.Unit
         {
             LoggedInAs = null;
 
-            var ex = Assert.ThrowsException<LoginException>(()
-                => CorrectUserOrAdmin(customer1.Id));
-
-            Assert.AreEqual("Not logged in!", ex.Message);
+            Assert.IsFalse(CorrectUserOrAdmin(customer1.Id));
         }
 
         [TestMethod]
@@ -124,17 +118,6 @@ namespace Test.Unit
             LoggedInAs = customer1;
 
             Assert.IsFalse(AdminChecker());
-        }
-
-        [TestMethod]
-        public void AdminChecker_ShouldFail_NoOneLoggedIn()
-        {
-            LoggedInAs = null;
-
-            var ex = Assert.ThrowsException<LoginException>(()
-                => AdminChecker());
-
-            Assert.AreEqual("Not logged in!", ex.Message);
         }
 
         [TestMethod]
