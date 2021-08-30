@@ -10,47 +10,22 @@ namespace AintBnB.BusinessLogic.Helpers
 {
     internal static class Authentication
     {
-        /// <summary>A static variable that contains the user that is logged in.</summary>
-        public static User LoggedInAs;
-
-
-        /// <summary>Checks if anyone is logged in.</summary>
-        /// <exception cref="LoginException">Not logged in!</exception>
-        public static void AnyoneLoggedIn()
-        {
-            if (LoggedInAs == null)
-                throw new LoginException("Not logged in!");
-        }
-
-
         /// <summary>Checks if the logged in user is admin.</summary>
         /// <returns>True if admin is logged in, false otherwise</returns>
-        public static bool AdminChecker()
+        public static bool AdminChecker(UserTypes userType)
         {
-            try
-            {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            if (LoggedInAs.UserType == UserTypes.Admin)
+            if (userType == UserTypes.Admin)
                 return true;
 
             return false;
         }
 
         /// <summary>Checks if the logged in user is admin or the user that matches the one from the parameter.</summary>
-        /// <param name="id">The ID of the user to check.</param>
+        /// <param name="idOwner">The ID of the user to check.</param>
         /// <returns>True if the logged in user has the same ID as the one from the parameter or is admin, false otherwise</returns>
-        public static bool CorrectUserOrAdmin(int id)
+        public static bool CorrectUserOrAdmin(int idOwner, int loggedInAsId, UserTypes userType)
         {
-            if (AdminChecker())
-                return true;
-
-            if (LoggedInAs != null && id == LoggedInAs.Id)
+            if (AdminChecker(userType) ||idOwner == loggedInAsId)
                 return true;
 
             return false;
@@ -60,28 +35,24 @@ namespace AintBnB.BusinessLogic.Helpers
         /// <param name="idOwner">The ID of the user to check.</param>
         /// <param name="user">The object of the user to check.</param>
         /// <returns>True if the logged in user has the same ID as the one from the parameter, is the same as the user object from the parameter or is admin, false otherwise</returns>
-        public static bool CorrectUserOrOwnerOrAdmin(int idOwner, User user)
+        public static bool CorrectUserOrOwnerOrAdmin(int idOwner, int bookerId, int loggedInAsId, UserTypes userTypeLoggedInAs)
         {
-            AnyoneLoggedIn();
-
-            if (idOwner != LoggedInAs.Id)
+            if (idOwner != loggedInAsId && bookerId != loggedInAsId)
             {
-                if (!CorrectUserOrAdmin(user.Id))
+                if (!CorrectUserOrAdmin(idOwner, loggedInAsId, userTypeLoggedInAs))
                     return false;
             }
             return true;
         }
 
-        public static bool CheckIfUserIsAllowedToPerformAction(User user)
+        public static bool CheckIfUserIsAllowedToPerformAction(User user, int idOwner)
         {
-            AnyoneLoggedIn();
-
             if (user.UserType != UserTypes.Customer)
                 return false;
 
-            if (user.Id != LoggedInAs.Id)
+            if (user.Id != idOwner)
             {
-                if (!AdminChecker())
+                if (!AdminChecker(user.UserType))
                     return false;
             }
             return true;
@@ -124,7 +95,7 @@ namespace AintBnB.BusinessLogic.Helpers
         /// <summary>Logs out the user.</summary>
         public static void Logout()
         {
-            LoggedInAs = null;
+            //LoggedInAs = null;
         }
 
         /// <summary>Tries to login a user.</summary>
@@ -132,39 +103,30 @@ namespace AintBnB.BusinessLogic.Helpers
         /// <param name="password">The password of the user that tries to login.</param>
         /// <param name="allUsers">A list of all the in the database.</param>
         /// <exception cref="AlreadyLoggedInException">If the user is already logged in</exception>
-        public static void TryToLogin(string userName, string password, List<User> allUsers)
+        public static Tuple<int, UserTypes> TryToLogin(string userName, string password, List<User> allUsers)
         {
-            try
-            {
-                AnyoneLoggedIn();
-            }
-            catch (Exception)
-            {
-                LoginUser(userName, password, allUsers);
-                return;
-            }
-            throw new AlreadyLoggedInException();
-        }
-
-        /// <summary>Logins the user.</summary>
-        /// <param name="userName">Username of the user that tries to login.</param>
-        /// <param name="password">The password of the user that tries to login.</param>
-        /// <param name="allUsers">A list of all the in the database.</param>
-        /// <exception cref="LoginException">Username and/or password are incorrect</exception>
-        private static void LoginUser(string userName, string password, List<User> allUsers)
-        {
-            foreach (User user in allUsers)
+            foreach (var user in allUsers)
             {
                 if (string.Equals(user.UserName, userName))
                 {
                     if (VerifyPasswordHash(password, user.Password))
                     {
-                        LoggedInAs = user;
-                        return;
+                        return new Tuple<int, UserTypes>(user.Id, user.UserType);
                     }
                 }
             }
             throw new LoginException("Username and/or password not correct!");
+
+            //try
+            //{
+            //    AnyoneLoggedIn();
+            //}
+            //catch (Exception)
+            //{
+            //    LoginUser(userName, password, allUsers);
+            //    return;
+            //}
+            //throw new AlreadyLoggedInException();
         }
     }
 }

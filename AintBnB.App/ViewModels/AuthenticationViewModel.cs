@@ -2,8 +2,11 @@
 using AintBnB.App.Helpers;
 using AintBnB.Core.Models;
 using System;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
@@ -47,9 +50,20 @@ namespace AintBnB.App.ViewModels
 
             _uniquePartOfUri = "login";
 
+            await GetCsrfToken(_clientProvider);
+
             var userAndPass = new string[] { User.UserName.Trim(), User.Password.Trim() };
 
             await PostAsync(_uri + _uniquePartOfUri, userAndPass, _clientProvider);
+
+            var responseCookies = _clientProvider.clientHandler.CookieContainer.GetCookies(new Uri(_uri + _uniquePartOfUri)).Cast<Cookie>();
+            try
+            {
+                localSettings.Values["myCoockie"] = await EncryptCookieValueAsync(responseCookies.Single(o => o.Name == "myCoockie").Value);
+            }
+            catch
+            {
+            }
         }
 
         private void CheckForEmptyFields()
@@ -62,22 +76,44 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = "loggedin";
 
-            var user = await GetAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            IdOfLoggedInUser = user.Id;
+            IdOfLoggedInUser = await GetAsync<int>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task IsAdminAsync()
         {
             _uniquePartOfUri = "admin";
 
-            await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+            try
+            {
+                await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         public async Task LogoutFromAppAsync()
         {
             _uniquePartOfUri = "logout";
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
+
+            if (localSettings.Values.ContainsKey("myCoockie"))
+            {
+                var cookieObj = await DecryptCookieValueAsync(localSettings.Values["myCoockie"].ToString());
+                if (cookieObj != null)
+                {
+                    var authCookie = new Cookie("myCoockie", cookieObj.ToString());
+                    authCookie.Expires = DateTime.Now.Subtract(TimeSpan.FromDays(1));
+                    localSettings.Values.Remove("myCoockie");
+                }
+            }
         }
     }
 }

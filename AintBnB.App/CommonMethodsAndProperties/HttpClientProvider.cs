@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 
 namespace AintBnB.App.CommonMethodsAndProperties
 {
@@ -13,6 +14,7 @@ namespace AintBnB.App.CommonMethodsAndProperties
         {
             clientHandler = new HttpClientHandler();
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            clientHandler.CookieContainer = new CookieContainer();
             client = new HttpClient(clientHandler);
         }
     }

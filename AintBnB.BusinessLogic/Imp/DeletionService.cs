@@ -5,7 +5,6 @@ using AintBnB.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BusinessLogic.Helpers.DateHelper;
 
 namespace AintBnB.BusinessLogic.Imp
@@ -27,19 +26,11 @@ namespace AintBnB.BusinessLogic.Imp
         public async Task DeleteUserAsync(int id)
         {
             var user = await _unitOfWork.UserRepository.ReadAsync(id);
-            if (CorrectUserOrAdmin(id))
-            {
-                CheckIfUserCanBeDeleted(user);
-                await DeleteUsersAccommodationsAsync(id);
-                await DeleteUsersBookingsAsync(id);
-                await _unitOfWork.UserRepository.DeleteAsync(id);
-                await _unitOfWork.CommitAsync();
-
-                if (!AdminChecker())
-                    Logout();
-            }
-            else
-                throw new AccessException($"Administrator or user with ID {id} only!");
+            CheckIfUserCanBeDeleted(user);
+            await DeleteUsersAccommodationsAsync(id);
+            await DeleteUsersBookingsAsync(id);
+            await _unitOfWork.UserRepository.DeleteAsync(id);
+            await _unitOfWork.CommitAsync();
         }
 
         /// <summary>Checks if the user can be deleted.</summary>
@@ -66,8 +57,6 @@ namespace AintBnB.BusinessLogic.Imp
             {
                 if (accommodation.Owner.Id == id)
                 {
-                    CanAccommodationBeDeleted(accommodation);
-
                     try
                     {
                         await CanAccommodationBookingsBeDeletedAsync(accommodation.Id);
@@ -107,7 +96,7 @@ namespace AintBnB.BusinessLogic.Imp
                 {
                     try
                     {
-                        await CanTheBookingBeDeletedAsync(booking.Id, booking);
+                        await DeadLineExpirationAsync(id, booking.Accommodation.CancellationDeadlineInDays);
                     }
                     catch (Exception)
                     {
@@ -128,26 +117,14 @@ namespace AintBnB.BusinessLogic.Imp
         {
             var accommodation = await _unitOfWork.AccommodationRepository.ReadAsync(id);
 
-            CanAccommodationBeDeleted(accommodation);
+            if (accommodation == null)
+                throw new IdNotFoundException("Accommodation", accommodation.Id);
 
             await CanAccommodationBookingsBeDeletedAsync(accommodation.Id);
 
             await _unitOfWork.AccommodationRepository.DeleteAsync(id);
             DeletePicturesOfAccommodation(id);
             await _unitOfWork.CommitAsync();
-        }
-
-        /// <summary>Determines whether the accommodation can be deleted.</summary>
-        /// <param name="accommodation">The accommodation to be deleted.</param>
-        /// <exception cref="IdNotFoundException">Accommodation not found in the database</exception>
-        /// <exception cref="AccessException">If the user that tries to delete the accommodation isn't the owner or admin</exception>
-        private void CanAccommodationBeDeleted(Accommodation accommodation)
-        {
-            if (accommodation == null)
-                throw new IdNotFoundException("Accommodation", accommodation.Id);
-
-            if (!CorrectUserOrAdmin(accommodation.Owner.Id))
-                throw new AccessException($"Administrator or user with ID {accommodation.Owner.Id} only!");
         }
 
         /// <summary>Determines whether the bookings of the accommodation to be deleted can be cancelled.</summary>
@@ -163,7 +140,7 @@ namespace AintBnB.BusinessLogic.Imp
                 {
                     try
                     {
-                        await CanTheBookingBeDeletedAsync(booking.Id, booking);
+                        await DeadLineExpirationAsync(booking.Id, booking.Accommodation.CancellationDeadlineInDays);
                     }
                     catch (Exception)
                     {
@@ -188,24 +165,13 @@ namespace AintBnB.BusinessLogic.Imp
             if (booking == null)
                 throw new IdNotFoundException("Booking", id);
 
-            await CanTheBookingBeDeletedAsync(id, booking);
+            await DeadLineExpirationAsync(id, booking.Accommodation.CancellationDeadlineInDays);
 
             await DeleteTheBookingAsync(id);
 
             await _unitOfWork.CommitAsync();
         }
 
-        /// <summary>Determines whether the booking can be deleted.</summary>
-        /// <param name="id">The ID of the booking to be deleted.</param>
-        /// <param name="booking">The booking object.</param>
-        /// <exception cref="AccessException">If the user that tires to delete the booking isn't the booker, the owner of the accommodation that was booked or admin</exception>
-        private async Task CanTheBookingBeDeletedAsync(int id, Booking booking)
-        {
-            if (CorrectUserOrOwnerOrAdmin(booking.Accommodation.Owner.Id, booking.BookedBy))
-                await DeadLineExpirationAsync(id, booking.Accommodation.CancellationDeadlineInDays);
-            else
-                throw new AccessException();
-        }
 
         /// <summary>Checks if the cancellation deadline has expired.</summary>
         /// <param name="id">The ID of the booking to be deleted.</param>

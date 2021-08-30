@@ -11,9 +11,14 @@ namespace AintBnB.BusinessLogic.Interfaces
         /// <returns>The booking object</returns>
         Task<Booking> GetBookingAsync(int id);
 
-        /// <summary>Gets all bookings in the database.</summary>
-        /// <returns>A list of all the bookings if method is called by admin. If the method is called by a user it fetches all the bookings of the user</returns>
-        Task<List<Booking>> GetAllBookingsAsync();
+        /// <summary>Gets all the bookings in the database.</summary>
+        /// <returns>A list of all the bookings</returns>
+        Task<List<Booking>> GetAllInSystemAsync();
+
+        /// <summary>Gets all bookings in the database belonging to a user.</summary>
+        /// <param name="userid">The user-ID of the user to get the bookings of.</param>
+        /// <returns>A list of all the bookings of the user</returns>
+        Task<List<Booking>> GetOnlyOnesOwnedByUserAsync(int userId);
 
         /// <summary>Books an accommodation.</summary>
         /// <param name="startDate">The start date of the booking.</param>

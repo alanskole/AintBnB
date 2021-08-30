@@ -28,7 +28,6 @@ namespace AintBnB.App.Views
             try
             {
                 await WorldViewModel.GetAllCountriesInTheWorldAsync();
-
             }
             catch (Exception ex)
             {

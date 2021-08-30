@@ -1,6 +1,5 @@
 ﻿using AintBnB.App.ViewModels;
 using System;
-using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;

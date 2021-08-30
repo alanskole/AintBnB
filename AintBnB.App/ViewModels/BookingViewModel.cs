@@ -4,6 +4,7 @@ using AintBnB.Core.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
@@ -78,12 +79,20 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = StartDate + "/" + Booking.BookedBy.Id + "/" + Nights + "/" + Booking.Accommodation.Id;
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
+
             Booking = await GetAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task UpdateBookingAsync()
         {
             _uniquePartOfUri = StartDate + "/" + Nights + "/" + Booking.Id;
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
 
             Booking = await GetAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
         }
@@ -92,6 +101,10 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = "rate/" + Booking.Id + "/" + Booking.Rating;
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
+
             await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
         }
 
@@ -99,11 +112,15 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = Booking.Id.ToString();
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             Booking = await GetAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task GetAllBookingsAsync()
         {
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             AllBookings = await GetAllAsync<Booking>(_uri, _clientProvider);
         }
 
@@ -111,12 +128,18 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = UserId + "/" + "bookingsownaccommodation";
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             AllBookings = await GetAllAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task DeleteABookingAsync()
         {
             _uniquePartOfUri = Booking.Id.ToString();
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
 
             await DeleteAsync(_uri + _uniquePartOfUri, _clientProvider);
         }

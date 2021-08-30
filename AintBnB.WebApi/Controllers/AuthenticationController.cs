@@ -1,13 +1,19 @@
 ﻿using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Core.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.WebApi.Helpers.CurrentUserDetails;
 
 namespace AintBnB.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     public class AuthenticationController : ControllerBase
     {
         private IUserService _userService;
@@ -21,12 +27,10 @@ namespace AintBnB.WebApi.Controllers
         /// <returns>Status 200 and the user if successful, otherwise status code 404</returns>
         [HttpGet]
         [Route("api/[controller]/loggedin")]
-        public IActionResult GetLoggedInUser()
+        public IActionResult GetLoggedInUserId()
         {
-            if (LoggedInAs == null)
-                return NotFound("No one logged in");
-
-            return Ok(LoggedInAs);
+            var id = GetIdOfLoggedInUser(HttpContext);
+            return Ok(id);
         }
 
         [HttpGet]
@@ -43,7 +47,7 @@ namespace AintBnB.WebApi.Controllers
                 return BadRequest(ex.Message);
             }
 
-            if (CorrectUserOrAdmin(user.Id))
+            if (CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), user.UserType))
                 return Ok("User can access");
             else
                 return BadRequest("Restricted access!");
@@ -55,7 +59,9 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]/admin")]
         public IActionResult IsUserAdmin()
         {
-            if (AdminChecker())
+            var userType = GetUsertypeOfLoggedInUser(HttpContext);
+
+            if (AdminChecker(userType))
                 return Ok("User is admin");
             else
                 return BadRequest("User is not admin!");
@@ -65,14 +71,10 @@ namespace AintBnB.WebApi.Controllers
         /// <returns>Status 200 if successful, otherwise status code 400</returns>
         [HttpGet]
         [Route("api/[controller]/logout")]
-        public IActionResult LogoutUser()
+        public async Task<IActionResult> LogoutUserAsync()
         {
-            Logout();
-
-            if (LoggedInAs == null)
-                return Ok("Logout ok!");
-            else
-                return BadRequest("Failed to logout!");
+            await HttpContext.SignOutAsync();
+            return Ok("Logout ok!");
         }
 
 
@@ -80,12 +82,24 @@ namespace AintBnB.WebApi.Controllers
         /// <param name="usernameAndPassword">An array with the username and password of the user that tries to log in.</param>
         /// <returns>Status 200 if successful, otherwise status code 404</returns>
         [HttpPost]
+        [AllowAnonymous]
         [Route("api/[controller]/login")]
         public async Task<IActionResult> LogInAsync([FromBody] string[] usernameAndPassword)
         {
             try
             {
-                TryToLogin(usernameAndPassword[0], usernameAndPassword[1], await _userService.GetAllUsersForLoginAsync());
+                var idAndUsertypeOfUserLoggingIn = TryToLogin(usernameAndPassword[0], usernameAndPassword[1], await _userService.GetAllUsersAsync());
+
+                var userClaims = new List<Claim>()
+                {
+                    new Claim(ClaimTypes.NameIdentifier, idAndUsertypeOfUserLoggingIn.Item1.ToString()),
+                    new Claim(ClaimTypes.Role, idAndUsertypeOfUserLoggingIn.Item2.ToString())
+                };
+
+                var claimsId = new ClaimsIdentity(userClaims, "User Identity");
+
+                var userPrincipal = new ClaimsPrincipal(new[] { claimsId });
+                await HttpContext.SignInAsync(userPrincipal);
 
                 return Ok("Login ok!");
             }

@@ -3,6 +3,7 @@ using AintBnB.App.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
@@ -67,12 +68,16 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = "countries";
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             AllCountries = await GetAllAsync<string>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task GetAllCitiesOfACountryAsync()
         {
             _uniquePartOfUri = "cities/" + Country;
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
 
             AllCitiesOfACountry = await GetAllAsync<string>(_uri + _uniquePartOfUri, _clientProvider);
         }

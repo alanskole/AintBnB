@@ -2,6 +2,7 @@
 using AintBnB.App.Helpers;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
@@ -63,6 +64,10 @@ namespace AintBnB.App.ViewModels
         public async Task ChangePasswordAsync()
         {
             var elements = new string[] { Old, UserId.ToString(), New1, New2 };
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
 
             await PostAsync(_uri, elements, _clientProvider);
         }

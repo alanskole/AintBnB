@@ -4,6 +4,7 @@ using AintBnB.Core.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
@@ -120,6 +121,11 @@ namespace AintBnB.App.ViewModels
         public async Task CreateAccommodationAsync()
         {
             _uniquePartOfUri = DaysSchedule.ToString() + "/" + UserId.ToString();
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
+
             await PostAsync(_uri + _uniquePartOfUri, Accommodation, _clientProvider);
         }
 
@@ -127,11 +133,15 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = Accommodation.Id.ToString();
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             Accommodation = await GetAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task GetAllAccommodationsAsync()
         {
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             AllAccommodations = await GetAllAsync<Accommodation>(_uri, _clientProvider);
         }
 
@@ -139,12 +149,17 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = UserId.ToString() + "/allaccommodations";
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             AllAccommodations = await GetAllAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task GetAvailableAsync()
         {
             _uniquePartOfUri = _accommodation.Address.Country + "/" + _accommodation.Address.City + "/" + FromDate + "/" + Nights.ToString();
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             AllAccommodations = await GetAllAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
@@ -152,12 +167,19 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = "sort/" + SortBy + "/" + AscOrDesc;
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             AllAccommodations = await SortListAsync(_uri + _uniquePartOfUri, AllAccommodations, _clientProvider);
         }
 
         public async Task DeleteAccommodationAsync()
         {
             _uniquePartOfUri = Accommodation.Id.ToString();
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
+
             await DeleteAsync(_uri + _uniquePartOfUri, _clientProvider);
         }
 
@@ -165,12 +187,20 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = Accommodation.Id.ToString();
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
+
             await PutAsync(_uri + _uniquePartOfUri, Accommodation, _clientProvider);
         }
 
         public async Task ExpandScheduleOfAccommodationAsync()
         {
             _uniquePartOfUri = Accommodation.Id.ToString() + "/" + ExpandScheduleByDays.ToString();
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
 
             await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
         }

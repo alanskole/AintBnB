@@ -16,6 +16,11 @@ namespace AintBnB.BusinessLogic.Interfaces
         /// <param name="imageId">The Id of the image to delete.</param>
         Task RemovePictureAsync(int imageId);
 
+        /// <summary>Gets an image by id.</summary>
+        /// <param name="imageId">The Id of the image to fetch.</param>
+        /// <returns>An image object with the requested image</returns>
+        Task<Image> GetPicture(int imageId);
+
         /// <summary>Gets a list of all the images of an accommodation.</summary>
         /// <param name="accommoationId">The Id of the accommodation to get all the images of.</param>
         /// <returns>A list with all the images of an accommodation</returns>

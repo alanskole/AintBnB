@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.AllCountriesAndCities;
@@ -6,6 +7,7 @@ using static AintBnB.BusinessLogic.Helpers.AllCountriesAndCities;
 namespace AintBnB.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     public class WorldController : Controller
     {
 

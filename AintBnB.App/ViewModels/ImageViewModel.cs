@@ -9,6 +9,7 @@ using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
@@ -81,12 +82,18 @@ namespace AintBnB.App.ViewModels
         }
         public async Task CreatePictureAsync()
         {
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
+
             await PostAsync(_uri, Image, _clientProvider);
         }
 
         public async Task GetAllPicturesAsync()
         {
             _uniquePartOfUri = _image.Accommodation.Id.ToString();
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
 
             AllImages = await GetAllAsync<Image>(_uri + _uniquePartOfUri, _clientProvider);
 
@@ -165,6 +172,10 @@ namespace AintBnB.App.ViewModels
         public async Task DeleteAPictureAsync()
         {
             _uniquePartOfUri = _imageId.ToString();
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
 
             await DeleteAsync(_uri + _uniquePartOfUri, _clientProvider);
         }

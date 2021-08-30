@@ -1,11 +1,16 @@
 ﻿using AintBnB.BusinessLogic.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using static AintBnB.WebApi.Helpers.CurrentUserDetails;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
+using AintBnB.BusinessLogic.CustomExceptions;
 
 namespace AintBnB.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     public class BookingController : ControllerBase
     {
         private IBookingService _bookingService;
@@ -33,10 +38,15 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                var booker = await _userService.GetUserAsync(bookerId);
                 var accommodation = await _accommodationService.GetAccommodationAsync(accommodationId);
+                var booker = await _userService.GetUserAsync(bookerId);
+
+                if (!CheckIfUserIsAllowedToPerformAction(booker, accommodation.Owner.Id))
+                    return BadRequest($"Must be performed by a customer with ID {booker.Id}, or by admin on behalf of a customer with ID {booker.Id}!");
+
                 var booking = await _bookingService.BookAsync(startDate, booker, nights, accommodation);
                 return Ok(booking);
+
             }
             catch (Exception ex)
             {
@@ -53,9 +63,14 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]/{newStartDate}/{nights}/{bookingId}")]
         public async Task<IActionResult> UpdateBookingAsync([FromRoute] string newStartDate, [FromRoute] int nights, [FromRoute] int bookingId)
         {
+            var currentUser = await _userService.GetUserAsync(GetIdOfLoggedInUser(HttpContext));
+            var booking = await _bookingService.GetBookingAsync(bookingId);
+
+            if (!CheckIfUserIsAllowedToPerformAction(currentUser, booking.Accommodation.Owner.Id))
+                return BadRequest($"Must be performed by the booker, or by admin on behalf of the booker!");
+
             try
             {
-                var booking = await _bookingService.GetBookingAsync(bookingId);
                 await _bookingService.UpdateBookingAsync(newStartDate, nights, bookingId);
                 return Ok(booking);
             }
@@ -73,6 +88,11 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]/rate/{bookingId}/{rating}")]
         public async Task<IActionResult> LeaveRatingAsync([FromRoute] int bookingId, [FromRoute] int rating)
         {
+            var booker = await _bookingService.GetBookingAsync(bookingId);
+
+            if (booker.Id != GetIdOfLoggedInUser(HttpContext))
+                return BadRequest(new AccessException("Only the booker can leave a rating!").Message);
+
             try
             {
                 await _bookingService.RateAsync(bookingId, rating);
@@ -93,7 +113,12 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                return Ok(await _bookingService.GetBookingAsync(id));
+                var booking = await _bookingService.GetBookingAsync(id);
+
+                if (CorrectUserOrOwnerOrAdmin(booking.Accommodation.Owner.Id, booking.BookedBy.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return Ok(booking);
+                else
+                    return NotFound(new AccessException().Message);
             }
             catch (Exception ex)
             {
@@ -108,14 +133,21 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]/{id}/bookingsownaccommodation")]
         public async Task<IActionResult> GetBookingsOnOwnedAccommodationsAsync([FromRoute] int id)
         {
-            try
+            var user = await _userService.GetUserAsync(id);
+
+            if (CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
             {
-                return Ok(await _bookingService.GetBookingsOfOwnedAccommodationAsync(id));
+                try
+                {
+                    return Ok(await _bookingService.GetBookingsOfOwnedAccommodationAsync(id));
+                }
+                catch (Exception ex)
+                {
+                    return NotFound(ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+            else
+                return NotFound(new AccessException().Message);
         }
 
         /// <summary>API GET request to return all the bookings from the database</summary>
@@ -126,7 +158,12 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                return Ok(await _bookingService.GetAllBookingsAsync());
+                var user = await _userService.GetUserAsync(GetIdOfLoggedInUser(HttpContext));
+
+                if (AdminChecker(user.UserType))
+                    return Ok(await _bookingService.GetAllInSystemAsync());
+                else
+                    return Ok(await _bookingService.GetOnlyOnesOwnedByUserAsync(GetIdOfLoggedInUser(HttpContext)));
             }
             catch (Exception ex)
             {
@@ -143,7 +180,13 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
+                var booking = await _bookingService.GetBookingAsync(id);
+
+                if (!CorrectUserOrOwnerOrAdmin(booking.Accommodation.Owner.Id, booking.BookedBy.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return BadRequest(new AccessException().Message);
+
                 await _deletionService.DeleteBookingAsync(id);
+
                 return Ok("Deletion ok");
             }
             catch (Exception ex)

@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.AllCountriesAndCities;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BusinessLogic.Helpers.DateHelper;
 using static AintBnB.BusinessLogic.Helpers.Regexp;
 
@@ -40,18 +39,14 @@ namespace AintBnB.BusinessLogic.Imp
             if (daysToCreateScheduleFor < 1)
                 throw new ParameterException("Days to create the schedule for", "less than one");
 
-            if (CheckIfUserIsAllowedToPerformAction(owner))
-            {
-                var accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight, cancellationDeadlineInDays);
+            var accommodation = new Accommodation(owner, address, squareMeters, amountOfBedroooms, kilometersFromCenter, description, pricePerNight, cancellationDeadlineInDays);
 
-                await ValidateAccommodationAsync(accommodation);
+            await ValidateAccommodationAsync(accommodation);
 
-                CreateScheduleForXAmountOfDays(accommodation, daysToCreateScheduleFor);
-                await _unitOfWork.AccommodationRepository.CreateAsync(accommodation);
-                await _unitOfWork.CommitAsync();
-                return accommodation;
-            }
-            throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin on behalf of a customer with ID {owner.Id}!");
+            CreateScheduleForXAmountOfDays(accommodation, daysToCreateScheduleFor);
+            await _unitOfWork.AccommodationRepository.CreateAsync(accommodation);
+            await _unitOfWork.CommitAsync();
+            return accommodation;
         }
 
         /// <summary>Validates the properties of an accommodation.</summary>
@@ -137,8 +132,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <exception cref="IdNotFoundException">If the ID doesn't match any accommodation-IDs from the database</exception>
         public async Task<Accommodation> GetAccommodationAsync(int id)
         {
-            AnyoneLoggedIn();
-
             var acc = await _unitOfWork.AccommodationRepository.ReadAsync(id);
 
             if (acc == null)
@@ -152,8 +145,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <exception cref="NoneFoundInDatabaseTableException">No accommodations found in the database</exception>
         public async Task<List<Accommodation>> GetAllAccommodationsAsync()
         {
-            AnyoneLoggedIn();
-
             var all = await _unitOfWork.AccommodationRepository.GetAllAsync();
 
             if (all.Count == 0)
@@ -168,8 +159,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <exception cref="NoneFoundInDatabaseTableException">The user doesn't have any accommodations</exception>
         public async Task<List<Accommodation>> GetAllOwnedAccommodationsAsync(int userid)
         {
-            AnyoneLoggedIn();
-
             var all = new List<Accommodation>();
 
             await FindAllAccommodationsOfAUserAsync(all, userid);
@@ -201,22 +190,16 @@ namespace AintBnB.BusinessLogic.Imp
             var acc = await _unitOfWork.AccommodationRepository.ReadAsync(id);
 
             var owner = acc.Owner;
+            await GetAccommodationAsync(id);
 
-            if (CorrectUserOrAdmin(owner.Id))
-            {
-                await GetAccommodationAsync(id);
+            accommodation.Description = accommodation.Description.Trim();
 
-                accommodation.Description = accommodation.Description.Trim();
+            ValidateUpdatedFields(accommodation.SquareMeters, accommodation.Description, accommodation.PricePerNight, accommodation.CancellationDeadlineInDays);
 
-                ValidateUpdatedFields(accommodation.SquareMeters, accommodation.Description, accommodation.PricePerNight, accommodation.CancellationDeadlineInDays);
+            accommodation.Id = id;
 
-                accommodation.Id = id;
-
-                await _unitOfWork.AccommodationRepository.UpdateAsync(id, accommodation);
-                await _unitOfWork.CommitAsync();
-            }
-            else
-                throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin on behalf of a customer with ID {owner.Id}!");
+            await _unitOfWork.AccommodationRepository.UpdateAsync(id, accommodation);
+            await _unitOfWork.CommitAsync();
         }
 
         /// <summary>Validates the updated accommodation properties.</summary>
@@ -254,24 +237,18 @@ namespace AintBnB.BusinessLogic.Imp
                 throw new ParameterException("Days", "less than one");
 
             var acc = await GetAccommodationAsync(id);
-            var owner = acc.Owner;
 
-            if (CorrectUserOrAdmin(owner.Id))
-            {
-                var dateAndStatus = new SortedDictionary<string, bool>();
+            var dateAndStatus = new SortedDictionary<string, bool>();
 
-                var fromDate = DateTime.Parse(acc.Schedule.Keys.Last()).AddDays(1);
+            var fromDate = DateTime.Parse(acc.Schedule.Keys.Last()).AddDays(1);
 
-                AddDaysToDateAndAddToSchedule(days, fromDate, dateAndStatus);
+            AddDaysToDateAndAddToSchedule(days, fromDate, dateAndStatus);
 
-                MergeTwoSortedDictionaries(acc.Schedule, dateAndStatus);
+            MergeTwoSortedDictionaries(acc.Schedule, dateAndStatus);
 
-                await _unitOfWork.AccommodationRepository.UpdateAsync(id, acc);
+            await _unitOfWork.AccommodationRepository.UpdateAsync(id, acc);
 
-                await _unitOfWork.CommitAsync();
-            }
-            else
-                throw new AccessException($"Must be performed by a customer with ID {owner.Id}, or by admin on behalf of a customer with ID {owner.Id}!");
+            await _unitOfWork.CommitAsync();
         }
 
         /// <summary>Merges a newly created sorted dictionarie with the orignal one to exapnd the schedule of an accommodation.</summary>
@@ -294,8 +271,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <exception cref="DateException">No available accommodations found that satisfy the search</exception>
         public async Task<List<Accommodation>> FindAvailableAsync(string country, string city, string startdate, int nights)
         {
-            AnyoneLoggedIn();
-
             var available = new List<Accommodation>();
 
             await SearchInCountryAndCityAsync(country, city, startdate, nights, available);

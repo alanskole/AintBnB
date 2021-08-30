@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
@@ -58,6 +59,8 @@ namespace AintBnB.App.ViewModels
             if (User.Password != PasswordConfirm)
                 throw new Exception("The passwords don't match!");
 
+            await GetCsrfToken(_clientProvider);
+
             await PostAsync(_uri, User, _clientProvider);
         }
 
@@ -65,17 +68,23 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = User.Id.ToString();
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             User = await GetAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task GetAllUsersAsync()
         {
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
             AllUsers = await GetAllAsync<User>(_uri, _clientProvider);
         }
 
         public async Task GetAllCustomersAsync()
         {
             _uniquePartOfUri = "allcustomers";
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
 
             AllUsers = await GetAllAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
         }
@@ -84,12 +93,20 @@ namespace AintBnB.App.ViewModels
         {
             _uniquePartOfUri = User.Id.ToString();
 
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
+
             await DeleteAsync(_uri + _uniquePartOfUri, _clientProvider);
         }
 
         public async Task UpdateAUserAsync()
         {
             _uniquePartOfUri = User.Id.ToString();
+
+            await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+            await GetCsrfToken(_clientProvider);
 
             await PutAsync(_uri + _uniquePartOfUri, User, _clientProvider);
         }

@@ -5,9 +5,8 @@ using AintBnB.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BusinessLogic.Helpers.Regexp;
-
+using static AintBnB.BusinessLogic.Helpers.Authentication;
 namespace AintBnB.BusinessLogic.Imp
 {
     public class UserService : IUserService
@@ -110,46 +109,12 @@ namespace AintBnB.BusinessLogic.Imp
             if (user == null)
                 throw new IdNotFoundException("User", id);
 
-            if (CorrectUserOrAdmin(user.Id))
-            {
-                return user;
-            }
-            throw new AccessException();
-        }
-
-
-        /// <summary>Gets all users. Used when logging in.</summary>
-        /// <returns>A list with all the users</returns>
-        /// <exception cref="AlreadyLoggedInException">If the user that tries to get the list already is logged in</exception>
-        public async Task<List<User>> GetAllUsersForLoginAsync()
-        {
-            if (LoggedInAs != null)
-                throw new AlreadyLoggedInException();
-
-            try
-            {
-                return await AdminCanGetAllUsersAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-
+            return user;
         }
 
         /// <summary>Gets all users.</summary>
         /// <returns>A list of all the users</returns>
         public async Task<List<User>> GetAllUsersAsync()
-        {
-            if (AdminChecker())
-                return await AdminCanGetAllUsersAsync();
-            else
-                throw new AccessException();
-        }
-
-        /// <summary>Returns a list of all the users in the database for admin.</summary>
-        /// <returns>A list of all the users from the database</returns>
-        private async Task<List<User>> AdminCanGetAllUsersAsync()
         {
             var all = await _unitOfWork.UserRepository.GetAllAsync();
             IsListEmpty(all);
@@ -161,9 +126,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <exception cref="AccessException">Only admin can do this</exception>
         public async Task<List<User>> GetAllUsersWithTypeCustomerAsync()
         {
-            if (!AdminChecker())
-                throw new AccessException();
-
             var all = new List<User>();
 
             foreach (var user in await _unitOfWork.UserRepository.GetAllAsync())
@@ -185,32 +147,29 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Updates a user.</summary>
         /// <param name="id">The ID of the user to update.</param>
         /// <param name="updatedUser">The updated user object.</param>
+        /// <param name="userTypeOfLoggedInUser">The usertype of the user sending the request.</param>
         /// <exception cref="AccessException">Only the owner of the account or admin ployee can update a user</exception>
-        public async Task UpdateUserAsync(int id, User updatedUser)
+        public async Task UpdateUserAsync(int id, User updatedUser, UserTypes userTypeOfLoggedInUser)
         {
             var old = await GetUserAsync(id);
 
-            if (CorrectUserOrAdmin(old.Id))
-            {
-                ValidateUser(old.UserName, updatedUser.FirstName, updatedUser.LastName);
+            ValidateUser(old.UserName, updatedUser.FirstName, updatedUser.LastName);
 
-                if (updatedUser.UserType != old.UserType)
-                    CanUserTypeBeUpdated();
+            if (updatedUser.UserType != old.UserType)
+                CanUserTypeBeUpdated(userTypeOfLoggedInUser);
 
-                updatedUser.UserName = old.UserName;
-
-                await _unitOfWork.UserRepository.UpdateAsync(id, updatedUser);
-                await _unitOfWork.CommitAsync();
-            }
-            else
-                throw new AccessException();
+            updatedUser.UserName = old.UserName;
+            
+            await _unitOfWork.UserRepository.UpdateAsync(id, updatedUser);
+            await _unitOfWork.CommitAsync();
         }
 
-        /// <summary>Determines whether the user can be updated.</summary>
+        /// <summary>Determines whether the usertype can be updated.</summary>
+        /// <param name="userTypeOfLoggedInUser">The usertype of the user sending the request.</param>
         /// <exception cref="AccessException">Only admin can change the usertype of a user</exception>
-        private static void CanUserTypeBeUpdated()
+        private static void CanUserTypeBeUpdated(UserTypes userTypeOfLoggedInUser)
         {
-            if (!AdminChecker())
+            if (userTypeOfLoggedInUser != UserTypes.Admin)
                 throw new AccessException("Only admin can change usertype!");
         }
 
@@ -219,36 +178,28 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="userId">The ID of the user to change the password of.</param>
         /// <param name="new1">The new password.</param>
         /// <param name="new2">The new password confirmed.</param>
-        /// <exception cref="PasswordChangeException">new
-        /// or
-        /// old</exception>
-        /// <exception cref="AccessException">Only the owner of the account can change their password!</exception>
+        /// <exception cref="PasswordChangeException">new or old</exception>
         public async Task ChangePasswordAsync(string old, int userId, string new1, string new2)
         {
             var user = await _unitOfWork.UserRepository.ReadAsync(userId);
 
-            if (LoggedInAs.Id == user.Id)
+            if (old == new1)
+                throw new PasswordChangeException();
+
+            string hashedOriginalPassword = user.Password;
+
+            if (new1 != new2)
+                throw new PasswordChangeException("new");
+
+            ValidatePassword(new1);
+
+            if (VerifyPasswordHash(old, hashedOriginalPassword))
             {
-                if (old == new1)
-                    throw new PasswordChangeException();
-
-                string hashedOriginalPassword = user.Password;
-
-                if (new1 != new2)
-                    throw new PasswordChangeException("new");
-
-                ValidatePassword(new1);
-
-                if (VerifyPasswordHash(old, hashedOriginalPassword))
-                {
-                    user.Password = HashPassword(new1);
-                    await _unitOfWork.CommitAsync();
-                }
-                else
-                    throw new PasswordChangeException("old");
+                user.Password = HashPassword(new1);
+                await _unitOfWork.CommitAsync();
             }
             else
-                throw new AccessException("Only the owner of the account can change their password!");
+                throw new PasswordChangeException("old");
         }
     }
 }

@@ -17,10 +17,10 @@ namespace AintBnB.App.Views
 
         private void Frame_Navigated(object sender, NavigationEventArgs e)
         {
-            if (e.SourcePageType == typeof(MainPage) || e.SourcePageType == typeof(LoginPage) || e.SourcePageType == typeof(CreateUserPage))
-                navigationView.IsPaneVisible = false;
-            else
-                navigationView.IsPaneVisible = true;
+            //if (e.SourcePageType == typeof(MainPage) || e.SourcePageType == typeof(LoginPage) || e.SourcePageType == typeof(CreateUserPage))
+            //    navigationView.IsPaneVisible = false;
+            //else
+            navigationView.IsPaneVisible = true;
         }
     }
 }

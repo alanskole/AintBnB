@@ -4,7 +4,6 @@ using AintBnB.Core.Models;
 using AintBnB.Repository.Interfaces;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace AintBnB.BusinessLogic.Imp
 {
@@ -27,13 +26,18 @@ namespace AintBnB.BusinessLogic.Imp
         {
             var acc = await _unitOfWork.AccommodationRepository.ReadAsync(accommoationId);
 
-            if (!CorrectUserOrAdmin(acc.Owner.Id))
-                throw new AccessException("Only the accommodation's owner or admin can upload photos to an accommodation!");
-
             var newImage = new Image(acc, img);
             await _unitOfWork.ImageRepository.CreateAsync(newImage);
             await _unitOfWork.CommitAsync();
             return newImage;
+        }
+
+        /// <summary>Gets an image by id.</summary>
+        /// <param name="imageId">The Id of the image to fetch.</param>
+        /// <returns>An image object with the requested image</returns>
+        public async Task<Image> GetPicture(int imageId)
+        {
+            return await _unitOfWork.ImageRepository.ReadAsync(imageId);
         }
 
         /// <summary>Gets a list of all the images of an accommodation.</summary>
@@ -51,10 +55,8 @@ namespace AintBnB.BusinessLogic.Imp
         {
             var img = await _unitOfWork.ImageRepository.ReadAsync(imageId);
 
-            if (!CorrectUserOrAdmin(img.Accommodation.Owner.Id))
-                throw new AccessException("Only the accommodation's owner or admin can remove photos from an accommodation!");
-
             _unitOfWork.ImageRepository.Delete(img);
+
             await _unitOfWork.CommitAsync();
         }
     }
