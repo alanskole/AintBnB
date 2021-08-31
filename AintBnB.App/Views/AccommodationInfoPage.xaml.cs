@@ -16,8 +16,8 @@ namespace AintBnB.App.Views
         public AccommodationViewModel AccommodationViewModel { get; } = new AccommodationViewModel();
         public ImageViewModel ImageViewModel { get; } = new ImageViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
-
         private bool _skipSelectionChanged;
+        private int _selectedIndex = -1;
 
         public AccommodationInfoPage()
         {
@@ -28,7 +28,7 @@ namespace AintBnB.App.Views
         {
             base.OnNavigatedTo(e);
 
-            WhenNavigatedToView(e, ComboBoxAccommodations);
+            _selectedIndex = WhenNavigatedToView(e, ComboBoxAccommodations);
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -163,9 +163,10 @@ namespace AintBnB.App.Views
             try
             {
                 await AccommodationViewModel.DeleteAccommodationAsync();
-                await new MessageDialog("Deletion ok!").ShowAsync();
-                Frame.Navigate(typeof(AllAccommodationsPage));
 
+                await new MessageDialog("Deletion ok!").ShowAsync();
+
+                Frame.Navigate(typeof(AllAccommodationsPage));
             }
             catch (Exception ex)
             {
@@ -230,9 +231,7 @@ namespace AintBnB.App.Views
 
         private void Refresh()
         {
-            var infoPage = new AccommodationInfoPage();
-            Content = infoPage;
-            infoPage.ComboBoxAccommodations.SelectedIndex = ComboBoxAccommodations.Items.IndexOf(AccommodationViewModel.Accommodation.Id);
+            Frame.Navigate(typeof(AccommodationInfoPage), _selectedIndex);
         }
     }
 }

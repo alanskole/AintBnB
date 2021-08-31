@@ -27,7 +27,7 @@ namespace AintBnB.App.Views
 
                 await AccommodationViewMode.GetAllAccommodationsAsync();
             }
-            catch (Exception)
+            catch
             {
                 await AuthenticationViewModel.IdOfLoggedInUserAsync();
                 AccommodationViewMode.UserId = AuthenticationViewModel.IdOfLoggedInUser;
@@ -51,7 +51,6 @@ namespace AintBnB.App.Views
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-
             Frame.Navigate(typeof(AccommodationInfoPage), listView.SelectedIndex);
         }
     }

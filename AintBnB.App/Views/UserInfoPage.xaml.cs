@@ -19,6 +19,7 @@ namespace AintBnB.App.Views
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
 
         private string _usertype = "";
+        private int _selectedIndex = -1;
 
         public UserInfoPage()
         {
@@ -29,7 +30,7 @@ namespace AintBnB.App.Views
         {
             base.OnNavigatedTo(e);
 
-            WhenNavigatedToView(e, ComboBoxUsers);
+            _selectedIndex = WhenNavigatedToView(e, ComboBoxUsers);
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
