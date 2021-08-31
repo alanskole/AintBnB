@@ -73,7 +73,7 @@ namespace AintBnB.WebApi.Controllers
                     return NotFound(new AccessException("Only the accommodation's owner or admin can remove photos from an accommodation!").Message);
 
                 await _imageService.RemovePictureAsync(imageId);
-                return Ok("Deleted");
+                return Ok();
             }
             catch (Exception ex)
             {

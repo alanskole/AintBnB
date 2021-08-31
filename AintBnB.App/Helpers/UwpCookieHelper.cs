@@ -14,16 +14,16 @@ namespace AintBnB.App.Helpers
     internal static class UwpCookieHelper
     {
         internal static ApplicationDataContainer localSettings = Current.LocalSettings;
-
-        internal static async Task AddAuthCookieAsync(HttpClientHandler clientHandler)
+        internal const string DefaultCookieName = "myCoockie";
+        internal static async Task AddAuthCookieAsync(HttpClientHandler clientHandler, string cookieName = DefaultCookieName)
         {
-            if (localSettings.Values.ContainsKey("myCoockie"))
+            if (localSettings.Values.ContainsKey(cookieName))
             {
-                var cookieValueLocalSettings = await DecryptCookieValueAsync(localSettings.Values["myCoockie"].ToString());
+                var cookieValueLocalSettings = await DecryptCookieValueAsync(localSettings.Values[DefaultCookieName].ToString());
                 if (cookieValueLocalSettings != null)
                 {
                     var cookie = new Cookie();
-                    cookie.Name = "myCoockie";
+                    cookie.Name = DefaultCookieName;
                     cookie.Path = "/";
                     cookie.Domain = "localhost";
                     cookie.HttpOnly = true;

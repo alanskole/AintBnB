@@ -129,6 +129,7 @@ namespace AintBnB.App.Views
             {
                 await BookingViewModel.DeleteABookingAsync();
                 await new MessageDialog("Deletion ok!").ShowAsync();
+
                 Frame.Navigate(typeof(AllBookingsPage));
             }
             catch (Exception ex)

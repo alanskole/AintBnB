@@ -15,6 +15,7 @@ namespace AintBnB.App.Views
 
         private void Button_Click_Login(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+
             Frame.Navigate(typeof(LoginPage));
         }
 
@@ -25,6 +26,7 @@ namespace AintBnB.App.Views
                 await UserViewModel.CreateTheUserAsync();
 
                 await new MessageDialog("Your account was created successfully!").ShowAsync();
+
 
                 Frame.Navigate(typeof(LoginPage));
             }

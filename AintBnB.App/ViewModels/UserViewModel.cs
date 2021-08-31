@@ -12,9 +12,7 @@ namespace AintBnB.App.ViewModels
     public class UserViewModel : Observable
     {
         private User _user = new User();
-        private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
-        private string _uniquePartOfUri;
         private string _passwordConfirm;
         private List<User> _allUsers;
 
@@ -50,65 +48,85 @@ namespace AintBnB.App.ViewModels
 
         public UserViewModel()
         {
-            _clientProvider.ControllerPartOfUri = "api/user/";
-            _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/user/";
+            }
         }
 
         public async Task CreateTheUserAsync()
         {
-            if (User.Password != PasswordConfirm)
-                throw new Exception("The passwords don't match!");
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                if (User.Password != PasswordConfirm)
+                    throw new Exception("The passwords don't match!");
 
-            await GetCsrfToken(_clientProvider);
+                await GetCsrfToken(_clientProvider);
 
-            await PostAsync(_uri, User, _clientProvider);
+                await PostAsync(_uri, User, _clientProvider);
+            }
         }
 
         public async Task GetAUserAsync()
         {
-            _uniquePartOfUri = User.Id.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = User.Id.ToString();
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            User = await GetAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
+                User = await GetAsync<User>(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
 
         public async Task GetAllUsersAsync()
         {
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            AllUsers = await GetAllAsync<User>(_uri, _clientProvider);
+                AllUsers = await GetAllAsync<User>(_uri, _clientProvider);
+            }
         }
 
         public async Task GetAllCustomersAsync()
         {
-            _uniquePartOfUri = "allcustomers";
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = "allcustomers";
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            AllUsers = await GetAllAsync<User>(_uri + _uniquePartOfUri, _clientProvider);
+                AllUsers = await GetAllAsync<User>(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
 
         public async Task DeleteAUserAsync()
         {
-            _uniquePartOfUri = User.Id.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = User.Id.ToString();
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            await GetCsrfToken(_clientProvider);
+                await GetCsrfToken(_clientProvider);
 
-            await DeleteAsync(_uri + _uniquePartOfUri, _clientProvider);
+                await DeleteAsync(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
 
         public async Task UpdateAUserAsync()
         {
-            _uniquePartOfUri = User.Id.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = User.Id.ToString();
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            await GetCsrfToken(_clientProvider);
+                await GetCsrfToken(_clientProvider);
 
-            await PutAsync(_uri + _uniquePartOfUri, User, _clientProvider);
+                await PutAsync(_uri + uniquePartOfUri, User, _clientProvider);
+            }
         }
     }
 }

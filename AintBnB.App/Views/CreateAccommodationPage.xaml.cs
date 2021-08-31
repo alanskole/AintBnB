@@ -84,6 +84,7 @@ namespace AintBnB.App.Views
             {
                 await AccommodationViewModel.CreateAccommodationAsync();
                 await new MessageDialog("Creation ok!").ShowAsync();
+
                 Frame.Navigate(typeof(AllAccommodationsPage));
             }
             catch (Exception ex)

@@ -138,6 +138,7 @@ namespace AintBnB.App.Views
 
         private void Button_Click_AllUsers(object sender, RoutedEventArgs e)
         {
+
             Frame.Navigate(typeof(AllUsersPage));
         }
 
@@ -215,11 +216,13 @@ namespace AintBnB.App.Views
             try
             {
                 await AuthenticationViewModel.IsAdminAsync();
+
                 Frame.Navigate(typeof(AllUsersPage));
             }
             catch (Exception)
             {
                 await AuthenticationViewModel.LogoutFromAppAsync();
+
                 Frame.Navigate(typeof(MainPage));
             }
         }

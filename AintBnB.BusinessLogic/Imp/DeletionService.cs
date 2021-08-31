@@ -96,7 +96,7 @@ namespace AintBnB.BusinessLogic.Imp
                 {
                     try
                     {
-                        await DeadLineExpirationAsync(id, booking.Accommodation.CancellationDeadlineInDays);
+                        await DeadLineExpirationAsync(booking.Id, booking.Accommodation.CancellationDeadlineInDays);
                     }
                     catch (Exception)
                     {

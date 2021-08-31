@@ -51,6 +51,7 @@ namespace AintBnB.App.Views
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+
             Frame.Navigate(typeof(AccommodationInfoPage), listView.SelectedIndex);
         }
     }

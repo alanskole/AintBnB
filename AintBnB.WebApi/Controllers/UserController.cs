@@ -1,6 +1,7 @@
 ﻿using AintBnB.BusinessLogic.CustomExceptions;
 using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Core.Models;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -31,6 +32,9 @@ namespace AintBnB.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CreateUserAsync([FromBody] User user)
         {
+            if (HttpContext.User.Identity.IsAuthenticated)
+                return BadRequest();
+
             try
             {
                 var newUser = await _userService.CreateUserAsync(user.UserName, user.Password, user.FirstName, user.LastName, user.UserType);
@@ -58,7 +62,7 @@ namespace AintBnB.WebApi.Controllers
                     return BadRequest(new AccessException().Message);
 
                 await _userService.UpdateUserAsync(id, user, GetUsertypeOfLoggedInUser(HttpContext));
-                return Ok(user);
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -75,12 +79,12 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                if (GetIdOfLoggedInUser(HttpContext) != Int32.Parse(elements[1]))
+                if (GetIdOfLoggedInUser(HttpContext) != int.Parse(elements[1]))
                     return BadRequest(new AccessException("Only the owner of the account can change their password!").Message);
 
-                await _userService.ChangePasswordAsync(elements[0], Int32.Parse(elements[1]), elements[2], elements[3]);
+                await _userService.ChangePasswordAsync(elements[0], int.Parse(elements[1]), elements[2], elements[3]);
 
-                return Ok("Password change ok!");
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -163,7 +167,11 @@ namespace AintBnB.WebApi.Controllers
                     return BadRequest(new AccessException($"Administrator or user with ID {id} only!").Message);
 
                 await _deletionService.DeleteUserAsync(id);
-                return Ok("Deletion ok");
+
+                if (!AdminChecker(GetUsertypeOfLoggedInUser(HttpContext)))
+                    await HttpContext.SignOutAsync();
+
+                return Ok();
             }
             catch (Exception ex)
             {

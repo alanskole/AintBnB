@@ -115,6 +115,7 @@ namespace AintBnB.App.Views
 
                 await new MessageDialog("Booking deleted!").ShowAsync();
 
+
                 Frame.Navigate(typeof(AllBookingsOfOwnedAccommodations));
             }
             catch (Exception ex)

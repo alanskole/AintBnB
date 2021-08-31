@@ -148,6 +148,7 @@ namespace AintBnB.App.Views
             {
                 await BookingViewModel.BookAccommodationAsync();
                 await new MessageDialog("Booking successful!").ShowAsync();
+
                 Frame.Navigate(typeof(AllBookingsPage));
             }
             catch (Exception ex)

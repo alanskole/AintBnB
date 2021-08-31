@@ -11,11 +11,13 @@ namespace AintBnB.App.Views
 
         private void Button_Click_CreateUser(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+
             Frame.Navigate(typeof(CreateUserPage));
         }
 
         private void Button_Click_Login(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
+
             Frame.Navigate(typeof(LoginPage));
         }
     }

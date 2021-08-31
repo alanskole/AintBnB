@@ -5,8 +5,8 @@ using AintBnB.Repository.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static AintBnB.BusinessLogic.Helpers.Regexp;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.BusinessLogic.Helpers.Regexp;
 namespace AintBnB.BusinessLogic.Imp
 {
     public class UserService : IUserService
@@ -159,7 +159,7 @@ namespace AintBnB.BusinessLogic.Imp
                 CanUserTypeBeUpdated(userTypeOfLoggedInUser);
 
             updatedUser.UserName = old.UserName;
-            
+
             await _unitOfWork.UserRepository.UpdateAsync(id, updatedUser);
             await _unitOfWork.CommitAsync();
         }

@@ -25,7 +25,7 @@ namespace AintBnB.BusinessLogic.Helpers
         /// <returns>True if the logged in user has the same ID as the one from the parameter or is admin, false otherwise</returns>
         public static bool CorrectUserOrAdmin(int idOwner, int loggedInAsId, UserTypes userType)
         {
-            if (AdminChecker(userType) ||idOwner == loggedInAsId)
+            if (AdminChecker(userType) || idOwner == loggedInAsId)
                 return true;
 
             return false;
@@ -45,14 +45,14 @@ namespace AintBnB.BusinessLogic.Helpers
             return true;
         }
 
-        public static bool CheckIfUserIsAllowedToPerformAction(User user, int idOwner)
+        public static bool CheckIfUserIsAllowedToPerformAction(User userThatOwnsTheObject, int idOfLoggedInUser, UserTypes userTypeOfLoggedInUser)
         {
-            if (user.UserType != UserTypes.Customer)
+            if (userThatOwnsTheObject.UserType != UserTypes.Customer)
                 return false;
 
-            if (user.Id != idOwner)
+            if (userThatOwnsTheObject.Id != idOfLoggedInUser)
             {
-                if (!AdminChecker(user.UserType))
+                if (!AdminChecker(userTypeOfLoggedInUser))
                     return false;
             }
             return true;

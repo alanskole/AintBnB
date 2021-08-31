@@ -10,9 +10,7 @@ namespace AintBnB.App.ViewModels
 {
     public class AccommodationViewModel : Observable
     {
-        private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
-        private string _uniquePartOfUri;
         private int _userId;
         private Accommodation _accommodation = new Accommodation { Address = new Address() };
         private int _daysSchedule;
@@ -114,95 +112,124 @@ namespace AintBnB.App.ViewModels
 
         public AccommodationViewModel()
         {
-            _clientProvider.ControllerPartOfUri = "api/accommodation/";
-            _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/accommodation/";
+            }
         }
 
         public async Task CreateAccommodationAsync()
         {
-            _uniquePartOfUri = DaysSchedule.ToString() + "/" + UserId.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = DaysSchedule.ToString() + "/" + UserId.ToString();
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            await GetCsrfToken(_clientProvider);
+                await GetCsrfToken(_clientProvider);
 
-            await PostAsync(_uri + _uniquePartOfUri, Accommodation, _clientProvider);
+                await PostAsync(_uri + uniquePartOfUri, Accommodation, _clientProvider);
+            }
         }
 
         public async Task GetAccommodationAsync()
         {
-            _uniquePartOfUri = Accommodation.Id.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = Accommodation.Id.ToString();
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            Accommodation = await GetAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
+                Accommodation = await GetAsync<Accommodation>(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
 
         public async Task GetAllAccommodationsAsync()
         {
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            AllAccommodations = await GetAllAsync<Accommodation>(_uri, _clientProvider);
+                AllAccommodations = await GetAllAsync<Accommodation>(_uri, _clientProvider);
+            }
         }
 
         public async Task GetAllAccommodationsOfAUserAsync()
         {
-            _uniquePartOfUri = UserId.ToString() + "/allaccommodations";
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = UserId.ToString() + "/allaccommodations";
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            AllAccommodations = await GetAllAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
+                AllAccommodations = await GetAllAsync<Accommodation>(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
 
         public async Task GetAvailableAsync()
         {
-            _uniquePartOfUri = _accommodation.Address.Country + "/" + _accommodation.Address.City + "/" + FromDate + "/" + Nights.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = _accommodation.Address.Country + "/" + _accommodation.Address.City + "/" + FromDate + "/" + Nights.ToString();
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            AllAccommodations = await GetAllAsync<Accommodation>(_uri + _uniquePartOfUri, _clientProvider);
+                AllAccommodations = await GetAllAsync<Accommodation>(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
 
         public async Task SortAvailableListAsync()
         {
-            _uniquePartOfUri = "sort/" + SortBy + "/" + AscOrDesc;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = "sort/" + SortBy + "/" + AscOrDesc;
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            AllAccommodations = await SortListAsync(_uri + _uniquePartOfUri, AllAccommodations, _clientProvider);
+                AllAccommodations = await SortListAsync(_uri + uniquePartOfUri, AllAccommodations, _clientProvider);
+            }
         }
 
         public async Task DeleteAccommodationAsync()
         {
-            _uniquePartOfUri = Accommodation.Id.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = Accommodation.Id.ToString();
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            await GetCsrfToken(_clientProvider);
+                await GetCsrfToken(_clientProvider);
 
-            await DeleteAsync(_uri + _uniquePartOfUri, _clientProvider);
+                await DeleteAsync(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
 
         public async Task UpdateAccommodationAsync()
         {
-            _uniquePartOfUri = Accommodation.Id.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = Accommodation.Id.ToString();
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            await GetCsrfToken(_clientProvider);
+                await GetCsrfToken(_clientProvider);
 
-            await PutAsync(_uri + _uniquePartOfUri, Accommodation, _clientProvider);
+                await PutAsync(_uri + uniquePartOfUri, Accommodation, _clientProvider);
+            }
         }
 
         public async Task ExpandScheduleOfAccommodationAsync()
         {
-            _uniquePartOfUri = Accommodation.Id.ToString() + "/" + ExpandScheduleByDays.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = Accommodation.Id.ToString() + "/expand";
 
-            await AddAuthCookieAsync(_clientProvider.clientHandler);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-            await GetCsrfToken(_clientProvider);
+                await GetCsrfToken(_clientProvider);
 
-            await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
+                await PostAsync(_uri + uniquePartOfUri, ExpandScheduleByDays, _clientProvider);
+            }
         }
     }
 }

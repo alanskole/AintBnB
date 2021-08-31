@@ -26,7 +26,20 @@ namespace AintBnB.WebApi.Controllers
         /// <summary>API GET request to get the user that's logged in.</summary>
         /// <returns>Status 200 and the user if successful, otherwise status code 404</returns>
         [HttpGet]
-        [Route("api/[controller]/loggedin")]
+        [Route("api/[controller]/isLoggedIn")]
+        [AllowAnonymous]
+        public IActionResult IsLoggedIn()
+        {
+            if (HttpContext.User.Identity.IsAuthenticated)
+                return Ok();
+            else
+                return NotFound();
+        }
+
+        /// <summary>API GET request to get the user that's logged in.</summary>
+        /// <returns>Status 200 and the user if successful, otherwise status code 404</returns>
+        [HttpGet]
+        [Route("api/[controller]/loggedinUserId")]
         public IActionResult GetLoggedInUserId()
         {
             var id = GetIdOfLoggedInUser(HttpContext);
@@ -48,7 +61,7 @@ namespace AintBnB.WebApi.Controllers
             }
 
             if (CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), user.UserType))
-                return Ok("User can access");
+                return Ok();
             else
                 return BadRequest("Restricted access!");
         }
@@ -62,19 +75,19 @@ namespace AintBnB.WebApi.Controllers
             var userType = GetUsertypeOfLoggedInUser(HttpContext);
 
             if (AdminChecker(userType))
-                return Ok("User is admin");
+                return Ok();
             else
                 return BadRequest("User is not admin!");
         }
 
-        /// <summary>API GET request to logout the user</summary>
+        /// <summary>API POST request to logout the user</summary>
         /// <returns>Status 200 if successful, otherwise status code 400</returns>
-        [HttpGet]
+        [HttpPost]
         [Route("api/[controller]/logout")]
         public async Task<IActionResult> LogoutUserAsync()
         {
             await HttpContext.SignOutAsync();
-            return Ok("Logout ok!");
+            return Ok();
         }
 
 
@@ -82,8 +95,8 @@ namespace AintBnB.WebApi.Controllers
         /// <param name="usernameAndPassword">An array with the username and password of the user that tries to log in.</param>
         /// <returns>Status 200 if successful, otherwise status code 404</returns>
         [HttpPost]
-        [AllowAnonymous]
         [Route("api/[controller]/login")]
+        [AllowAnonymous]
         public async Task<IActionResult> LogInAsync([FromBody] string[] usernameAndPassword)
         {
             try
@@ -101,7 +114,7 @@ namespace AintBnB.WebApi.Controllers
                 var userPrincipal = new ClaimsPrincipal(new[] { claimsId });
                 await HttpContext.SignInAsync(userPrincipal);
 
-                return Ok("Login ok!");
+                return Ok();
             }
             catch (Exception ex)
             {

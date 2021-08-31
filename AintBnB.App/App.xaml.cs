@@ -44,6 +44,10 @@ namespace AintBnB.App
 
         private ActivationService CreateActivationService()
         {
+            var authVM = new ViewModels.AuthenticationViewModel();
+            var isLoggedIn = System.Threading.Tasks.Task.Run(async () => await authVM.IsUserLoggedInAsync()).Result;
+            if (isLoggedIn)
+                return new ActivationService(this, typeof(Views.SearchPage), new Lazy<UIElement>(CreateShell));
             return new ActivationService(this, typeof(Views.MainPage), new Lazy<UIElement>(CreateShell));
         }
 
