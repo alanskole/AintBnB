@@ -2,6 +2,7 @@
 using AintBnB.App.Helpers;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
@@ -11,7 +12,6 @@ namespace AintBnB.App.ViewModels
         private string _old;
         private string _new1;
         private string _new2;
-        private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
 
         public int UserId
@@ -56,15 +56,24 @@ namespace AintBnB.App.ViewModels
 
         public PasswordChangerViewModel()
         {
-            _clientProvider.ControllerPartOfUri = "api/user/change/";
-            _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/user/change/";
+            }
         }
 
         public async Task ChangePasswordAsync()
         {
-            var elements = new string[] { Old, UserId.ToString(), New1, New2 };
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var elements = new string[] { Old, UserId.ToString(), New1, New2 };
 
-            await PostAsync(_uri, elements, _clientProvider);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                await GetCsrfToken(_clientProvider);
+
+                await PostAsync(_uri, elements, _clientProvider);
+            }
         }
     }
 }

@@ -1,11 +1,17 @@
-﻿using AintBnB.BusinessLogic.Interfaces;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.WebApi.Helpers.CurrentUserDetails;
 
 namespace AintBnB.WebApi.Controllers
 {
+    [ApiController]
+    [Authorize]
     public class ImageController : Controller
     {
         private IImageService _imageService;
@@ -22,6 +28,9 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]")]
         public async Task<IActionResult> CreateImageAsync([FromBody] Image img)
         {
+            if (!CorrectUserOrAdmin(img.Accommodation.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                throw new AccessException("Only the accommodation's owner or admin can upload photos to an accommodation!");
+
             try
             {
                 var newImg = await _imageService.AddPictureAsync(img.Accommodation.Id, img.Img);
@@ -58,8 +67,13 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
+                var img = await _imageService.GetPicture(imageId);
+
+                if (!CorrectUserOrAdmin(img.Accommodation.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return NotFound(new AccessException("Only the accommodation's owner or admin can remove photos from an accommodation!").Message);
+
                 await _imageService.RemovePictureAsync(imageId);
-                return Ok("Deleted");
+                return Ok();
             }
             catch (Exception ex)
             {

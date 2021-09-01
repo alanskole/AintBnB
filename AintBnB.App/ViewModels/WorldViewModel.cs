@@ -3,14 +3,13 @@ using AintBnB.App.Helpers;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
     public class WorldViewModel : Observable
     {
-        private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
-        private string _uniquePartOfUri;
         private string _country;
         private string _city;
         private List<string> _allCountries;
@@ -59,22 +58,34 @@ namespace AintBnB.App.ViewModels
 
         public WorldViewModel()
         {
-            _clientProvider.ControllerPartOfUri = "api/world/";
-            _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/world/";
+            }
         }
 
         public async Task GetAllCountriesInTheWorldAsync()
         {
-            _uniquePartOfUri = "countries";
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = "countries";
 
-            AllCountries = await GetAllAsync<string>(_uri + _uniquePartOfUri, _clientProvider);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                AllCountries = await GetAllAsync<string>(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
 
         public async Task GetAllCitiesOfACountryAsync()
         {
-            _uniquePartOfUri = "cities/" + Country;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = "cities/" + Country;
 
-            AllCitiesOfACountry = await GetAllAsync<string>(_uri + _uniquePartOfUri, _clientProvider);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                AllCitiesOfACountry = await GetAllAsync<string>(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
     }
 }

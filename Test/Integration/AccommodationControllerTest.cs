@@ -7,7 +7,6 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test.Integration
 {
@@ -18,10 +17,11 @@ namespace Test.Integration
         private HttpClient _client;
 
         [TestInitialize]
-        public void SetUp()
+        public async Task SetUpAsync()
         {
             _factory = new CustomWebApplicationFactory();
             _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userAdmin.UserName, "aaaaaa" });
         }
 
         [TestCleanup]
@@ -33,8 +33,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task CreateAccommodation_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userAdmin;
-
             Address addr = new Address
             {
                 Id = 500,
@@ -58,7 +56,7 @@ namespace Test.Integration
                 Schedule = _factory.accommodation1.Schedule,
             };
 
-            var response = await _client.PostAsync("api/accommodation/10/6",
+            var response = await _client.PostAsync("api/accommodation/10/3",
                 new StringContent(
                     JsonConvert.SerializeObject(ac),
                     Encoding.UTF8,
@@ -71,8 +69,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task CreateAccommodation_ShouldReturn_BadRequestIfError()
         {
-            LoggedInAs = _factory.userAdmin;
-
             Accommodation ac = new Accommodation
             {
             };
@@ -90,8 +86,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task FindAvailable_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userAdmin;
-
             string city = _factory.accommodation1.Address.City + "/";
             string country = _factory.accommodation1.Address.Country + "/";
             string startDate = _factory.accommodation1.Schedule.Keys.Last() + "/";
@@ -106,8 +100,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task FindAvailable_ShouldReturn_NotFoundIfError()
         {
-            LoggedInAs = _factory.userAdmin;
-
             string city = _factory.accommodation1.Address.City + "/";
             string country = _factory.accommodation1.Address.Country + "/";
             string startDate = _factory.accommodation1.Schedule.Keys.Last() + "/";
@@ -122,8 +114,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task SortAvailableList_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userAdmin;
-
             List<Accommodation> accs = new List<Accommodation>() { _factory.accommodation1, _factory.accommodation2 };
 
             var response = await _client.PostAsync("api/accommodation/sort/Size/Ascending",
@@ -139,10 +129,7 @@ namespace Test.Integration
         [TestMethod]
         public async Task SortAvailableList_ShouldReturn_NotFoundIfError()
         {
-            LoggedInAs = _factory.userAdmin;
-
             List<Accommodation> accs = new List<Accommodation>();
-
 
             var response = await _client.PostAsync("api/accommodation/sort/Size/Ascending",
                 new StringContent(
@@ -157,30 +144,34 @@ namespace Test.Integration
         [TestMethod]
         public async Task ExpandSchedule_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userAdmin;
-
-            var response = await _client.GetAsync("api/accommodation/1/1");
+            var response = await _client.PostAsync("api/accommodation/1/expand",
+                            new StringContent(
+                                JsonConvert.SerializeObject(100),
+                                Encoding.UTF8,
+                                "application/json"));
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
         [TestMethod]
         public async Task ExpandSchedule_ShouldReturn_NotFoundIfError()
         {
-            LoggedInAs = _factory.userAdmin;
+            _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer2.UserName, "aaaaaa" });
 
-            var response = await _client.GetAsync("api/accommodation/100/1");
+            var response = await _client.PostAsync("api/accommodation/1/expand",
+                new StringContent(
+                    JsonConvert.SerializeObject(100),
+                    Encoding.UTF8,
+                    "application/json"));
 
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
         [TestMethod]
         public async Task UpdateAccommodation_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userAdmin;
-
             _factory.accommodation1.Description = "ssdssddsdsdsasdsdsdsdsd";
 
             var response = await _client.PutAsync("api/accommodation/1",
@@ -190,14 +181,11 @@ namespace Test.Integration
                     "application/json"));
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
         [TestMethod]
         public async Task UpdateAccommodation_ShouldReturn_BadRequestIfError()
         {
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.PutAsync("api/accommodation/1",
                 new StringContent(
                     JsonConvert.SerializeObject(new Accommodation()),
@@ -211,9 +199,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task GetAllAccommodationsInTheSystem_ShouldReturn_SuccessStatus()
         {
-
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.GetAsync("api/accommodation");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -221,24 +206,9 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetAllAccommodationsInTheSystem_ShouldReturn_NotFoundIfError()
-        {
-
-            LoggedInAs = null;
-
-            var response = await _client.GetAsync("api/accommodation");
-
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-        }
-
-        [TestMethod]
         public async Task GetAllAccommodationsOfAUser_ShouldReturn_SuccessStatus()
         {
-
-            LoggedInAs = _factory.userAdmin;
-
-            var response = await _client.GetAsync("api/accommodation/5/allaccommodations");
+            var response = await _client.GetAsync("api/accommodation/2/allaccommodations");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
@@ -247,9 +217,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task GetAllAccommodationsOfAUser_ShouldReturn_NotFoundIfError()
         {
-
-            LoggedInAs = null;
-
             var response = await _client.GetAsync("api/accommodation/5/allaccommodations");
 
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
@@ -259,9 +226,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task GetAccommodation_ShouldReturn_SuccessStatus()
         {
-
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.GetAsync("api/accommodation/1");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -271,9 +235,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task GetAccommodation_ShouldReturn_NotFoundIfError()
         {
-
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.GetAsync("api/accommodation/100");
 
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
@@ -283,19 +244,14 @@ namespace Test.Integration
         [TestMethod]
         public async Task DeleteAccommodation_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.DeleteAsync("api/accommodation/1");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
         [TestMethod]
         public async Task DeleteAccommodation_ShouldReturn_BadRequestIfError()
         {
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.DeleteAsync("api/accommodation/100");
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);

@@ -27,26 +27,12 @@ namespace AintBnB.App.Views
             {
                 await new MessageDialog(ex.Message).ShowAsync();
             }
-
-            try
-            {
-                await AuthenticationViewModel.IsAdminAsync();
-                EmpReqButton.Visibility = Visibility.Visible;
-            }
-            catch (Exception)
-            {
-
-            }
         }
 
         private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Frame.Navigate(typeof(UserInfoPage), listView.SelectedIndex);
-        }
 
-        private void Button_Click_EmployeeRequest(object sender, RoutedEventArgs e)
-        {
-            Frame.Navigate(typeof(EmployeeRequestPage));
+            Frame.Navigate(typeof(UserInfoPage), listView.SelectedIndex);
         }
     }
 }

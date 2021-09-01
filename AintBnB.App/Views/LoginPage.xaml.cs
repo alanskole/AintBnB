@@ -20,6 +20,7 @@ namespace AintBnB.App.Views
             try
             {
                 await AuthenticationViewModel.LoginAsync();
+
                 Frame.Navigate(typeof(SearchPage));
             }
             catch (Exception ex)
@@ -30,6 +31,7 @@ namespace AintBnB.App.Views
 
         private void Button_Click_CreateUser(object sender, RoutedEventArgs e)
         {
+
             Frame.Navigate(typeof(CreateUserPage));
         }
     }

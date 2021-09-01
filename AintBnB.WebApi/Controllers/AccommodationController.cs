@@ -1,14 +1,19 @@
-﻿using AintBnB.BusinessLogic.Interfaces;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Core.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.WebApi.Helpers.CurrentUserDetails;
 
 namespace AintBnB.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     public class AccommodationController : ControllerBase
     {
         private IAccommodationService _accommodationService;
@@ -34,6 +39,10 @@ namespace AintBnB.WebApi.Controllers
             try
             {
                 var owner = await _userService.GetUserAsync(userId);
+
+                if (!CheckIfUserIsAllowedToPerformAction(owner, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return BadRequest($"Must be performed by a customer with ID {owner.Id}, or by admin on behalf of a customer with ID {owner.Id}!");
+
                 var newAccommodation = await _accommodationService.CreateAccommodationAsync(owner, accommodation.Address, accommodation.SquareMeters, accommodation.AmountOfBedrooms, accommodation.KilometersFromCenter, accommodation.Description, accommodation.PricePerNight, accommodation.CancellationDeadlineInDays, days);
                 return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + accommodation.Id, accommodation);
             }
@@ -70,6 +79,7 @@ namespace AintBnB.WebApi.Controllers
         /// <returns>Status 200 and the correct sorting order if successful, otherwise status code 404</returns>
         [HttpPost]
         [Route("api/[controller]/sort/{sortBy}/{ascOrDesc}")]
+        [IgnoreAntiforgeryToken]
         public IActionResult SortAvailableList([FromBody] List<Accommodation> available, [FromRoute] string sortBy, [FromRoute] string ascOrDesc)
         {
             try
@@ -82,23 +92,31 @@ namespace AintBnB.WebApi.Controllers
             }
         }
 
-        /// <summary>API GET request to expand the schedule of an accommodation by x amount of days</summary>
+        /// <summary>API POST request to expand the schedule of an accommodation by x amount of days</summary>
         /// <param name="id">The ID of the accommodation to expand the schedule of.</param>
         /// <param name="days">The amount of days to expand the schedule by.</param>
-        /// <returns>Status 200 and the accommodation if successful, otherwise status code 404</returns>
-        [HttpGet]
-        [Route("api/[controller]/{id}/{days}")]
-        public async Task<IActionResult> ExpandScheduleAsync([FromRoute] int id, [FromRoute] int days)
+        /// <returns>Status 200 and the accommodation if successful, otherwise status code 400</returns>
+        [HttpPost]
+        [Route("api/[controller]/{id}/expand")]
+        public async Task<IActionResult> ExpandScheduleAsync([FromRoute] int id, [FromBody] int days)
         {
-            try
+            var acc = await _accommodationService.GetAccommodationAsync(id);
+            if (acc == null)
+                return NotFound("Accommodation not found!");
+
+            if (CorrectUserOrAdmin(acc.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
             {
-                await _accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(id, days);
-                return Ok(await _accommodationService.GetAccommodationAsync(id));
+                try
+                {
+                    await _accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(id, days);
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                return NotFound($"Couldn't expand the schedule for the accommodation with id {id}. {ex.Message}");
-            }
+            return BadRequest($"Must be performed by the accommodation owner, or by admin on behalf of the accommodation owner!");
         }
 
         /// <summary>API PUT request to update an existing accommodation</summary>
@@ -111,8 +129,15 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                await _accommodationService.UpdateAccommodationAsync(id, accommodation);
-                return Ok(accommodation);
+                var acc = await _accommodationService.GetAccommodationAsync(id);
+                var userType = GetUsertypeOfLoggedInUser(HttpContext);
+
+                if (CorrectUserOrAdmin(acc.Owner.Id, GetIdOfLoggedInUser(HttpContext), userType))
+                {
+                    await _accommodationService.UpdateAccommodationAsync(id, accommodation);
+                    return Ok();
+                }
+                return BadRequest(new AccessException().Message);
             }
             catch (Exception ex)
             {
@@ -179,8 +204,13 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
+                var accommodation = await _accommodationService.GetAccommodationAsync(id);
+
+                if (!CorrectUserOrAdmin(accommodation.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return BadRequest(new AccessException($"Administrator or user with ID {accommodation.Owner.Id} only!").Message);
+
                 await _deletionService.DeleteAccommodationAsync(id);
-                return Ok("Deletion ok");
+                return Ok();
             }
             catch (Exception ex)
             {

@@ -39,19 +39,12 @@ namespace AintBnB.BusinessLogic.Interfaces
 
         /// <summary>Updates a user.</summary>
         /// <param name="id">The ID of the user to update.</param>
+        /// <param name="userTypeOfLoggedInUser">The usertype of the user sending the request.</param>
         /// <param name="updatedUser">The updated user object.</param>
-        Task UpdateUserAsync(int id, User updatedUser);
+        Task UpdateUserAsync(int id, User updatedUser, UserTypes userTypeOfLoggedInUser);
 
         /// <summary>Gets all users with usertype customer.</summary>
         /// <returns>A list of all the users with usertype customer</returns>
         Task<List<User>> GetAllUsersWithTypeCustomerAsync();
-
-        /// <summary>Gets all the users that has requested an employee account.</summary>
-        /// <returns>A list with all the users that has requested an employee account</returns>
-        Task<List<User>> GetAllEmployeeRequestsAsync();
-
-        /// <summary>Gets all users. Used when logging in.</summary>
-        /// <returns>A list with all the users</returns> 
-        Task<List<User>> GetAllUsersForLoginAsync();
     }
 }

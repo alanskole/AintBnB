@@ -8,14 +8,17 @@ namespace AintBnB.App.CommonMethodsAndProperties
 {
     internal static class CommonViewMethods
     {
-        public static void WhenNavigatedToView(NavigationEventArgs e, ComboBox comboBox)
+        public static int WhenNavigatedToView(NavigationEventArgs e, ComboBox comboBox)
         {
             if (e.Parameter != null)
             {
-                var parameter = int.Parse(e.Parameter.ToString());
+                var selectedIndex = int.Parse(e.Parameter.ToString());
 
-                comboBox.SelectedIndex = parameter;
+                comboBox.SelectedIndex = selectedIndex;
+
+                return selectedIndex;
             }
+            return -1;
         }
 
         public static async Task<IUICommand> DialogeMessageAsync(string message, string buttonText)

@@ -9,14 +9,14 @@ using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
     public class ImageViewModel : Observable
     {
-        private HttpClientProvider _clientProvider = new HttpClientProvider();
+
         private string _uri;
-        private string _uniquePartOfUri;
         private Image _image = new Image();
         private int _imageId;
         private List<Image> _allImages;
@@ -76,28 +76,43 @@ namespace AintBnB.App.ViewModels
 
         public ImageViewModel()
         {
-            _clientProvider.ControllerPartOfUri = "api/image/";
-            _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/image/";
+            }
         }
+
         public async Task CreatePictureAsync()
         {
-            await PostAsync(_uri, Image, _clientProvider);
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                await GetCsrfToken(_clientProvider);
+
+                await PostAsync(_uri, Image, _clientProvider);
+            }
         }
 
         public async Task GetAllPicturesAsync()
         {
-            _uniquePartOfUri = _image.Accommodation.Id.ToString();
-
-            AllImages = await GetAllAsync<Image>(_uri + _uniquePartOfUri, _clientProvider);
-
-            _allImagesBytes = new List<byte[]>();
-
-            foreach (var pic in AllImages)
+            using (var _clientProvider = new HttpClientProvider())
             {
-                _allImagesBytes.Add(pic.Img);
-            }
+                var uniquePartOfUri = _image.Accommodation.Id.ToString();
 
-            await ConvertBytesToBitmapImageListAsync();
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                AllImages = await GetAllAsync<Image>(_uri + uniquePartOfUri, _clientProvider);
+
+                _allImagesBytes = new List<byte[]>();
+
+                foreach (var pic in AllImages)
+                {
+                    _allImagesBytes.Add(pic.Img);
+                }
+
+                await ConvertBytesToBitmapImageListAsync();
+            }
         }
 
         private async Task ConvertBytesToBitmapImageListAsync()
@@ -164,9 +179,16 @@ namespace AintBnB.App.ViewModels
 
         public async Task DeleteAPictureAsync()
         {
-            _uniquePartOfUri = _imageId.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = _imageId.ToString();
 
-            await DeleteAsync(_uri + _uniquePartOfUri, _clientProvider);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                await GetCsrfToken(_clientProvider);
+
+                await DeleteAsync(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
     }
 }

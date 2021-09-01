@@ -4,6 +4,7 @@ using AintBnB.Core.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
 {
@@ -11,9 +12,7 @@ namespace AintBnB.App.ViewModels
     {
         private string _startDate;
         private int _night;
-        private HttpClientProvider _clientProvider = new HttpClientProvider();
         private string _uri;
-        private string _uniquePartOfUri;
         private Booking _booking = new Booking { BookedBy = new User(), Accommodation = new Accommodation(), Dates = new List<string>() };
         private int _userId;
         List<Booking> _allBookings;
@@ -70,55 +69,108 @@ namespace AintBnB.App.ViewModels
 
         public BookingViewModel()
         {
-            _clientProvider.ControllerPartOfUri = "api/booking/";
-            _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + _clientProvider.ControllerPartOfUri;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/booking/";
+            }
         }
 
         public async Task BookAccommodationAsync()
         {
-            _uniquePartOfUri = StartDate + "/" + Booking.BookedBy.Id + "/" + Nights + "/" + Booking.Accommodation.Id;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = "book";
 
-            Booking = await GetAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
+                var bookingInfo = new string[] { StartDate, Booking.BookedBy.Id.ToString(), Nights.ToString(), Booking.Accommodation.Id.ToString() };
+
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                await GetCsrfToken(_clientProvider);
+
+                await PostAsync(_uri + uniquePartOfUri, bookingInfo, _clientProvider);
+            }
         }
 
         public async Task UpdateBookingAsync()
         {
-            _uniquePartOfUri = StartDate + "/" + Nights + "/" + Booking.Id;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = Booking.Id.ToString();
 
-            Booking = await GetAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
+                var newDates = new string[] { StartDate, Nights.ToString() };
+
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                await GetCsrfToken(_clientProvider);
+
+                await PutAsync(_uri + uniquePartOfUri, newDates, _clientProvider);
+
+                await GetABookingAsync();
+            }
         }
 
         public async Task RateAsync()
         {
-            _uniquePartOfUri = "rate/" + Booking.Id + "/" + Booking.Rating;
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = "rate/" + Booking.Id + "/";
 
-            await GetAsync(_uri + _uniquePartOfUri, _clientProvider);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                await GetCsrfToken(_clientProvider);
+
+                await PostAsync(_uri + uniquePartOfUri, Booking.Rating, _clientProvider);
+
+                await GetABookingAsync();
+            }
         }
 
         public async Task GetABookingAsync()
         {
-            _uniquePartOfUri = Booking.Id.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = Booking.Id.ToString();
 
-            Booking = await GetAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                Booking = await GetAsync<Booking>(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
 
         public async Task GetAllBookingsAsync()
         {
-            AllBookings = await GetAllAsync<Booking>(_uri, _clientProvider);
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                AllBookings = await GetAllAsync<Booking>(_uri, _clientProvider);
+            }
         }
 
         public async Task GetAllBookingsOfOwnedAccommodationsAsync()
         {
-            _uniquePartOfUri = UserId + "/" + "bookingsownaccommodation";
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = UserId + "/" + "bookingsownaccommodation";
 
-            AllBookings = await GetAllAsync<Booking>(_uri + _uniquePartOfUri, _clientProvider);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                AllBookings = await GetAllAsync<Booking>(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
 
         public async Task DeleteABookingAsync()
         {
-            _uniquePartOfUri = Booking.Id.ToString();
+            using (var _clientProvider = new HttpClientProvider())
+            {
+                var uniquePartOfUri = Booking.Id.ToString();
 
-            await DeleteAsync(_uri + _uniquePartOfUri, _clientProvider);
+                await AddAuthCookieAsync(_clientProvider.clientHandler);
+
+                await GetCsrfToken(_clientProvider);
+
+                await DeleteAsync(_uri + uniquePartOfUri, _clientProvider);
+            }
         }
     }
 }

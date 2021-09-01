@@ -1,6 +1,5 @@
 ﻿using AintBnB.App.ViewModels;
 using System;
-using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -24,11 +23,11 @@ namespace AintBnB.App.Views
 
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
+                await AuthenticationViewModel.IsAdminAsync();
 
                 await AccommodationViewMode.GetAllAccommodationsAsync();
             }
-            catch (Exception)
+            catch
             {
                 await AuthenticationViewModel.IdOfLoggedInUserAsync();
                 AccommodationViewMode.UserId = AuthenticationViewModel.IdOfLoggedInUser;

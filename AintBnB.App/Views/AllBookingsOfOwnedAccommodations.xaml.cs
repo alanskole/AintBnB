@@ -26,7 +26,7 @@ namespace AintBnB.App.Views
         {
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
+                await AuthenticationViewModel.IsAdminAsync();
 
                 await FillComboboxWithIdsOfAllTheCustomersAsync();
             }
@@ -114,6 +114,7 @@ namespace AintBnB.App.Views
                 await BookingViewModel.DeleteABookingAsync();
 
                 await new MessageDialog("Booking deleted!").ShowAsync();
+
 
                 Frame.Navigate(typeof(AllBookingsOfOwnedAccommodations));
             }

@@ -14,6 +14,8 @@ namespace AintBnB.App.Views
     {
         public BookingViewModel BookingViewModel { get; } = new BookingViewModel();
         public AuthenticationViewModel AuthenticationViewModel { get; } = new AuthenticationViewModel();
+        private int _selectedIndex = -1;
+
         public BookingInfoPage()
         {
             this.InitializeComponent();
@@ -22,7 +24,7 @@ namespace AintBnB.App.Views
         {
             base.OnNavigatedTo(e);
 
-            WhenNavigatedToView(e, ComboBoxBookings);
+            _selectedIndex = WhenNavigatedToView(e, ComboBoxBookings);
         }
 
         private async void Page_Loaded(object sender, RoutedEventArgs e)
@@ -129,6 +131,7 @@ namespace AintBnB.App.Views
             {
                 await BookingViewModel.DeleteABookingAsync();
                 await new MessageDialog("Deletion ok!").ShowAsync();
+
                 Frame.Navigate(typeof(AllBookingsPage));
             }
             catch (Exception ex)
@@ -166,6 +169,12 @@ namespace AintBnB.App.Views
                 Rating.Visibility = Visibility.Visible;
                 ComboBoxRating.Visibility = Visibility.Collapsed;
                 RateButton.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Rating.Visibility = Visibility.Collapsed;
+                ComboBoxRating.Visibility = Visibility.Visible;
+                RateButton.Visibility = Visibility.Visible;
             }
         }
 

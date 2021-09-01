@@ -28,7 +28,6 @@ namespace AintBnB.App.Views
             try
             {
                 await WorldViewModel.GetAllCountriesInTheWorldAsync();
-
             }
             catch (Exception ex)
             {
@@ -42,7 +41,7 @@ namespace AintBnB.App.Views
         {
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
+                await AuthenticationViewModel.IsAdminAsync();
 
                 await FillComboboxWithTheIdsOfAllTheCustomersAsync();
             }
@@ -117,7 +116,7 @@ namespace AintBnB.App.Views
         {
             BookingViewModel.StartDate = AccommodationViewModel.FromDate;
 
-            await IfNotAdminOrEmployeeGetIdOfLoggedInCustomerAsync();
+            await IfNotAdminOrGetIdOfLoggedInCustomerAsync();
 
             BookingViewModel.Nights = int.Parse(nights.Text);
             BookingViewModel.Booking.Accommodation.Id = AccommodationViewModel.AllAccommodations[index].Id;
@@ -130,11 +129,11 @@ namespace AintBnB.App.Views
             await BookTheAccommodationAsync();
         }
 
-        private async Task IfNotAdminOrEmployeeGetIdOfLoggedInCustomerAsync()
+        private async Task IfNotAdminOrGetIdOfLoggedInCustomerAsync()
         {
             try
             {
-                await AuthenticationViewModel.IsEmployeeOrAdminAsync();
+                await AuthenticationViewModel.IsAdminAsync();
             }
             catch (Exception)
             {
@@ -149,6 +148,7 @@ namespace AintBnB.App.Views
             {
                 await BookingViewModel.BookAccommodationAsync();
                 await new MessageDialog("Booking successful!").ShowAsync();
+
                 Frame.Navigate(typeof(AllBookingsPage));
             }
             catch (Exception ex)

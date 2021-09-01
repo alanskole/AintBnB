@@ -1,12 +1,18 @@
-﻿using AintBnB.BusinessLogic.Interfaces;
+﻿using AintBnB.BusinessLogic.CustomExceptions;
+using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Core.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.WebApi.Helpers.CurrentUserDetails;
 
 namespace AintBnB.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private IUserService _userService;
@@ -23,8 +29,12 @@ namespace AintBnB.WebApi.Controllers
         /// <returns>Status code 201 if successful, otherwise status 400</returns>
         [HttpPost]
         [Route("api/[controller]")]
+        [AllowAnonymous]
         public async Task<IActionResult> CreateUserAsync([FromBody] User user)
         {
+            if (HttpContext.User.Identity.IsAuthenticated)
+                return BadRequest("You're already logged in with a user account!");
+
             try
             {
                 var newUser = await _userService.CreateUserAsync(user.UserName, user.Password, user.FirstName, user.LastName, user.UserType);
@@ -46,8 +56,13 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                await _userService.UpdateUserAsync(id, user);
-                return Ok(user);
+                var old = await _userService.GetUserAsync(id);
+
+                if (!CorrectUserOrAdmin(old.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return BadRequest(new AccessException().Message);
+
+                await _userService.UpdateUserAsync(id, user, GetUsertypeOfLoggedInUser(HttpContext));
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -64,9 +79,12 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                await _userService.ChangePasswordAsync(elements[0], Int32.Parse(elements[1]), elements[2], elements[3]);
+                if (GetIdOfLoggedInUser(HttpContext) != int.Parse(elements[1]))
+                    return BadRequest(new AccessException("Only the owner of the account can change their password!").Message);
 
-                return Ok("Password change ok!");
+                await _userService.ChangePasswordAsync(elements[0], int.Parse(elements[1]), elements[2], elements[3]);
+
+                return Ok();
             }
             catch (Exception ex)
             {
@@ -82,6 +100,9 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
+                if (!AdminChecker(GetUsertypeOfLoggedInUser(HttpContext)))
+                    return NotFound(new AccessException().Message);
+
                 return Ok(await _userService.GetAllUsersAsync());
             }
             catch (Exception ex)
@@ -98,23 +119,10 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                return Ok(await _userService.GetAllUsersWithTypeCustomerAsync());
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
-        }
+                if (!AdminChecker(GetUsertypeOfLoggedInUser(HttpContext)))
+                    return NotFound(new AccessException().Message);
 
-        /// <summary>API GET request that gets all users with usertype employeerequest.</summary>
-        /// <returns>Status 200 and all the users with usertype employeerequest if successful, otherwise status code 404</returns>
-        [HttpGet]
-        [Route("api/[controller]/requests")]
-        public async Task<IActionResult> GetAllEmployeeRequestsAsync()
-        {
-            try
-            {
-                return Ok(await _userService.GetAllEmployeeRequestsAsync());
+                return Ok(await _userService.GetAllUsersWithTypeCustomerAsync());
             }
             catch (Exception ex)
             {
@@ -131,7 +139,12 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
-                return Ok(await _userService.GetUserAsync(id));
+                var user = await _userService.GetUserAsync(id);
+
+                if (!CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return NotFound(new AccessException().Message);
+
+                return Ok(user);
             }
             catch (Exception ex)
             {
@@ -148,8 +161,17 @@ namespace AintBnB.WebApi.Controllers
         {
             try
             {
+                var user = await _userService.GetUserAsync(id);
+
+                if (!CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return BadRequest(new AccessException($"Administrator or user with ID {id} only!").Message);
+
                 await _deletionService.DeleteUserAsync(id);
-                return Ok("Deletion ok");
+
+                if (!AdminChecker(GetUsertypeOfLoggedInUser(HttpContext)))
+                    await HttpContext.SignOutAsync();
+
+                return Ok();
             }
             catch (Exception ex)
             {

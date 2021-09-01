@@ -21,7 +21,6 @@
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="Auto"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
                 <RowDefinition Height="2*"></RowDefinition>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -58,7 +57,7 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Visibility="Collapsed"
-                Text="{x:Bind UserViewModel.User.Id, Mode=TwoWay}"
+                Text="{x:Bind UserViewModel.User.Id, Mode=OneWay}"
                 Name="userIdTextBox"/>
 
             <TextBox
@@ -68,7 +67,7 @@
                 Header="Username"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Text="{x:Bind UserViewModel.User.UserName, Mode=TwoWay}"
+                Text="{x:Bind UserViewModel.User.UserName, Mode=OneWay}"
                 Name="userName"/>
 
             <TextBox
@@ -94,22 +93,12 @@
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                x:Name="EmployeeButton"
-                Content="Make Employee"
-                Click="Button_Click_MakeEmployee"
-                Visibility="Collapsed"/>
-
-            <Button
-                Grid.Row="7"
-                Grid.Column="1"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
                 Content="Update User"
                 Click="Button_Click_UpdateUser"
                 Name="UpdateUserButton"/>
 
             <Button
-                Grid.Row="8"
+                Grid.Row="7"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -118,7 +107,7 @@
                 Name="ChangePasswordButton"/>
 
             <Button
-                Grid.Row="9"
+                Grid.Row="8"
                 Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -127,7 +116,7 @@
                 Name="DeleteButton"/>
 
             <ContentDialog
-                Grid.ColumnSpan="11"
+                Grid.ColumnSpan="10"
                 Grid.RowSpan="3"
                 Grid.Row="4"
                 VerticalAlignment="Center"

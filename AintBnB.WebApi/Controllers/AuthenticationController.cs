@@ -1,13 +1,19 @@
 ﻿using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Core.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
+using static AintBnB.WebApi.Helpers.CurrentUserDetails;
 
 namespace AintBnB.WebApi.Controllers
 {
     [ApiController]
+    [Authorize]
     public class AuthenticationController : ControllerBase
     {
         private IUserService _userService;
@@ -20,13 +26,24 @@ namespace AintBnB.WebApi.Controllers
         /// <summary>API GET request to get the user that's logged in.</summary>
         /// <returns>Status 200 and the user if successful, otherwise status code 404</returns>
         [HttpGet]
-        [Route("api/[controller]/loggedin")]
-        public IActionResult GetLoggedInUser()
+        [Route("api/[controller]/isLoggedIn")]
+        [AllowAnonymous]
+        public IActionResult IsLoggedIn()
         {
-            if (LoggedInAs == null)
-                return NotFound("No one logged in");
+            if (HttpContext.User.Identity.IsAuthenticated)
+                return Ok();
+            else
+                return NotFound();
+        }
 
-            return Ok(LoggedInAs);
+        /// <summary>API GET request to get the user that's logged in.</summary>
+        /// <returns>Status 200 and the user if successful, otherwise status code 404</returns>
+        [HttpGet]
+        [Route("api/[controller]/loggedinUserId")]
+        public IActionResult GetLoggedInUserId()
+        {
+            var id = GetIdOfLoggedInUser(HttpContext);
+            return Ok(id);
         }
 
         [HttpGet]
@@ -43,34 +60,10 @@ namespace AintBnB.WebApi.Controllers
                 return BadRequest(ex.Message);
             }
 
-            if (CorrectUserOrAdminOrEmployee(user))
-                return Ok("User can access");
+            if (CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                return Ok();
             else
                 return BadRequest("Restricted access!");
-        }
-
-        /// <summary>API GET request to check if user that's logged in is admin or employee</summary>
-        /// <returns>Status 200  if true, otherwise status code 400</returns>
-        [HttpGet]
-        [Route("api/[controller]/elevatedrights")]
-        public IActionResult IsUserAdminOrEmployee()
-        {
-            if (HasElevatedRights())
-                return Ok("User can access");
-            else
-                return BadRequest("User is neither admin or employee!");
-        }
-
-        /// <summary>API GET request to check if the user that's logged in is employee</summary>
-        /// <returns>Status 200 if true, otherwise status code 400</returns>
-        [HttpGet]
-        [Route("api/[controller]/employee")]
-        public IActionResult IsEmployee()
-        {
-            if (EmployeeChecker())
-                return Ok("User is employee");
-            else
-                return BadRequest("User is not employee!");
         }
 
         /// <summary>API GET request to check if the user that's logged in is admin</summary>
@@ -79,24 +72,22 @@ namespace AintBnB.WebApi.Controllers
         [Route("api/[controller]/admin")]
         public IActionResult IsUserAdmin()
         {
-            if (AdminChecker())
-                return Ok("User is admin");
+            var userType = GetUsertypeOfLoggedInUser(HttpContext);
+
+            if (AdminChecker(userType))
+                return Ok();
             else
                 return BadRequest("User is not admin!");
         }
 
-        /// <summary>API GET request to logout the user</summary>
+        /// <summary>API POST request to logout the user</summary>
         /// <returns>Status 200 if successful, otherwise status code 400</returns>
-        [HttpGet]
+        [HttpPost]
         [Route("api/[controller]/logout")]
-        public IActionResult LogoutUser()
+        public async Task<IActionResult> LogoutUserAsync()
         {
-            Logout();
-
-            if (LoggedInAs == null)
-                return Ok("Logout ok!");
-            else
-                return BadRequest("Failed to logout!");
+            await HttpContext.SignOutAsync();
+            return Ok();
         }
 
 
@@ -105,13 +96,28 @@ namespace AintBnB.WebApi.Controllers
         /// <returns>Status 200 if successful, otherwise status code 404</returns>
         [HttpPost]
         [Route("api/[controller]/login")]
+        [AllowAnonymous]
         public async Task<IActionResult> LogInAsync([FromBody] string[] usernameAndPassword)
         {
+            if (HttpContext.User.Identity.IsAuthenticated)
+                return BadRequest("Already logged in!");
+
             try
             {
-                TryToLogin(usernameAndPassword[0], usernameAndPassword[1], await _userService.GetAllUsersForLoginAsync());
+                var idAndUsertypeOfUserLoggingIn = TryToLogin(usernameAndPassword[0], usernameAndPassword[1], await _userService.GetAllUsersAsync());
 
-                return Ok("Login ok!");
+                var userClaims = new List<Claim>()
+                {
+                    new Claim(ClaimTypes.NameIdentifier, idAndUsertypeOfUserLoggingIn.Item1.ToString()),
+                    new Claim(ClaimTypes.Role, idAndUsertypeOfUserLoggingIn.Item2.ToString())
+                };
+
+                var claimsId = new ClaimsIdentity(userClaims, "User Identity");
+
+                var userPrincipal = new ClaimsPrincipal(new[] { claimsId });
+                await HttpContext.SignInAsync(userPrincipal);
+
+                return Ok();
             }
             catch (Exception ex)
             {
