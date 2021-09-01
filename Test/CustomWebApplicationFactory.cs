@@ -2,12 +2,18 @@
 using AintBnB.Database.DbCtx;
 using AintBnB.WebApi;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace Test
@@ -26,7 +32,7 @@ namespace Test
         public Booking booking1;
         public Booking booking2;
         public Booking booking3;
-        private DatabaseContext db;
+        public DatabaseContext db;
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
 
@@ -41,6 +47,11 @@ namespace Test
                 services.AddDbContext<DatabaseContext>(options =>
                 {
                     options.UseInMemoryDatabase("InMemoryDbForTesting");
+                });
+
+                services.AddMvc(options =>
+                {
+                    options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
                 });
 
                 var sp = services.BuildServiceProvider();
@@ -80,7 +91,6 @@ namespace Test
                 };
 
                 db.Add(userAdmin);
-                db.SaveChanges();
                 db.SaveChanges();
                 db.Add(userCustomer1);
                 db.SaveChanges();
@@ -207,6 +217,12 @@ namespace Test
                 db.Add(booking3);
                 db.SaveChanges();
             });
+        }
+
+        public async Task LoginUserAsync(HttpClient client, string[] info)
+        {
+            await client.PostAsync("api/authentication/login",
+                new StringContent( JsonConvert.SerializeObject(info), Encoding.UTF8, "application/json"));
         }
 
         public void DisposeDb()

@@ -95,12 +95,15 @@ namespace AintBnB.WebApi.Controllers
         /// <summary>API POST request to expand the schedule of an accommodation by x amount of days</summary>
         /// <param name="id">The ID of the accommodation to expand the schedule of.</param>
         /// <param name="days">The amount of days to expand the schedule by.</param>
-        /// <returns>Status 200 and the accommodation if successful, otherwise status code 404</returns>
+        /// <returns>Status 200 and the accommodation if successful, otherwise status code 400</returns>
         [HttpPost]
         [Route("api/[controller]/{id}/expand")]
         public async Task<IActionResult> ExpandScheduleAsync([FromRoute] int id, [FromBody] int days)
         {
             var acc = await _accommodationService.GetAccommodationAsync(id);
+            if (acc == null)
+                return NotFound("Accommodation not found!");
+
             if (CorrectUserOrAdmin(acc.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
             {
                 try
@@ -110,10 +113,10 @@ namespace AintBnB.WebApi.Controllers
                 }
                 catch (Exception ex)
                 {
-                    return NotFound(ex.Message);
+                    return BadRequest(ex.Message);
                 }
             }
-            return NotFound($"Must be performed by the accommodation owner, or by admin on behalf of the accommodation owner!");
+            return BadRequest($"Must be performed by the accommodation owner, or by admin on behalf of the accommodation owner!");
         }
 
         /// <summary>API PUT request to update an existing accommodation</summary>

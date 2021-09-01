@@ -23,9 +23,9 @@ namespace AintBnB.BusinessLogic.Helpers
         /// <summary>Checks if the logged in user is admin or the user that matches the one from the parameter.</summary>
         /// <param name="idOwner">The ID of the user to check.</param>
         /// <returns>True if the logged in user has the same ID as the one from the parameter or is admin, false otherwise</returns>
-        public static bool CorrectUserOrAdmin(int idOwner, int loggedInAsId, UserTypes userType)
+        public static bool CorrectUserOrAdmin(int idOwner, int loggedInAsId, UserTypes userTypeOfLoggedInUser)
         {
-            if (AdminChecker(userType) || idOwner == loggedInAsId)
+            if (AdminChecker(userTypeOfLoggedInUser) || idOwner == loggedInAsId)
                 return true;
 
             return false;
@@ -92,12 +92,6 @@ namespace AintBnB.BusinessLogic.Helpers
                 throw new PasswordException("must contain maximum 50 characters");
         }
 
-        /// <summary>Logs out the user.</summary>
-        public static void Logout()
-        {
-            //LoggedInAs = null;
-        }
-
         /// <summary>Tries to login a user.</summary>
         /// <param name="userName">Username of the user that tries to login.</param>
         /// <param name="password">The password of the user that tries to login.</param>
@@ -116,17 +110,6 @@ namespace AintBnB.BusinessLogic.Helpers
                 }
             }
             throw new LoginException("Username and/or password not correct!");
-
-            //try
-            //{
-            //    AnyoneLoggedIn();
-            //}
-            //catch (Exception)
-            //{
-            //    LoginUser(userName, password, allUsers);
-            //    return;
-            //}
-            //throw new AlreadyLoggedInException();
         }
     }
 }

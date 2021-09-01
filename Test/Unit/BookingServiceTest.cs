@@ -6,8 +6,6 @@ using System;
 using System.Reflection;
 using System.Threading.Tasks;
 
-using static AintBnB.BusinessLogic.Helpers.Authentication;
-
 namespace Test.Unit
 {
     [TestClass]
@@ -31,8 +29,6 @@ namespace Test.Unit
         [TestMethod]
         public async Task BookAsync_ShouldReturn_NewBookingIfDatesAreAvailable()
         {
-            LoggedInAs = userCustomer2;
-
             var startDate = DateTime.Today.ToString("yyyy-MM-dd");
             var nights = 2;
 
@@ -49,8 +45,6 @@ namespace Test.Unit
         [TestMethod]
         public async Task BookAsync_ShouldFail_IfOwnerOfAccommodationWantsToBookTheirOwnAccommodationAsync()
         {
-            LoggedInAs = userCustomer1;
-
             var startDate = DateTime.Today.ToString("yyyy-MM-dd");
             var nights = 2;
 
@@ -63,8 +57,6 @@ namespace Test.Unit
         [TestMethod]
         public async Task BookAsync_ShouldFail_IfNightsAreLessThanOneAsync()
         {
-            LoggedInAs = userCustomer2;
-
             var startDate = DateTime.Today.ToString("yyyy-MM-dd");
             var nights = 0;
 
@@ -72,58 +64,6 @@ namespace Test.Unit
                 => await bookingService.BookAsync(startDate, userCustomer2, nights, accommodation1));
 
             Assert.AreEqual("Nights cannot be less than one!", ex.Message);
-        }
-
-        [TestMethod]
-        public void BookIfAvailableAndUserHasPermission_ShouldFail_IfAdminWantsToBookForOwnAccount()
-        {
-            LoggedInAs = userAdmin;
-
-            string startDate = DateTime.Today.ToString("yyyy-MM-dd");
-            int nights = 2;
-
-            var result = typeof(BookingService)
-                .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var ex = Assert.ThrowsException<TargetInvocationException>(()
-                => result.Invoke(bookingService, new object[] { startDate, userAdmin, nights, accommodation1 }));
-
-            Assert.AreEqual(ex.InnerException.GetType(), typeof(AccessException));
-
-            Assert.AreEqual($"Must be performed by a customer with ID {userAdmin.Id}, or by admin on behalf of a customer with ID {userAdmin.Id}!", ex.InnerException.Message);
-        }
-
-        [TestMethod]
-        public void BookIfAvailableAndUserHasPermission_ShouldFail_IfCustomerTriesToBookForAnotherCustomer()
-        {
-            LoggedInAs = userCustomer1;
-
-            var startDate = DateTime.Today.ToString("yyyy-MM-dd");
-            var nights = 2;
-
-            var result = typeof(BookingService)
-                .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var ex = Assert.ThrowsException<TargetInvocationException>(()
-                => result.Invoke(bookingService, new object[] { startDate, userCustomer2, nights, accommodation1 }));
-
-            Assert.AreEqual(ex.InnerException.GetType(), typeof(AccessException));
-
-            Assert.AreEqual($"Must be performed by a customer with ID {userCustomer2.Id}, or by admin on behalf of a customer with ID {userCustomer2.Id}!", ex.InnerException.Message);
-        }
-
-        [TestMethod]
-        public void BookIfAvailableAndUserHasPermission_ShouldPass_IfAdminTriesToBookForACustomer()
-        {
-            LoggedInAs = userAdmin;
-
-            var startDate = DateTime.Today.ToString("yyyy-MM-dd");
-            var nights = 2;
-
-            var result = typeof(BookingService)
-                .GetMethod("BookIfAvailableAndUserHasPermission", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            result.Invoke(bookingService, new object[] { startDate, userCustomer2, nights, accommodation1 });
         }
 
         [TestMethod]
@@ -163,8 +103,6 @@ namespace Test.Unit
         {
             await CreateDummyBookingAsync();
 
-            LoggedInAs = booking1.BookedBy;
-
             var newStartDateTime = DateTime.Today.AddDays(1);
             var originalStartDateTime = DateTime.Parse(booking1.Dates[0]);
             var originalCheckoutDateTime = DateTime.Parse(booking1.Dates[booking1.Dates.Count - 1]);
@@ -196,8 +134,6 @@ namespace Test.Unit
         public async Task UpdateBookingAsync_Should_SetUpdatedDatesToUnavailableInSchedule()
         {
             await CreateDummyBookingAsync();
-
-            LoggedInAs = booking1.BookedBy;
 
             var newStartDateTime = DateTime.Today.AddDays(1);
             var originalStartDateTime = DateTime.Parse(booking1.Dates[0]);
@@ -244,8 +180,6 @@ namespace Test.Unit
         {
             await CreateDummyBookingAsync();
 
-            LoggedInAs = booking4.BookedBy;
-
             var newStartDateTime = DateTime.Today.AddDays(10);
             var orignalDates = booking4.Dates;
 
@@ -265,8 +199,6 @@ namespace Test.Unit
         public async Task UpdateBookingAsync_ShouldSucceed_AndSetTheOriginalDatesThatAreNotBookedAnyLongerToAvailable_CaseWhenNewCheckOutDateIsBeforeOriginal()
         {
             await CreateDummyBookingAsync();
-
-            LoggedInAs = booking1.BookedBy;
 
             var newStartDateTime = DateTime.Today.AddDays(1);
             var originalStartDateTime = DateTime.Parse(booking1.Dates[0]);
@@ -304,8 +236,6 @@ namespace Test.Unit
         {
             await CreateDummyBookingAsync();
 
-            LoggedInAs = booking1.BookedBy;
-
             var newStartDateTime = DateTime.Today.AddDays(3);
             var originalStartDateTime = DateTime.Parse(booking1.Dates[0]);
             var originalCheckoutDateTime = DateTime.Parse(booking1.Dates[booking1.Dates.Count - 1]);
@@ -341,8 +271,6 @@ namespace Test.Unit
         {
             await CreateDummyBookingAsync();
 
-            LoggedInAs = booking1.BookedBy;
-
             var newStartDateTime = DateTime.Today.AddDays(15);
             var orignalDates = booking1.Dates;
 
@@ -374,32 +302,15 @@ namespace Test.Unit
         {
             await CreateDummyBookingAsync();
 
-            LoggedInAs = userCustomer2;
-
             var bk = await bookingService.GetBookingAsync(1);
 
             Assert.AreEqual(booking1.Id, bk.Id);
         }
-
-        [TestMethod]
-        public async Task GetBookingAsync_ShouldReturn_CorrectBookingIfOwnerOfAccommodationTriesToGetABookingOfTheirAccommodationByAnotherUser()
-        {
-            await CreateDummyBookingAsync();
-
-            LoggedInAs = userCustomer1;
-
-            var bk = await bookingService.GetBookingAsync(1);
-
-            Assert.AreEqual(booking1.Id, bk.Id);
-        }
-
 
         [TestMethod]
         public async Task GetBookingAsync_ShouldFail_IfIdDoesNotExist()
         {
             await CreateDummyBookingAsync();
-
-            LoggedInAs = userCustomer1;
 
             var ex = await Assert.ThrowsExceptionAsync<IdNotFoundException>(async ()
                 => await bookingService.GetBookingAsync(100));
@@ -411,8 +322,6 @@ namespace Test.Unit
         public async Task GetBookingsOfOwnedAccommodationAsync_ShouldReturn_ListOfAllBookingsOnTheAccommodationOfTheUser()
         {
             await CreateDummyBookingAsync();
-
-            LoggedInAs = userCustomer2;
 
             var all = await bookingService.GetBookingsOfOwnedAccommodationAsync(3);
 
@@ -427,8 +336,6 @@ namespace Test.Unit
         public async Task GetBookingsOfOwnedAccommodationAsync_ShouldFail_IfThereAreNoBookingsOnTheAccommodationsOfTheUser()
         {
             await CreateDummyBookingAsync();
-
-            LoggedInAs = userAdmin;
 
             await userService.CreateUserAsync("usr", "aaaaaa", "fa", "sd", UserTypes.Customer);
 
@@ -445,13 +352,11 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task GetAllBookingsAsync_ShouldReturn_AllBookingsInTheSystemIfAdmin()
+        public async Task GetAllBookingsAsync_ShouldReturn_AllBookingsInTheSystem()
         {
             await CreateDummyBookingAsync();
 
-            LoggedInAs = userAdmin;
-
-            var allBookings = await bookingService.GetAllBookingsAsync();
+            var allBookings = await bookingService.GetAllInSystemAsync();
 
             Assert.AreEqual(6, allBookings.Count);
             Assert.IsTrue(allBookings.Contains(booking1));
@@ -460,13 +365,11 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task GetAllBookingsAsync_ShouldReturn_AllBookingsOfTheCustomerIfNormalCustomer()
+        public async Task GetAllBookingsAsync_ShouldReturn_AllBookingsOfTheCustomer()
         {
             await CreateDummyBookingAsync();
 
-            LoggedInAs = userCustomer1;
-
-            var allBookings = await bookingService.GetAllBookingsAsync();
+            var allBookings = await bookingService.GetOnlyOnesOwnedByUserAsync(userCustomer1.Id);
 
             Assert.AreEqual(2, allBookings.Count);
             Assert.IsTrue(allBookings.Contains(booking2));
@@ -476,10 +379,8 @@ namespace Test.Unit
         [TestMethod]
         public async Task GetAllBookingsAsync_ShouldFail_IfThereAreNoBookingsInTheSystemAsync()
         {
-            LoggedInAs = userAdmin;
-
             var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
-                => await bookingService.GetAllBookingsAsync());
+                => await bookingService.GetAllInSystemAsync());
 
             Assert.AreEqual("No bookings found!", ex.Message);
         }
@@ -487,26 +388,22 @@ namespace Test.Unit
         [TestMethod]
         public async Task GetAllBookingsAsync_ShouldFail_IfCustomerDoesNotHaveAnyBookingsAsync()
         {
-            LoggedInAs = userCustomer1;
-
             var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
-                => await bookingService.GetAllBookingsAsync());
+                => await bookingService.GetAllInSystemAsync());
 
-            Assert.AreEqual($"User with Id {userCustomer1.Id} doesn't have any bookings!", ex.Message);
+            Assert.AreEqual($"No bookings found!", ex.Message);
         }
 
         [TestMethod]
-        public async Task CanRatingBeGiven_ShouldFail_WhenTryingToBookBeforeTheCheckoutDateHasPassed()
+        public async Task CanRatingBeGiven_ShouldFail_WhenTryingToRateBeforeTheCheckoutDateHasPassed()
         {
             await CreateDummyBookingAsync();
-
-            LoggedInAs = booking1.BookedBy;
 
             var result = typeof(BookingService)
                 .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.ThrowsException<TargetInvocationException>(()
-                => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 3 }));
+                => result.Invoke(bookingService, new object[] { booking1, 3 }));
 
             Assert.AreEqual(ex.InnerException.GetType(), typeof(ParameterException));
 
@@ -514,29 +411,9 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task CanRatingBeGiven_ShouldFail_WhenRatingGivenBySomeoneElseThanTheBooker()
-        {
-            await CreateDummyBookingAsync();
-
-            LoggedInAs = userAdmin;
-
-            var result = typeof(BookingService)
-                .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
-
-            var ex = Assert.ThrowsException<TargetInvocationException>(()
-                => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 3 }));
-
-            Assert.AreEqual(ex.InnerException.GetType(), typeof(AccessException));
-
-            Assert.AreEqual("Only the booker can leave a rating!", ex.InnerException.Message);
-        }
-
-        [TestMethod]
         public async Task CanRatingBeGiven_ShouldFail_WhenBookingHasAlreadyBeenRated()
         {
             await CreateDummyBookingAsync();
-
-            LoggedInAs = booking1.BookedBy;
 
             booking1.Rating = 2;
 
@@ -544,7 +421,7 @@ namespace Test.Unit
                 .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.ThrowsException<TargetInvocationException>(()
-                => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 3 }));
+                => result.Invoke(bookingService, new object[] { booking1, 3 }));
 
             Assert.AreEqual(ex.InnerException.GetType(), typeof(ParameterException));
 
@@ -556,13 +433,11 @@ namespace Test.Unit
         {
             await CreateDummyBookingAsync();
 
-            LoggedInAs = booking1.BookedBy;
-
             var result = typeof(BookingService)
                 .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
             var ex = Assert.ThrowsException<TargetInvocationException>(()
-                => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 0 }));
+                => result.Invoke(bookingService, new object[] { booking1, 0 }));
 
             Assert.AreEqual(ex.InnerException.GetType(), typeof(ParameterException));
 
@@ -572,7 +447,7 @@ namespace Test.Unit
                 .GetMethod("CanRatingBeGiven", BindingFlags.NonPublic | BindingFlags.Instance);
 
             ex = Assert.ThrowsException<TargetInvocationException>(()
-                => result.Invoke(bookingService, new object[] { booking1, booking1.BookedBy, 6 }));
+                => result.Invoke(bookingService, new object[] { booking1, 6 }));
 
             Assert.AreEqual("Rating cannot be less than 1 or bigger than 5!", ex.InnerException.Message);
         }

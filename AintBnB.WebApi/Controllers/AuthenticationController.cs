@@ -60,7 +60,7 @@ namespace AintBnB.WebApi.Controllers
                 return BadRequest(ex.Message);
             }
 
-            if (CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), user.UserType))
+            if (CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
                 return Ok();
             else
                 return BadRequest("Restricted access!");
@@ -99,6 +99,9 @@ namespace AintBnB.WebApi.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> LogInAsync([FromBody] string[] usernameAndPassword)
         {
+            if (HttpContext.User.Identity.IsAuthenticated)
+                return BadRequest("Already logged in!");
+
             try
             {
                 var idAndUsertypeOfUserLoggingIn = TryToLogin(usernameAndPassword[0], usernameAndPassword[1], await _userService.GetAllUsersAsync());

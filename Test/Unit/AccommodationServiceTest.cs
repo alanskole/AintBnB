@@ -8,8 +8,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-using static AintBnB.BusinessLogic.Helpers.Authentication;
-
 namespace Test.Unit
 {
     [TestClass]
@@ -30,24 +28,9 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task CreateAccommodationAsync_ShouldReturn_NewAccommodationWhenCustomerCreatesOwnedByTheCustomer()
+        public async Task CreateAccommodationAsync_ShouldReturn_NewAccommodation()
         {
-            LoggedInAs = userCustomer1;
-
             var acc = await accommodationService.CreateAccommodationAsync(userCustomer1, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100);
-
-            Assert.AreEqual(1, acc.Id);
-            Assert.AreEqual(userCustomer1.Id, acc.Owner.Id);
-            Assert.AreEqual(adr1, acc.Address);
-        }
-
-        [TestMethod]
-        public async Task CreateAccommodationAsync_ShouldReturn_NewAccommodationWhenAdminCreatesOnBehalfOfCustomer()
-        {
-            LoggedInAs = userAdmin;
-
-            var acc = await accommodationService.CreateAccommodationAsync(userCustomer1, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100);
-
             Assert.AreEqual(1, acc.Id);
             Assert.AreEqual(userCustomer1.Id, acc.Owner.Id);
             Assert.AreEqual(adr1, acc.Address);
@@ -56,34 +39,10 @@ namespace Test.Unit
         [TestMethod]
         public async Task CreateAccommodationAsync_ShouldFail_IfDaysToCreateScheduleForIsLessThanOneAsync()
         {
-            LoggedInAs = userCustomer1;
-
             var ex = await Assert.ThrowsExceptionAsync<ParameterException>(async ()
                 => await accommodationService.CreateAccommodationAsync(userCustomer2, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 0));
 
             Assert.AreEqual("Days to create the schedule for cannot be less than one!", ex.Message);
-        }
-
-        [TestMethod]
-        public async Task CreateAccommodationAsync_ShouldFail_IfOwnerIsNotCustomerAsync()
-        {
-            LoggedInAs = userAdmin;
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await accommodationService.CreateAccommodationAsync(userAdmin, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100));
-
-            Assert.AreEqual(ex.Message, $"Must be performed by a customer with ID {userAdmin.Id}, or by admin on behalf of a customer with ID {userAdmin.Id}!");
-        }
-
-        [TestMethod]
-        public async Task CreateAccommodationAsync_ShouldFail_IfCustomerTriesToCreateAccommodationForAnotherUserAsync()
-        {
-            LoggedInAs = userCustomer1;
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await accommodationService.CreateAccommodationAsync(userCustomer2, adr1, 50, 2, 2.3, "mmm mmm", 600, 2, 100));
-
-            Assert.AreEqual(ex.Message, $"Must be performed by a customer with ID {userCustomer2.Id}, or by admin on behalf of a customer with ID {userCustomer2.Id}!");
         }
 
         [DataRow(0, "ss", "3f", "23", "ss", "Fredrikstad", "Norway", 10, "ss", 10, 1)]
@@ -221,10 +180,8 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task GetAccommodationAsync_ShouldReturn_CorrectAccommodationIfAnyoneLoggedIn()
+        public async Task GetAccommodationAsync_ShouldReturn_CorrectAccommodation()
         {
-            LoggedInAs = userCustomer2;
-
             await CreateDummyAccommodationAsync();
 
             var acc = await accommodationService.GetAccommodationAsync(1);
@@ -236,23 +193,8 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task GetAccommodationAsync_ShouldFail_IfNoOneLoggedIn()
-        {
-            LoggedInAs = null;
-
-            await CreateDummyAccommodationAsync();
-
-            var ex = await Assert.ThrowsExceptionAsync<LoginException>(async ()
-                => await accommodationService.GetAccommodationAsync(1));
-
-            Assert.AreEqual("Not logged in!", ex.Message);
-        }
-
-        [TestMethod]
         public async Task GetAccommodationAsync_ShouldFail_IfNoAccommodationsWithTheIdExists()
         {
-            LoggedInAs = userAdmin;
-
             await CreateDummyAccommodationAsync();
 
             var ex = await Assert.ThrowsExceptionAsync<IdNotFoundException>(async ()
@@ -262,10 +204,8 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task GetAllAccommodationsAsync_ShouldReturn_CorrectAccommodationIfAnyoneLoggedInAndDatabaseHasAccommodations()
+        public async Task GetAllAccommodationsAsync_ShouldReturn_AllAccommodations()
         {
-            LoggedInAs = userCustomer2;
-
             await CreateDummyAccommodationAsync();
 
             var all = await accommodationService.GetAllAccommodationsAsync();
@@ -276,8 +216,6 @@ namespace Test.Unit
         [TestMethod]
         public async Task GetAllAccommodationsAsync_ShouldFail_IfNoAccommodationsInDatabaseAsync()
         {
-            LoggedInAs = userCustomer1;
-
             var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
                 => await accommodationService.GetAllAccommodationsAsync());
 
@@ -285,23 +223,8 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task GetAllAccommodationsAsync_ShouldFail_IfNoOneLoggedIn()
-        {
-            LoggedInAs = null;
-
-            await CreateDummyAccommodationAsync();
-
-            var ex = await Assert.ThrowsExceptionAsync<LoginException>(async ()
-                => await accommodationService.GetAllAccommodationsAsync());
-
-            Assert.AreEqual("Not logged in!", ex.Message);
-        }
-
-        [TestMethod]
         public async Task GetAllOwnedAccommodationsAsync_ShouldReturn_AllTheAccommodationsOwnedByAUser()
         {
-            LoggedInAs = userCustomer2;
-
             await CreateDummyAccommodationAsync();
 
             var all = await accommodationService.GetAllOwnedAccommodationsAsync(userCustomer2.Id);
@@ -316,8 +239,6 @@ namespace Test.Unit
         [TestMethod]
         public async Task GetAllOwnedAccommodationsAsync_ShouldFail_IfTheUserHasNoAccommodations()
         {
-            LoggedInAs = userAdmin;
-
             await CreateDummyAccommodationAsync();
 
             var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
@@ -329,67 +250,6 @@ namespace Test.Unit
         [TestMethod]
         public async Task UpdateAccommodationAsync_ShouldSucceed_IfChangingSquareMetersDescriptionPricePerNightOrCancellationDeadlineInDays()
         {
-            await CreateDummyAccommodationAsync();
-
-            LoggedInAs = accommodation1.Owner;
-
-            Accommodation upd = new Accommodation { SquareMeters = 1, Description = "new", PricePerNight = 1, CancellationDeadlineInDays = 11 };
-
-            Assert.AreNotEqual(accommodation1.SquareMeters, upd.SquareMeters);
-            Assert.AreNotEqual(accommodation1.Description, upd.Description);
-            Assert.AreNotEqual(accommodation1.PricePerNight, upd.PricePerNight);
-            Assert.AreNotEqual(accommodation1.CancellationDeadlineInDays, upd.CancellationDeadlineInDays);
-
-            await accommodationService.UpdateAccommodationAsync(accommodation1.Id, upd);
-
-            Assert.AreEqual(accommodation1.SquareMeters, upd.SquareMeters);
-            Assert.AreEqual(accommodation1.Description, upd.Description);
-            Assert.AreEqual(accommodation1.PricePerNight, upd.PricePerNight);
-            Assert.AreEqual(accommodation1.CancellationDeadlineInDays, upd.CancellationDeadlineInDays);
-        }
-
-        [TestMethod]
-        public async Task UpdateAccommodationAsync_ShouldFail_IfNotDoneByACustomerThatDoesNotOwnTheAccommodation()
-        {
-            await CreateDummyAccommodationAsync();
-
-            LoggedInAs = userCustomer2;
-
-            Accommodation upd = new Accommodation { SquareMeters = 1, Description = "new", PricePerNight = 1, CancellationDeadlineInDays = 11 };
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await accommodationService.UpdateAccommodationAsync(accommodation1.Id, upd));
-
-            Assert.AreEqual($"Must be performed by a customer with ID {accommodation1.Owner.Id}, or by admin on behalf of a customer with ID {accommodation1.Owner.Id}!", ex.Message);
-        }
-
-        [TestMethod]
-        public async Task UpdateAccommodationAsync_ShouldSucceed_IfDoneByOnBehalfOfTheOwner()
-        {
-            await CreateDummyAccommodationAsync();
-
-            LoggedInAs = accommodation1.Owner;
-
-            Accommodation upd = new Accommodation { SquareMeters = 1, Description = "new", PricePerNight = 1, CancellationDeadlineInDays = 11 };
-
-            Assert.AreNotEqual(accommodation1.SquareMeters, upd.SquareMeters);
-            Assert.AreNotEqual(accommodation1.Description, upd.Description);
-            Assert.AreNotEqual(accommodation1.PricePerNight, upd.PricePerNight);
-            Assert.AreNotEqual(accommodation1.CancellationDeadlineInDays, upd.CancellationDeadlineInDays);
-
-            await accommodationService.UpdateAccommodationAsync(accommodation1.Id, upd);
-
-            Assert.AreEqual(accommodation1.SquareMeters, upd.SquareMeters);
-            Assert.AreEqual(accommodation1.Description, upd.Description);
-            Assert.AreEqual(accommodation1.PricePerNight, upd.PricePerNight);
-            Assert.AreEqual(accommodation1.CancellationDeadlineInDays, upd.CancellationDeadlineInDays);
-        }
-
-        [TestMethod]
-        public async Task UpdateAccommodationAsync_ShouldSucceed_IfDoneByAdminOnBehalfOfTheOwner()
-        {
-            LoggedInAs = userAdmin;
-
             await CreateDummyAccommodationAsync();
 
             Accommodation upd = new Accommodation { SquareMeters = 1, Description = "new", PricePerNight = 1, CancellationDeadlineInDays = 11 };
@@ -412,8 +272,6 @@ namespace Test.Unit
         {
             await CreateDummyAccommodationAsync();
 
-            LoggedInAs = accommodation1.Owner;
-
             int exandByDays = 10;
 
             int newSize = accommodation1.Schedule.Count + exandByDays;
@@ -426,24 +284,9 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task ExpandScheduleOfAccommodationWithXAmountOfDaysAsync_ShouldFail_IfDoneByACustomerThatDoesNotOwnTheAccommodation()
-        {
-            await CreateDummyAccommodationAsync();
-
-            LoggedInAs = accommodation3.Owner;
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(accommodation1.Id, 10));
-
-            Assert.AreEqual($"Must be performed by a customer with ID {accommodation1.Owner.Id}, or by admin on behalf of a customer with ID {accommodation1.Owner.Id}!", ex.Message);
-        }
-
-        [TestMethod]
         public async Task ExpandScheduleOfAccommodationWithXAmountOfDaysAsync_ShouldFail_IfDaysToExapndByIsLessThanOne()
         {
             await CreateDummyAccommodationAsync();
-
-            LoggedInAs = accommodation1.Owner;
 
             var ex = await Assert.ThrowsExceptionAsync<ParameterException>(async ()
                 => await accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(accommodation1.Id, 0));
@@ -456,8 +299,6 @@ namespace Test.Unit
         {
             await CreateDummyAccommodationAsync();
 
-            LoggedInAs = accommodation1.Owner;
-
             var ex = await Assert.ThrowsExceptionAsync<IdNotFoundException>(async ()
                 => await accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(100, 10));
 
@@ -468,8 +309,6 @@ namespace Test.Unit
         public async Task FindAvailableAsync_ShouldReturn_AllAvailableAccommodationsInACityIfAvailable()
         {
             await CreateDummyAccommodationAsync();
-
-            LoggedInAs = accommodation1.Owner;
 
             Assert.AreEqual(accommodation1.Address.City, accommodation2.Address.City);
             Assert.AreEqual(accommodation1.Address.Country, accommodation2.Address.Country);
@@ -489,8 +328,6 @@ namespace Test.Unit
 
             await CreateDummyBookingAsync();
 
-            LoggedInAs = accommodation1.Owner;
-
             var ex = await Assert.ThrowsExceptionAsync<DateException>(async ()
                 => await accommodationService.FindAvailableAsync(accommodation1.Address.Country, accommodation1.Address.City, DateTime.Today.AddDays(6).ToString("yyyy-MM-dd"), 15));
 
@@ -501,8 +338,6 @@ namespace Test.Unit
         public async Task SortListOfAccommodations_ShouldReturn_ListWithCorrectSorting()
         {
             await CreateDummyAccommodationAsync();
-
-            LoggedInAs = accommodation1.Owner;
 
             var av = await accommodationService.FindAvailableAsync(accommodation1.Address.Country, accommodation1.Address.City, DateTime.Today.ToString("yyyy-MM-dd"), 5);
 

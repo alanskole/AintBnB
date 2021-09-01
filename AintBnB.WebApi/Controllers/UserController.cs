@@ -33,7 +33,7 @@ namespace AintBnB.WebApi.Controllers
         public async Task<IActionResult> CreateUserAsync([FromBody] User user)
         {
             if (HttpContext.User.Identity.IsAuthenticated)
-                return BadRequest();
+                return BadRequest("You're already logged in with a user account!");
 
             try
             {

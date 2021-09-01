@@ -1,7 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using AintBnB.Core.Models;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
@@ -14,10 +17,11 @@ namespace Test.Integration
         private HttpClient _client;
 
         [TestInitialize]
-        public void SetUp()
+        public async Task SetUpAsync()
         {
             _factory = new CustomWebApplicationFactory();
             _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userAdmin.UserName, "aaaaaa" });
         }
 
         [TestCleanup]
@@ -29,25 +33,25 @@ namespace Test.Integration
         [TestMethod]
         public async Task Book_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userAdmin;
-
             string startDate = _factory.accommodation1.Schedule.Keys.Last();
 
-            var response = await _client.GetAsync("api/booking/" + startDate + "/3/1/1");
+            var bookingInfo = JsonConvert.SerializeObject(new string[] { startDate, "3", "1", "1" });
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+            var response = await _client.PostAsync(
+                "api/booking/book", new StringContent(bookingInfo, Encoding.UTF8, "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
         }
 
         [TestMethod]
         public async Task Book_ShouldReturn_BadRequestIfError()
         {
-            LoggedInAs = _factory.userAdmin;
-
             string startDate = _factory.accommodation1.Schedule.Keys.Last();
 
-            var response = await _client.GetAsync("api/booking/" + startDate + "/6/2/1");
+            var bookingInfo = JsonConvert.SerializeObject(new string[] { startDate, "6", "2", "1" });
 
+            var response = await _client.PostAsync(
+                "api/booking/book", new StringContent(bookingInfo, Encoding.UTF8, "application/json"));
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
@@ -55,24 +59,23 @@ namespace Test.Integration
         [TestMethod]
         public async Task UpdateBooking_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userAdmin;
-
             string startDate = _factory.accommodation1.Schedule.Keys.Last();
 
-            var response = await _client.GetAsync("api/booking/" + startDate + "/1/1");
+            var newDates = JsonConvert.SerializeObject(new string[] { startDate, "1"});
+
+            var response = await _client.PutAsync("api/booking/1", new StringContent(newDates, Encoding.UTF8, "application/json"));
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
         [TestMethod]
         public async Task UpdateBooking_ShouldReturn_BadRequestIfError()
         {
-            LoggedInAs = _factory.userAdmin;
-
             string startDate = _factory.accommodation1.Schedule.Keys.Last();
 
-            var response = await _client.GetAsync("api/booking/" + startDate + "/2/1");
+            var newDates = JsonConvert.SerializeObject(new string[] { startDate, "2" });
+
+            var response = await _client.PutAsync("api/booking/1", new StringContent(newDates, Encoding.UTF8, "application/json"));
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
@@ -81,9 +84,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task GetBooking_ShouldReturn_SuccessStatus()
         {
-
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.GetAsync("api/booking/1");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -93,9 +93,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task GetBooking_ShouldReturn_NotFoundIfError()
         {
-
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.GetAsync("api/booking/100");
 
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
@@ -105,8 +102,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task GetBookingsOnOwnedAccommodations_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userCustomer2;
-
             var response = await _client.GetAsync("api/booking/3/bookingsownaccommodation");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -116,9 +111,19 @@ namespace Test.Integration
         [TestMethod]
         public async Task GetBookingsOnOwnedAccommodations_ShouldReturn_NotFoundIfError()
         {
-            LoggedInAs = _factory.userCustomer2;
+            var userCustomer3 = new User
+            {
+                UserName = "customer3",
+                Password = HashPassword("aaaaaa"),
+                FirstName = "Second",
+                LastName = "Customer",
+                UserType = UserTypes.Customer
+            };
 
-            var response = await _client.GetAsync("api/booking/600/bookingsownaccommodation");
+            _factory.db.Add(userCustomer3);
+            _factory.db.SaveChanges();
+
+            var response = await _client.GetAsync("api/booking/4/bookingsownaccommodation");
 
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
@@ -127,8 +132,6 @@ namespace Test.Integration
         [TestMethod]
         public async Task GetAllBookings_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.GetAsync("api/booking");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -136,32 +139,16 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetAllBookings_ShouldReturn_NotFoundIfError()
-        {
-            LoggedInAs = null;
-
-            var response = await _client.GetAsync("api/booking");
-
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
-            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-        }
-
-        [TestMethod]
         public async Task DeleteBooking_ShouldReturn_SuccessStatus()
         {
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.DeleteAsync("api/booking/1");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
         [TestMethod]
         public async Task DeleteBooking_ShouldReturn_BadRequestIfError()
         {
-            LoggedInAs = _factory.userAdmin;
-
             var response = await _client.DeleteAsync("api/booking/100");
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);

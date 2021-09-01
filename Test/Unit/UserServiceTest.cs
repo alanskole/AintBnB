@@ -27,41 +27,6 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task GetAllUsersForLoginAsync_ShouldReturn_ListOfAllUsers_WhenNoOneLoggedIn()
-        {
-            await CreateDummyUsersAsync();
-
-            Logout();
-            var all = await userService.GetAllUsersForLoginAsync();
-            Assert.AreEqual(4, all.Count);
-            Assert.AreEqual(UserTypes.Admin, all[0].UserType);
-        }
-
-        [TestMethod]
-        public async Task GetAllUsersForLoginAsync_ShoudFail_WhenLoggingInWithoutAnyRegisteredUsersAsync()
-        {
-            Logout();
-
-            var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
-                => await userService.GetAllUsersForLoginAsync());
-
-            Assert.AreEqual(ex.Message, "No users found!");
-        }
-
-        [TestMethod]
-        public async Task GetAllUsersForLoginAsync_ShoudFail_WhenAlreadyLoggedIn()
-        {
-            await CreateDummyUsersAsync();
-
-            LoggedInAs = userAdmin;
-
-            var ex = await Assert.ThrowsExceptionAsync<AlreadyLoggedInException>(async ()
-                => await userService.GetAllUsersForLoginAsync());
-
-            Assert.AreEqual(ex.Message, "Already logged in!");
-        }
-
-        [TestMethod]
         public async Task CreateUserAsync_ShouldReturn_NewlyCreatedUser()
         {
             var first = await userService.CreateUserAsync("adm1", "aaaaaa", "adminfirstname", "adminlastname", UserTypes.Admin);
@@ -125,8 +90,6 @@ namespace Test.Unit
         {
             await CreateDummyUsersAsync();
 
-            LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id);
-
             var user = await userService.GetUserAsync(id);
 
             Assert.AreNotEqual(user.FirstName, newFirstname);
@@ -135,7 +98,7 @@ namespace Test.Unit
             user.FirstName = newFirstname;
             user.LastName = newLastname;
 
-            await userService.UpdateUserAsync(id, await unitOfWork.UserRepository.ReadAsync(id));
+            await userService.UpdateUserAsync(id, user, user.UserType);
 
             user = await userService.GetUserAsync(id);
 
@@ -152,13 +115,13 @@ namespace Test.Unit
         {
             await CreateDummyUsersAsync();
 
-            LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id);
+            var user = await unitOfWork.UserRepository.ReadAsync(id);
 
-            Assert.IsFalse(VerifyPasswordHash(newPass, LoggedInAs.Password));
+            Assert.IsFalse(VerifyPasswordHash(newPass, user.Password));
 
             await userService.ChangePasswordAsync("aaaaaa", id, newPass, newPassConfirm);
 
-            Assert.IsTrue(VerifyPasswordHash(newPass, LoggedInAs.Password));
+            Assert.IsTrue(VerifyPasswordHash(newPass, user.Password));
         }
 
         [DataRow(1, "<'newpassone'>", "<'newpassone'>")]
@@ -168,8 +131,6 @@ namespace Test.Unit
         public async Task ChangePasswordAsync_ShouldFailWhen_OldPasswordWrong_NewPasswordConfirmationFails_UnchangedNewAndOld(int id, string newPass, string newPassConfirmed)
         {
             await CreateDummyUsersAsync();
-
-            LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id);
 
             if (id == 1)
             {
@@ -194,22 +155,6 @@ namespace Test.Unit
             }
         }
 
-
-        [DataRow(2, "newpasstwo", "aaaaaa")]
-        [DataRow(3, "newpassthree", "aaaaaa")]
-        [DataTestMethod]
-        public async Task ChangePasswordAsync_ShouldFail_WhenNotDoneByAccountOwner(int id, string oldPass, string newPass)
-        {
-            await CreateDummyUsersAsync();
-
-            LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id - 1);
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await userService.ChangePasswordAsync(oldPass, id, newPass, newPass));
-
-            Assert.AreEqual(ex.Message, "Only the owner of the account can change their password!");
-        }
-
         [DataRow(1)]
         [DataRow(2)]
         [DataRow(3)]
@@ -219,32 +164,15 @@ namespace Test.Unit
         {
             await CreateDummyUsersAsync();
 
-            LoggedInAs = await unitOfWork.UserRepository.ReadAsync(id);
-
-            User user = await userService.GetUserAsync(id);
+            var user = await userService.GetUserAsync(id);
 
             Assert.AreEqual(id, user.Id);
-        }
-
-        [TestMethod]
-        public async Task GetUserAsync_ShouldFail_IfCustomerTriesToGetAnotherUserAccount()
-        {
-            await CreateDummyUsersAsync();
-
-            LoggedInAs = userCustomer1;
-
-            var exc = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await userService.GetUserAsync(3));
-
-            Assert.AreEqual(exc.Message, "Restricted access!");
         }
 
         [TestMethod]
         public async Task GetUserAsync_ShouldFail_IfNoUsersWithTheIdExists()
         {
             await CreateDummyUsersAsync();
-
-            LoggedInAs = userAdmin;
 
             var ex = await Assert.ThrowsExceptionAsync<IdNotFoundException>(async ()
                 => await userService.GetUserAsync(600));
@@ -253,28 +181,9 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task Only_Admin_Can_View_Admin_Account()
+        public async Task GetAllUsersAsync_ShouldReturn_AllUsers()
         {
             await CreateDummyUsersAsync();
-
-            LoggedInAs = userAdmin;
-
-            await userService.GetUserAsync(1);
-
-            LoggedInAs = userCustomer1;
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
-                => await userService.GetUserAsync(1));
-
-            Assert.AreEqual(ex.Message, "Restricted access!");
-        }
-
-        [TestMethod]
-        public async Task GetAllUsersAsync_ShouldReturn_AllUsersWhenAdmin()
-        {
-            await CreateDummyUsersAsync();
-
-            LoggedInAs = userAdmin;
 
             var all = await userService.GetAllUsersAsync();
 
@@ -282,16 +191,12 @@ namespace Test.Unit
         }
 
         [TestMethod]
-        public async Task GetAllUsersAsync_ShouldFail_WhenCustomer()
+        public async Task GetAllUsersAsync_ShouldFail_WhenNoUsersExist()
         {
-            await CreateDummyUsersAsync();
-
-            LoggedInAs = userCustomer1;
-
-            var ex = await Assert.ThrowsExceptionAsync<AccessException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
                 => await userService.GetAllUsersAsync());
 
-            Assert.AreEqual(ex.Message, "Restricted access!");
+            Assert.AreEqual(ex.Message, "No users found!");
         }
 
         [TestMethod]
