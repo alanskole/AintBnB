@@ -1,8 +1,6 @@
 ﻿using AintBnB.BusinessLogic.CustomExceptions;
-using AintBnB.BusinessLogic.Helpers;
 using AintBnB.Core.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Reflection;
 using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
 
@@ -164,8 +162,8 @@ namespace Test.Unit
 
             var all = await userService.GetAllUsersAsync();
 
-            var ex = Assert.ThrowsException<LoginException>( ()
-                => TryToLogin("ssssssssssssssss", "aaaaaa", all));
+            var ex = Assert.ThrowsException<LoginException>(()
+               => TryToLogin("ssssssssssssssss", "aaaaaa", all));
 
             Assert.AreEqual("Username and/or password not correct!", ex.Message);
         }
@@ -179,9 +177,9 @@ namespace Test.Unit
 
             var all = await userService.GetAllUsersAsync();
 
-            
-            var ex = Assert.ThrowsException<LoginException>( ()
-                => TryToLogin(userCustomer1.UserName, "blblblblbla", all));
+
+            var ex = Assert.ThrowsException<LoginException>(()
+               => TryToLogin(userCustomer1.UserName, "blblblblbla", all));
 
             Assert.AreEqual("Username and/or password not correct!", ex.Message);
         }

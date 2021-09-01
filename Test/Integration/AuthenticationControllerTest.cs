@@ -71,7 +71,7 @@ namespace Test.Integration
             _client = _factory.CreateClient();
 
             await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
-            
+
             var response = await _client.GetAsync("api/authentication/admin");
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);

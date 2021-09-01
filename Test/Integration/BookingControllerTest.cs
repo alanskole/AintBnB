@@ -61,7 +61,7 @@ namespace Test.Integration
         {
             string startDate = _factory.accommodation1.Schedule.Keys.Last();
 
-            var newDates = JsonConvert.SerializeObject(new string[] { startDate, "1"});
+            var newDates = JsonConvert.SerializeObject(new string[] { startDate, "1" });
 
             var response = await _client.PutAsync("api/booking/1", new StringContent(newDates, Encoding.UTF8, "application/json"));
 

@@ -174,7 +174,7 @@ namespace Test.Integration
         public async Task GetAllCustomers_ShouldReturn_NotFoundIfError()
         {
             _client = _factory.CreateClient();
-            
+
             await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
 
             var response = await _client.GetAsync("api/user/allcustomers");
