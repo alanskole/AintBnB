@@ -18,7 +18,7 @@ namespace AintBnB.App.CommonMethodsAndProperties
         {
             var json = JsonConvert.SerializeObject(objJson);
             var response = await clientProvider.client.PostAsync(
-                new Uri(uri), new StringContent(json, Encoding.UTF8, "application/json"));
+                new Uri(clientProvider.client.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }
 
@@ -29,7 +29,7 @@ namespace AintBnB.App.CommonMethodsAndProperties
         /// <returns>The object that was requested</returns>
         public static async Task<T> GetAsync<T>(string uri, HttpClientProvider clientProvider)
         {
-            var response = await clientProvider.client.GetAsync(new Uri(uri));
+            var response = await clientProvider.client.GetAsync(new Uri(clientProvider.client.BaseAddress + uri));
             ResponseChecker(response);
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(json);
@@ -40,7 +40,7 @@ namespace AintBnB.App.CommonMethodsAndProperties
         /// <param name="clientProvider">The client provider containing the HttpClient that will be used to make the API call.</param>
         public static async Task GetAsync(string uri, HttpClientProvider clientProvider)
         {
-            var response = await clientProvider.client.GetAsync(new Uri(uri));
+            var response = await clientProvider.client.GetAsync(new Uri(clientProvider.client.BaseAddress + uri));
             ResponseChecker(response);
         }
 
@@ -51,7 +51,7 @@ namespace AintBnB.App.CommonMethodsAndProperties
         /// <returns>A list of the objects that was requested</returns>
         public static async Task<List<T>> GetAllAsync<T>(string uri, HttpClientProvider clientProvider)
         {
-            var response = await clientProvider.client.GetAsync(new Uri(uri));
+            var response = await clientProvider.client.GetAsync(new Uri(clientProvider.client.BaseAddress + uri));
             ResponseChecker(response);
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<T>>(json);
@@ -66,7 +66,7 @@ namespace AintBnB.App.CommonMethodsAndProperties
             var json = JsonConvert.SerializeObject(objJson);
 
             var response = await clientProvider.client.PutAsync(
-                new Uri(uri), new StringContent(json, Encoding.UTF8, "application/json"));
+                new Uri(clientProvider.client.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }
 
@@ -75,7 +75,7 @@ namespace AintBnB.App.CommonMethodsAndProperties
         /// <param name="clientProvider">The client provider containing the HttpClient that will be used to make the API call.</param>
         public static async Task DeleteAsync(string uri, HttpClientProvider clientProvider)
         {
-            var response = await clientProvider.client.DeleteAsync(new Uri(uri));
+            var response = await clientProvider.client.DeleteAsync(new Uri(clientProvider.client.BaseAddress + uri));
             ResponseChecker(response);
         }
 
@@ -83,7 +83,7 @@ namespace AintBnB.App.CommonMethodsAndProperties
         {
             var json = JsonConvert.SerializeObject(listJson);
             var response = await clientProvider.client.PostAsync(
-                new Uri(uri), new StringContent(json, Encoding.UTF8, "application/json"));
+                new Uri(clientProvider.client.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
             return JsonConvert.DeserializeObject<List<T>>(await response.Content.ReadAsStringAsync());
         }

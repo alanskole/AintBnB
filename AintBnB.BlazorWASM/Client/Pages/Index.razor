@@ -1,0 +1,40 @@
+﻿@page "/"
+
+<AuthorizeView>
+    <Authorized>
+        @if (true) { _navigationManager.NavigateTo("/userinfo", true); }
+    </Authorized>
+    <NotAuthorized>
+        <h1>Login</h1>
+
+        <label>Username</label><br>
+        <input @bind="_username" type="text" placeholder="Username" required>
+        <br>
+        <br>
+        <label>Password</label><br>
+        <input @bind="_password" type="password" placeholder="Password" required>
+        <br>
+        <br>
+        <button @onclick="LoginAsync">Login</button>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private string _username;
+    private string _password;
+    private string _token;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _token = await _jSRuntime.InvokeAsync<string>("csrfCookieReader");
+    }
+
+    private async Task LoginAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(_username) && !string.IsNullOrWhiteSpace(_password))
+        {
+            await _apiCaller.PostAsync("authentication/login", new string[] { _username.Trim(), _password.Trim() }, _token);
+            _navigationManager.NavigateTo("/userinfo", true);
+        }
+    }
+}

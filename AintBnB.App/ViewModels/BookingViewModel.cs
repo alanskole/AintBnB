@@ -12,7 +12,7 @@ namespace AintBnB.App.ViewModels
     {
         private string _startDate;
         private int _night;
-        private string _uri;
+        private string _uri = "booking/";
         private Booking _booking = new Booking { BookedBy = new User(), Accommodation = new Accommodation(), Dates = new List<string>() };
         private int _userId;
         List<Booking> _allBookings;
@@ -64,14 +64,6 @@ namespace AintBnB.App.ViewModels
             {
                 _allBookings = value;
                 NotifyPropertyChanged("AllBookings");
-            }
-        }
-
-        public BookingViewModel()
-        {
-            using (var _clientProvider = new HttpClientProvider())
-            {
-                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/booking/";
             }
         }
 

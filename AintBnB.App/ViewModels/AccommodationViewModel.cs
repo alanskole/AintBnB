@@ -10,7 +10,7 @@ namespace AintBnB.App.ViewModels
 {
     public class AccommodationViewModel : Observable
     {
-        private string _uri;
+        private string _uri = "accommodation/";
         private int _userId;
         private Accommodation _accommodation = new Accommodation { Address = new Address() };
         private int _daysSchedule;
@@ -107,14 +107,6 @@ namespace AintBnB.App.ViewModels
             {
                 _ascOrDesc = value;
                 NotifyPropertyChanged("AscOrDesc");
-            }
-        }
-
-        public AccommodationViewModel()
-        {
-            using (var _clientProvider = new HttpClientProvider())
-            {
-                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/accommodation/";
             }
         }
 

@@ -25,10 +25,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\AintBnB.BlazorWASM\Server\AintBnB.BlazorWASM.Server.csproj" />
 		<ProjectReference Include="..\AintBnB.BusinessLogic\AintBnB.BusinessLogic.csproj" />
 		<ProjectReference Include="..\AintBnB.Core\AintBnB.Core.csproj" />
 		<ProjectReference Include="..\AintBnB.Database\AintBnB.Database.csproj" />
-		<ProjectReference Include="..\AintBnB.WebApi\AintBnB.WebApi.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -12,7 +12,7 @@ namespace AintBnB.App.ViewModels
     public class UserViewModel : Observable
     {
         private User _user = new User();
-        private string _uri;
+        private string _uri = "user/";
         private string _passwordConfirm;
         private List<User> _allUsers;
 
@@ -43,14 +43,6 @@ namespace AintBnB.App.ViewModels
             {
                 _allUsers = value;
                 NotifyPropertyChanged("AllUsers");
-            }
-        }
-
-        public UserViewModel()
-        {
-            using (var _clientProvider = new HttpClientProvider())
-            {
-                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/user/";
             }
         }
 

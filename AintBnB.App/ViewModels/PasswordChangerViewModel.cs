@@ -12,7 +12,7 @@ namespace AintBnB.App.ViewModels
         private string _old;
         private string _new1;
         private string _new2;
-        private string _uri;
+        private string _uri = "user/change/";
 
         public int UserId
         {
@@ -51,14 +51,6 @@ namespace AintBnB.App.ViewModels
             {
                 _new2 = value;
                 NotifyPropertyChanged("New2");
-            }
-        }
-
-        public PasswordChangerViewModel()
-        {
-            using (var _clientProvider = new HttpClientProvider())
-            {
-                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/user/change/";
             }
         }
 

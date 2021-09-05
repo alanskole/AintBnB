@@ -1,0 +1,11 @@
+﻿@page "/userinfo"
+@inject NavigationManager _navigationManager
+
+<AuthorizeView>
+    <Authorized>
+        
+    </Authorized>
+    <NotAuthorized>
+        @if (true) { _navigationManager.NavigateTo("/", true); }
+    </NotAuthorized>
+</AuthorizeView>

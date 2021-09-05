@@ -1,6 +1,6 @@
 ﻿using AintBnB.Core.Models;
 using AintBnB.Database.DbCtx;
-using AintBnB.WebApi;
+using AintBnB.BlazorWASM.Server;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;

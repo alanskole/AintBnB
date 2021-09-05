@@ -16,7 +16,7 @@ namespace AintBnB.App.ViewModels
     public class ImageViewModel : Observable
     {
 
-        private string _uri;
+        private string _uri = "image/";
         private Image _image = new Image();
         private int _imageId;
         private List<Image> _allImages;
@@ -71,14 +71,6 @@ namespace AintBnB.App.ViewModels
             {
                 _allImagesConverted = value;
                 NotifyPropertyChanged("AllImagesConverted");
-            }
-        }
-
-        public ImageViewModel()
-        {
-            using (var _clientProvider = new HttpClientProvider())
-            {
-                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/image/";
             }
         }
 
