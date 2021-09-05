@@ -338,6 +338,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-/AintBnB.BlazorWASM.Client/appsettings.json
-/AintBnB.BlazorWASM/Client/appsettings.json
 /AintBnB.BlazorWASM/Server/appsettings.json
