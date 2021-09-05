@@ -1,0 +1,230 @@
+﻿@page "/accommodationinfo/{Id}"
+
+<h3>Accommodation Info</h3>
+@if (ShowHTML)
+{
+    <p>Price Per Night: @_accommodation.PricePerNight</p>
+    <p>Address: @_accommodation.Address.Street @_accommodation.Address.Number, @_accommodation.Address.Zip, @_accommodation.Address.City, @_accommodation.Address.Country</p>
+    <p>Average rating: @_accommodation.AverageRating (@_accommodation.AmountOfRatings votes)</p>
+    <p>Owner: @_accommodation.Owner.FirstName @_accommodation.Owner.LastName</p>
+    <p>Kilometers from city center: @_accommodation.KilometersFromCenter</p>
+    if (OwnerOrAdmin)
+    {
+        <p>Square meters: <input type="text" @bind="_accommodation.SquareMeters" /></p>
+        <p>Bedrooms: <input type="text" @bind="_accommodation.AmountOfBedrooms" /></p>
+        <p>Cancellation deadline: <input type="text" @bind="_accommodation.CancellationDeadlineInDays" /></p>
+        <p>Description: <textarea rows="4" cols="50" @bind="_accommodation.Description" /></p>
+        <br />
+        <button @onclick="@UpdateAccommodationAsync">
+            Update
+        </button>
+        <br />
+        <br />
+    }
+    else
+    {
+        <p>Square meters: @_accommodation.SquareMeters</p>
+        <p>Bedrooms: @_accommodation.AmountOfBedrooms</p>
+        <p>Cancellation deadline: @_accommodation.CancellationDeadlineInDays days</p>
+        <p>Description: @_accommodation.Description</p>
+    }
+
+    @if (OwnerOrAdmin)
+    {
+        <p>
+            Exapnd Schedule by: <input type="number" min="1" max="365" onKeyUp="if(this.value > 365) {this.value = '365';} else if(this.value < 1){this.value = '1';}" @bind="@_daysToExpandScheduleBy" /> days
+            <button @onclick="@ExpandScheduleAsync">
+                Expand Schedule
+            </button>
+        </p>
+        <button @onclick="@DeleteAccommodationAsync">
+            Delete Accommodation
+        </button>
+        <br />
+        <br />
+        <p>Upload a photo</p>
+        <InputFile OnChange="UploadPhotoAsync" accept="image/png,image/jpeg,image/jpg,image/bmp" title="Upload a bmp, jpg, jpeg or png image" />
+        <br />
+        <br />
+    }
+
+    @foreach (var pic in _images)
+    {
+        var imageSource = $"data:image;base64,{Convert.ToBase64String(pic.Img)}";
+
+        <img src="@imageSource" style='width:100%;' border="0" />
+
+        @if (OwnerOrAdmin)
+        {
+            <br />
+
+            <button @onclick="@(async () => await DeletePhotoAsync(pic.Id))">
+                Delete the photo above this button
+            </button>
+        }
+
+        <br />
+        <br />
+        <br />
+    }
+}
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private bool OwnerOrAdmin { get; set; } = false;
+    private bool ShowHTML { get; set; } = false;
+    private Accommodation _accommodation = new Accommodation { Owner = new User(), Address = new Address() };
+    private List<Image> _images = new List<Image>();
+    private string _token = "";
+    private int _daysToExpandScheduleBy = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var foundAccommodation = false;
+
+        try
+        {
+            _accommodation = await _apiCaller.GetAsync<Accommodation>("accommodation/" + Id);
+            foundAccommodation = true;
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+        }
+
+        await GetImagesOfAccommodationAsync();
+
+        await OwnerOrAdminAsync();
+
+        ShowHTML = foundAccommodation;
+    }
+
+    private async Task GetImagesOfAccommodationAsync()
+    {
+        try
+        {
+            _images = await _apiCaller.GetAllAsync<Image>("image/" + _accommodation.Id);
+        }
+        catch
+        {
+        }
+    }
+
+    private async Task OwnerOrAdminAsync()
+    {
+        try
+        {
+            await _apiCaller.GetAsync("authentication/" + _accommodation.Owner.Id);
+            OwnerOrAdmin = true;
+        }
+        catch
+        {
+            OwnerOrAdmin = false;
+        }
+    }
+
+    private async Task UpdateAccommodationAsync()
+    {
+        await SetTokenAsync();
+
+        try
+        {
+            await _apiCaller.PutAsync("accommodation/" + Id, _accommodation, _token);
+            _navigationManager.NavigateTo("/accommodationinfo/" + Id, true);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+        }
+    }
+
+    private async Task ExpandScheduleAsync()
+    {
+        await SetTokenAsync();
+
+        try
+        {
+            await _apiCaller.PostAsync("accommodation/" + Id + "/expand", _daysToExpandScheduleBy, _token);
+            _navigationManager.NavigateTo("/accommodationinfo/" + Id, true);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+        }
+    }
+
+    private async Task DeleteAccommodationAsync()
+    {
+        await SetTokenAsync();
+
+        try
+        {
+            await _apiCaller.DeleteAsync("accommodation/" + Id, _token);
+            _navigationManager.NavigateTo("/accommodations", true);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+        }
+    }
+
+    private async Task UploadPhotoAsync(IFileListEntry[] files)
+    {
+        var file = files.FirstOrDefault();
+        if (file != null)
+        {
+            if (string.Compare(file.Type.ToLower(), "image/png".ToLower()) != 0
+                && string.Compare(file.Type.ToLower(), "image/jpg".ToLower()) != 0
+                && string.Compare(file.Type.ToLower(), "image/jpeg".ToLower()) != 0
+                && string.Compare(file.Type.ToLower(), "image/bmp".ToLower()) != 0)
+            {
+                await _jSRuntime.InvokeAsync<string>("errorAlert", "Unsopported filetype, must be either png, jpg, jpeg or bmp!");
+                return;
+            }
+
+            var ms = new MemoryStream();
+            await file.Data.CopyToAsync(ms);
+            var fileBytes = ms.ToArray();
+            var image = new Image(_accommodation, fileBytes);
+            await SetTokenAsync();
+
+            await TryToUploadAsync(image);
+        }
+    }
+
+    private async Task TryToUploadAsync(Image image)
+    {
+        try
+        {
+            await _apiCaller.PostAsync("image", image, _token);
+            _navigationManager.NavigateTo("/accommodationinfo/" + Id, true);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+        }
+    }
+
+    private async Task DeletePhotoAsync(int id)
+    {
+        await SetTokenAsync();
+
+        try
+        {
+            await _apiCaller.DeleteAsync("image/" + id, _token);
+
+            _navigationManager.NavigateTo("/accommodationinfo/" + Id, true);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+        }
+    }
+
+    private async Task SetTokenAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_token))
+            _token = await _jSRuntime.InvokeAsync<string>("csrfCookieReader");
+    }
+}

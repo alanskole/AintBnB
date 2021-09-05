@@ -9,3 +9,21 @@
         @if (true) { _navigationManager.NavigateTo("/", true); }
     </NotAuthorized>
 </AuthorizeView>
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        You be admin son!!
+    </Authorized>
+    <NotAuthorized>
+        You be peasant!!
+    </NotAuthorized>
+</AuthorizeView>
+
+<AuthorizeView Roles="Customer">
+    <Authorized>
+        You just be a customer!!
+    </Authorized>
+    <NotAuthorized>
+        You be nathing
+    </NotAuthorized>
+</AuthorizeView>

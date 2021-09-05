@@ -23,12 +23,12 @@ namespace AintBnB.BlazorWASM.Client
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddAuthorizationCore();
-            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
 
+            builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddTransient<ApiCaller, ApiCaller>();
             builder.Services.AddScoped<User, User>();
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "api/") });
-
+            
             await builder.Build().RunAsync();
         }
     }

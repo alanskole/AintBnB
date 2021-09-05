@@ -98,10 +98,14 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         /// <summary>Checks the httpresponse of a _httpClient call for errors</summary>
         /// <param name="response">The response to check.</param>
         /// <exception cref="ArgumentException">If the repsonse doesn't contain a success code</exception>
-        public static void ResponseChecker(HttpResponseMessage response)
+        public void ResponseChecker(HttpResponseMessage response)
         {
             if (!response.IsSuccessStatusCode)
+            {
+                _httpClient = new HttpClient { BaseAddress = _httpClient.BaseAddress };
+
                 throw new ArgumentException(response.Content.ReadAsStringAsync().Result);
+            }
         }
     }
 }
