@@ -52,10 +52,7 @@
 
         if (string.IsNullOrWhiteSpace(Id))
         {
-            var authstate = await AuthenticationStateAsync.GetAuthenticationStateAsync();
-            var user = authstate.User;
-            var id = user.Identity.Name;
-            Id = id;
+            Id = _id.ToString();
         }
 
         try
