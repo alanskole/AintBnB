@@ -44,7 +44,7 @@
         }
         Startdate: <input type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" @onchange="@((e) => DateChanged(DateTime.Parse(e.Value.ToString())))" />
 
-        <p>Nights: <input type="number" @bind="_nights" /></p>
+        <p>Nights: <input type="number" @bind="_nights" min="1" onKeyUp="if(this.value < 1){this.value = '1';}"/></p>
 
         <button @onclick="@SearchAsync">
             Search
