@@ -130,7 +130,13 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 var claimsId = new ClaimsIdentity(userClaims, "User Identity");
 
                 var userPrincipal = new ClaimsPrincipal(new[] { claimsId });
-                await HttpContext.SignInAsync(userPrincipal);
+
+                await HttpContext.SignInAsync(
+                    userPrincipal,
+                    new AuthenticationProperties
+                    {
+                        IsPersistent = true
+                    });
 
                 return Ok();
             }
