@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BlazorWASM.Server.Helpers.CurrentUserDetails;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace AintBnB.BlazorWASM.Server.Controllers
 {

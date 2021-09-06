@@ -16,7 +16,7 @@ namespace AintBnB.BlazorWASM.Server.Helpers
 
         internal static int GetIdOfLoggedInUser(HttpContext httpContext)
         {
-            return int.Parse(httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            return int.Parse(httpContext.User.FindFirst(ClaimTypes.Name)?.Value);
         }
     }
 }

@@ -1,29 +1,107 @@
-﻿@page "/userinfo"
-@inject NavigationManager _navigationManager
+﻿@page "/user"
+@page "/user/{Id}"
+@inject AuthenticationStateProvider AuthenticationStateAsync
+
+<h3>User Info</h3>
 
 <AuthorizeView>
-    <Authorized>
-        
-    </Authorized>
     <NotAuthorized>
         @if (true) { _navigationManager.NavigateTo("/", true); }
     </NotAuthorized>
+    <Authorized>
+        @if (_user != null)
+        {
+            <p>Username: @_user.UserName</p>
+            <p>Firstname: <input type="text" @bind="_user.FirstName" /></p>
+            <p>Lastname: <input type="text" @bind="_user.LastName" /></p>
+            <p>
+                <button @onclick="@UpdateUserAsync">
+                    Update
+                </button>
+            </p>
+            <br />
+            <p>
+                <button @onclick="@DeleteUserAsync">
+                    Delete
+                </button>
+            </p>
+            @if (_user.Id == _id)
+            {
+                <br />
+                <a href="./changepassword">Password change</a>
+            }
+            <br />
+        }
+    </Authorized>
 </AuthorizeView>
 
-<AuthorizeView Roles="Admin">
-    <Authorized>
-        You be admin son!!
-    </Authorized>
-    <NotAuthorized>
-        You be peasant!!
-    </NotAuthorized>
-</AuthorizeView>
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    private User _user;
+    private string _token;
+    private int _id;
 
-<AuthorizeView Roles="Customer">
-    <Authorized>
-        You just be a customer!!
-    </Authorized>
-    <NotAuthorized>
-        You be nathing
-    </NotAuthorized>
-</AuthorizeView>
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await AuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        _id = int.Parse(user.Identity.Name);
+
+        _token = await _jSRuntime.InvokeAsync<string>("csrfCookieReader");
+
+        if (string.IsNullOrWhiteSpace(Id))
+        {
+            var authstate = await AuthenticationStateAsync.GetAuthenticationStateAsync();
+            var user = authstate.User;
+            var id = user.Identity.Name;
+            Id = id;
+        }
+
+        try
+        {
+            _user = await _apiCaller.GetAsync<User>("user/" + Id);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+
+    }
+
+    private async Task DeleteUserAsync()
+    {
+        try
+        {
+            await _apiCaller.DeleteAsync("user/" + Id, _token);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", "Deleted succesfully!");
+            await NavigateAfterDeletingUserAsync();
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+
+    private async Task UpdateUserAsync()
+    {
+        try
+        {
+            await _apiCaller.PutAsync("user/" + Id, _user, _token);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", "Updated succesfully!");
+            _navigationManager.NavigateTo("/user/" + Id, true);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+
+    private async Task NavigateAfterDeletingUserAsync()
+    {
+        if (_id == int.Parse(Id))
+            _navigationManager.NavigateTo("/logout", true);
+        else
+            _navigationManager.NavigateTo("/users", true);
+    }
+}

@@ -1,8 +1,34 @@
-﻿@page "/bookinginfo"
+﻿@page "/booking/{Id}"
 
 
-<h3>BookingInfo</h3>
+<h3>Booking Info</h3>
+
+<AuthorizeView>
+    <NotAuthorized>
+        @if (true) { _navigationManager.NavigateTo("/", true); }
+    </NotAuthorized>
+    <Authorized>
+        @if (_booking != null)
+        {
+            <p>@_booking.ToString()</p>
+        }
+    </Authorized>
+</AuthorizeView>
 
 @code {
+    [Parameter]
+    public string Id { get; set; }
+    private Booking _booking;
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _booking = await _apiCaller.GetAsync<Booking>("booking/" + Id);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
 }

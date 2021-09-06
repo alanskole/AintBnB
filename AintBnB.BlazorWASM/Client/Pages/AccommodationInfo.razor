@@ -1,81 +1,92 @@
 ﻿@page "/accommodationinfo/{Id}"
 
 <h3>Accommodation Info</h3>
-@if (ShowHTML)
-{
-    <p>Price Per Night: @_accommodation.PricePerNight</p>
-    <p>Address: @_accommodation.Address.Street @_accommodation.Address.Number, @_accommodation.Address.Zip, @_accommodation.Address.City, @_accommodation.Address.Country</p>
-    <p>Average rating: @_accommodation.AverageRating (@_accommodation.AmountOfRatings votes)</p>
-    <p>Owner: @_accommodation.Owner.FirstName @_accommodation.Owner.LastName</p>
-    <p>Kilometers from city center: @_accommodation.KilometersFromCenter</p>
-    if (OwnerOrAdmin)
-    {
-        <p>Square meters: <input type="text" @bind="_accommodation.SquareMeters" /></p>
-        <p>Bedrooms: <input type="text" @bind="_accommodation.AmountOfBedrooms" /></p>
-        <p>Cancellation deadline: <input type="text" @bind="_accommodation.CancellationDeadlineInDays" /></p>
-        <p>Description: <textarea rows="4" cols="50" @bind="_accommodation.Description" /></p>
-        <br />
-        <button @onclick="@UpdateAccommodationAsync">
-            Update
-        </button>
-        <br />
-        <br />
-    }
-    else
-    {
-        <p>Square meters: @_accommodation.SquareMeters</p>
-        <p>Bedrooms: @_accommodation.AmountOfBedrooms</p>
-        <p>Cancellation deadline: @_accommodation.CancellationDeadlineInDays days</p>
-        <p>Description: @_accommodation.Description</p>
-    }
 
-    @if (OwnerOrAdmin)
-    {
-        <p>
-            Exapnd Schedule by: <input type="number" min="1" max="365" onKeyUp="if(this.value > 365) {this.value = '365';} else if(this.value < 1){this.value = '1';}" @bind="@_daysToExpandScheduleBy" /> days
-            <button @onclick="@ExpandScheduleAsync">
-                Expand Schedule
-            </button>
-        </p>
-        <button @onclick="@DeleteAccommodationAsync">
-            Delete Accommodation
-        </button>
-        <br />
-        <br />
-        <p>Upload a photo</p>
-        <InputFile OnChange="UploadPhotoAsync" accept="image/png,image/jpeg,image/jpg,image/bmp" title="Upload a bmp, jpg, jpeg or png image" />
-        <br />
-        <br />
-    }
-
-    @foreach (var pic in _images)
-    {
-        var imageSource = $"data:image;base64,{Convert.ToBase64String(pic.Img)}";
-
-        <img src="@imageSource" style='width:100%;' border="0" />
-
-        @if (OwnerOrAdmin)
+<AuthorizeView>
+    <NotAuthorized>
+        @if (true) { _navigationManager.NavigateTo("/", true); }
+    </NotAuthorized>
+    <Authorized>
+        @if (ShowHTML)
         {
-            <br />
+            <p>Price Per Night: @_accommodation.PricePerNight</p>
+            <p>Address: @_accommodation.Address.Street @_accommodation.Address.Number, @_accommodation.Address.Zip, @_accommodation.Address.City, @_accommodation.Address.Country</p>
+            <p>Average rating: @_accommodation.AverageRating (@_accommodation.AmountOfRatings votes)</p>
+            <p>Owner: @_accommodation.Owner.FirstName @_accommodation.Owner.LastName</p>
+            <p>Kilometers from city center: @_accommodation.KilometersFromCenter</p>
+            if (OwnerOrAdmin)
+            {
+                <p>Square meters: <input type="text" @bind="_accommodation.SquareMeters" /></p>
+                <p>Bedrooms: <input type="text" @bind="_accommodation.AmountOfBedrooms" /></p>
+                <p>Cancellation deadline: <input type="text" @bind="_accommodation.CancellationDeadlineInDays" /></p>
+                <p>Description: <textarea rows="4" cols="50" @bind="_accommodation.Description" /></p>
+                <br />
+                <button @onclick="@UpdateAccommodationAsync">
+                    Update
+                </button>
+                <br />
+                <br />
+            }
+            else
+            {
+                <p>Square meters: @_accommodation.SquareMeters</p>
+                <p>Bedrooms: @_accommodation.AmountOfBedrooms</p>
+                <p>Cancellation deadline: @_accommodation.CancellationDeadlineInDays days</p>
+                <p>Description: @_accommodation.Description</p>
+            }
 
-            <button @onclick="@(async () => await DeletePhotoAsync(pic.Id))">
-                Delete the photo above this button
-            </button>
+            @if (OwnerOrAdmin)
+            {
+                <p>
+                    Exapnd Schedule by: <input type="number" min="1" max="365" onKeyUp="if(this.value > 365) {this.value = '365';} else if(this.value < 1){this.value = '1';}" @bind="@_daysToExpandScheduleBy" /> days
+                    <button @onclick="@ExpandScheduleAsync">
+                        Expand Schedule
+                    </button>
+                </p>
+                <button @onclick="@DeleteAccommodationAsync">
+                    Delete Accommodation
+                </button>
+                <br />
+                <br />
+                <p>Upload a photo</p>
+                <InputFile OnChange="UploadPhotoAsync" accept="image/png,image/jpeg,image/jpg,image/bmp" title="Upload a bmp, jpg, jpeg or png image" />
+                <br />
+                <br />
+            }
+
+            @if (_images != null)
+            {
+                @foreach (var pic in _images)
+                {
+                    var imageSource = $"data:image;base64,{Convert.ToBase64String(pic.Img)}";
+
+                    <img src="@imageSource" style='width:100%;' border="0" />
+
+                    @if (OwnerOrAdmin)
+                    {
+                        <br />
+
+                        <button @onclick="@(async () => await DeletePhotoAsync(pic.Id))">
+                            Delete the photo above this button
+                        </button>
+                    }
+
+                    <br />
+                    <br />
+                    <br />
+                }
+            }
         }
-
-        <br />
-        <br />
-        <br />
-    }
-}
+    </Authorized>
+</AuthorizeView>
 
 @code {
     [Parameter]
     public string Id { get; set; }
     private bool OwnerOrAdmin { get; set; } = false;
     private bool ShowHTML { get; set; } = false;
-    private Accommodation _accommodation = new Accommodation { Owner = new User(), Address = new Address() };
-    private List<Image> _images = new List<Image>();
+    private Accommodation _accommodation;
+    private List<Image> _images;
     private string _token = "";
     private int _daysToExpandScheduleBy = 1;
 
@@ -90,7 +101,7 @@
         }
         catch (Exception ex)
         {
-            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
         }
 
         await GetImagesOfAccommodationAsync();
@@ -135,7 +146,7 @@
         }
         catch (Exception ex)
         {
-            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
         }
     }
 
@@ -150,7 +161,7 @@
         }
         catch (Exception ex)
         {
-            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
         }
     }
 
@@ -165,7 +176,7 @@
         }
         catch (Exception ex)
         {
-            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
         }
     }
 
@@ -179,7 +190,7 @@
                 && string.Compare(file.Type.ToLower(), "image/jpeg".ToLower()) != 0
                 && string.Compare(file.Type.ToLower(), "image/bmp".ToLower()) != 0)
             {
-                await _jSRuntime.InvokeAsync<string>("errorAlert", "Unsopported filetype, must be either png, jpg, jpeg or bmp!");
+                await _jSRuntime.InvokeAsync<string>("alertMessage", "Unsopported filetype, must be either png, jpg, jpeg or bmp!");
                 return;
             }
 
@@ -202,7 +213,7 @@
         }
         catch (Exception ex)
         {
-            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
         }
     }
 
@@ -218,7 +229,7 @@
         }
         catch (Exception ex)
         {
-            await _jSRuntime.InvokeAsync<string>("errorAlert", ex.Message);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
         }
     }
 

@@ -7,8 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using static AintBnB.BusinessLogic.Helpers.Authentication;
 using static AintBnB.BlazorWASM.Server.Helpers.CurrentUserDetails;
+using static AintBnB.BusinessLogic.Helpers.Authentication;
 
 namespace AintBnB.BlazorWASM.Server.Controllers
 {
@@ -90,9 +90,9 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             var userType = GetUsertypeOfLoggedInUser(HttpContext);
 
             if (AdminChecker(userType))
-                return Ok();
+                return Ok("Admin");
             else
-                return BadRequest("User is not admin!");
+                return BadRequest("Not admin!");
         }
 
         /// <summary>API POST request to logout the user</summary>
@@ -123,7 +123,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
 
                 var userClaims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.NameIdentifier, idAndUsertypeOfUserLoggingIn.Item1.ToString()),
+                    new Claim(ClaimTypes.Name, idAndUsertypeOfUserLoggingIn.Item1.ToString()),
                     new Claim(ClaimTypes.Role, idAndUsertypeOfUserLoggingIn.Item2.ToString())
                 };
 

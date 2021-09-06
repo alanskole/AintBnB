@@ -1,12 +1,11 @@
-﻿using AintBnB.BlazorWASM.Client.ApiCalls;
-using AintBnB.Core.Models;
+﻿using AintBnB.Core.Models;
 using Microsoft.AspNetCore.Components.Authorization;
-using System.Security.Claims;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
-using System;
-using Newtonsoft.Json;
 
 namespace AintBnB.BlazorWASM.Client.CustomAuthentication
 {
@@ -30,7 +29,7 @@ namespace AintBnB.BlazorWASM.Client.CustomAuthentication
 
                 var userClaims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.NameIdentifier, currentUser.Id.ToString()),
+                    new Claim(ClaimTypes.Name, currentUser.Id.ToString()),
                     new Claim(ClaimTypes.Role, currentUser.UserType.ToString())
                 };
 
