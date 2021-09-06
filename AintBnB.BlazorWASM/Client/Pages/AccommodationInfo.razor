@@ -38,7 +38,7 @@
             @if (OwnerOrAdmin)
             {
                 <p>
-                    Exapnd Schedule by: <input type="number" min="1" max="365" onKeyUp="if(this.value > 365) {this.value = '365';} else if(this.value < 1){this.value = '1';}" @bind="@_daysToExpandScheduleBy" /> days
+                    Exapnd Schedule by: <input type="number" placeholder="1" min="1" max="365" onKeyUp="if(this.value > 365) {this.value = '365';} else if(this.value < 1){this.value = '1';}" @bind="@_daysToExpandScheduleBy" /> days
                     <button @onclick="@ExpandScheduleAsync">
                         Expand Schedule
                     </button>

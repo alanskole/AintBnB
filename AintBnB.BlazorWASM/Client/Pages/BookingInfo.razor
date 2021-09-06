@@ -53,7 +53,7 @@
             <p>
                 New startdate: <input type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" @onchange="@((e) => DateChanged(DateTime.Parse(e.Value.ToString())))" />
                 &nbsp;&nbsp;&nbsp;&nbsp;
-                Nights: <input type="number" min="1" onKeyUp="if(this.value < 1){this.value = '1';}" @bind="@_nights" />
+                Nights: <input type="number" placeholder="1" min="1" onKeyUp="if(this.value < 1){this.value = '1';}" @bind="@_nights" />
                 &nbsp;&nbsp;&nbsp;&nbsp;
                 <button @onclick="@UpdateBookingAsync">
                     Update
