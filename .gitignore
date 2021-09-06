@@ -338,4 +338,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
-/AintBnB.WebApi/appsettings.json
+/AintBnB.BlazorWASM/Server/appsettings.json

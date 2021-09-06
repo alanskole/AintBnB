@@ -1,0 +1,50 @@
+﻿@page "/createuser"
+
+<h3>Create Account</h3>
+
+<AuthorizeView>
+    <NotAuthorized>
+        <p>Username: <input type="text" @bind="_user.UserName" /></p>
+        <p>Password: <input type="text" @bind="_user.Password" /></p>
+        <p>Confirm password: <input type="text" @bind="_pass" /></p>
+        <p>Firstname: <input type="text" @bind="_user.FirstName" /></p>
+        <p>Lastname: <input type="text" @bind="_user.LastName" /></p>
+        <p>
+            <button @onclick="@CreateUserAsync">
+                Create
+            </button>
+        </p>
+    </NotAuthorized>
+    <Authorized>
+        @if (true) { _navigationManager.NavigateTo("/search", true); }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private User _user = new User();
+    private string _pass = "";
+
+    private async Task CreateUserAsync()
+    {
+        if (_user.Password.Trim().CompareTo(_pass.Trim()) != 0)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", "Passwords don't match!");
+        }
+        else
+        {
+            var csrfToken = await _jSRuntime.InvokeAsync<string>("csrfCookieReader");
+
+            try
+            {
+                await _apiCaller.PostAsync("user", _user, csrfToken);
+                await _jSRuntime.InvokeAsync<string>("alertMessage", "Created successfully!");
+                _navigationManager.NavigateTo("/", true);
+            }
+            catch (Exception ex)
+            {
+                await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+            }
+        }
+
+    }
+}

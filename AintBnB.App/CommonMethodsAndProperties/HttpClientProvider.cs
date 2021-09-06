@@ -6,8 +6,6 @@ namespace AintBnB.App.CommonMethodsAndProperties
 {
     internal class HttpClientProvider : IDisposable
     {
-        public string LocalHostAddress = "https://localhost:";
-        public string LocalHostPort = "44342/";
         public readonly HttpClientHandler clientHandler;
         public readonly HttpClient client;
         public HttpClientProvider()
@@ -15,7 +13,7 @@ namespace AintBnB.App.CommonMethodsAndProperties
             clientHandler = new HttpClientHandler();
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
             clientHandler.CookieContainer = new CookieContainer();
-            client = new HttpClient(clientHandler);
+            client = new HttpClient(clientHandler) { BaseAddress = new Uri("https://localhost:44348/api/") };
         }
 
         public void Dispose()

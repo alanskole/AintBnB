@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using static AintBnB.BusinessLogic.Helpers.PasswordHashing;
 
-[assembly: InternalsVisibleToAttribute("AintBnB.WebApi")]
+[assembly: InternalsVisibleToAttribute("AintBnB.BlazorWASM.Server")]
 namespace AintBnB.BusinessLogic.Helpers
 {
     internal static class Authentication

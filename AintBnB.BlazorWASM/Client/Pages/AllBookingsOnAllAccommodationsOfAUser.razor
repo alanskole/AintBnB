@@ -1,0 +1,108 @@
+﻿@page "/bookingsonallaccommodationsofauser"
+@inject AuthenticationStateProvider AuthenticationStateAsync
+@using System.Security.Claims
+
+<h3>Bookings On All Accommodations Of A User</h3>
+
+<AuthorizeView>
+    <NotAuthorized>
+        @if (true) { _navigationManager.NavigateTo("/", true); }
+    </NotAuthorized>
+    <Authorized>
+        @if (_allCustomers != null)
+        {
+            <p>
+                Users: <select @bind="_id">
+                    <option></option>
+                    @foreach (var cust in _allCustomers)
+                    {
+                        <option value="@cust.Id">@cust.Id</option>
+                    }
+                </select>
+            </p>
+        }
+
+        @if (_allBookings != null)
+        {
+            @foreach (var booking in _allBookings)
+            {
+                <p>
+                <p>
+                    @booking.ToString()
+                    &nbsp;&nbsp;&nbsp;
+                    <button @onclick="@(async () => await DeleteBookingAsync(booking.Id))">
+                        Cancel Booking
+                    </button>
+                </p>
+                </p>
+            }
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private int _id = 1;
+    private ClaimsPrincipal _user;
+    private bool _isAdmin = false;
+    private List<User> _allCustomers;
+    private List<Booking> _allBookings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await AuthenticationStateAsync.GetAuthenticationStateAsync();
+        _user = authstate.User;
+        var role = _user.FindFirst(ClaimTypes.Role)?.Value;
+
+        if (role.ToUpper().CompareTo("admin".ToUpper()) == 0)
+        {
+            _isAdmin = true;
+            await GetAllCustomersAsync();
+        }
+        else
+        {
+            _id = int.Parse(_user.Identity.Name);
+            await GetAllOfLoggedInCustomerAsync();
+        }
+    }
+
+
+    private async Task GetAllCustomersAsync()
+    {
+        try
+        {
+            _allCustomers = await _apiCaller.GetAllAsync<User>("user/allcustomers");
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+
+    private async Task GetAllOfLoggedInCustomerAsync()
+    {
+        try
+        {
+            _allBookings = await _apiCaller.GetAllAsync<Booking>("booking/" + _id + "/bookingsownaccommodation");
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+
+    private async Task DeleteBookingAsync(int id)
+    {
+        var csrfToken = await _jSRuntime.InvokeAsync<string>("csrfCookieReader");
+
+        try
+        {
+            await _apiCaller.DeleteAsync("booking/" + id, csrfToken);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", "Cancellation successful!");
+            _navigationManager.NavigateTo("/bookingsonallaccommodationsofauser", true);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+}

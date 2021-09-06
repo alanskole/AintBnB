@@ -9,7 +9,7 @@ namespace AintBnB.App.ViewModels
 {
     public class WorldViewModel : Observable
     {
-        private string _uri;
+        private string _uri = "world/";
         private string _country;
         private string _city;
         private List<string> _allCountries;
@@ -53,14 +53,6 @@ namespace AintBnB.App.ViewModels
             {
                 _allCitiesOfACountry = value;
                 NotifyPropertyChanged("AllCitiesOfACountry");
-            }
-        }
-
-        public WorldViewModel()
-        {
-            using (var _clientProvider = new HttpClientProvider())
-            {
-                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/world/";
             }
         }
 

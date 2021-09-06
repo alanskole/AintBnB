@@ -1,0 +1,52 @@
+﻿@page "/accommodations"
+@inject AuthenticationStateProvider AuthenticationStateAsync
+@using System.Security.Claims
+
+<h3>AllAccommodations</h3>
+
+<AuthorizeView>
+    <NotAuthorized>
+        @if (true) { _navigationManager.NavigateTo("/", true); }
+    </NotAuthorized>
+    <Authorized>
+        @if (_all != null)
+        {
+            @foreach (var acc in _all)
+            {
+                var link = "./accommodation/" + acc.Id;
+
+                <p>
+                    @acc.ToString()
+                    &nbsp;&nbsp;&nbsp;
+                    <a href=@link>Open</a>
+                </p>
+            }
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private List<Accommodation> _all;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await AuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var id = int.Parse(user.Identity.Name);
+        var role = user.FindFirst(ClaimTypes.Role)?.Value;
+
+        if (role.ToUpper().CompareTo("admin".ToUpper()) == 0)
+            _all = await _apiCaller.GetAllAsync<Accommodation>("accommodation/");
+        else
+        {
+            try
+            {
+                _all = await _apiCaller.GetAllAsync<Accommodation>("accommodation/" + id + "/allaccommodations");
+            }
+            catch (Exception ex)
+            {
+                await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+            }
+        }
+    }
+}

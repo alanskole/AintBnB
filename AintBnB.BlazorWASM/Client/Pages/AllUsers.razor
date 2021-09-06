@@ -1,0 +1,40 @@
+@page "/users"
+
+<h3>All Users</h3>
+
+<AuthorizeView Roles="Admin">
+    <Authorized>
+        @if (_all != null)
+        {
+            @foreach (var user in _all)
+            {
+                var link = "./user/" + user.Id;
+
+                <p>
+                    @user.ToString()
+                    &nbsp;&nbsp;&nbsp;
+                    <a href=@link>Open</a>
+                </p>
+            }
+        }
+    </Authorized>
+    <NotAuthorized>
+        @if (true) { _navigationManager.NavigateTo("/search", true); }
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private List<User> _all;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _all = await _apiCaller.GetAllAsync<User>("user");
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+}

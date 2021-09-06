@@ -1,0 +1,132 @@
+﻿@page "/createaccommodation"
+@inject AuthenticationStateProvider AuthenticationStateAsync
+@using System.Security.Claims
+
+<h3>Create Accommodation</h3>
+
+<AuthorizeView>
+    <NotAuthorized>
+        @if (true) { _navigationManager.NavigateTo("/", true); }
+    </NotAuthorized>
+    <Authorized>
+        <p>Address street: <input type="text" @bind="_accommodation.Address.Street" /></p>
+        <p>Address number: <input type="text" @bind="_accommodation.Address.Number" /></p>
+        <p>Address zip: <input type="text" @bind="_accommodation.Address.Zip" /></p>
+        <p>Address area: <input type="text" @bind="_accommodation.Address.Area" /></p>
+        @if (_countries.Count > 0)
+        {
+            <p>
+                Address country: <select @onchange="CountryChangedAsync">
+                    <option></option>
+                    @foreach (var country in _countries)
+                    {
+                        <option value="@country">@country</option>
+                    }
+                </select>
+            </p>
+            <p>
+                Address city: <select @bind="_accommodation.Address.City">
+                    <option></option>
+                    @foreach (var city in _cities)
+                    {
+                        <option value="@city">@city</option>
+                    }
+                </select>
+            </p>
+        }
+        <p>Square meters: <input type="number" @bind="_accommodation.SquareMeters" /></p>
+        <p>Amount of bedrooms: <input type="text" @bind="_accommodation.AmountOfBedrooms" /></p>
+        <p>Kilometers from center: <input @bind="_accommodation.KilometersFromCenter" type="number" placeholder="0" required name="price" min="0" step="0.1" pattern="^\d+(?:\.\d{1,2})?$" /></p>
+        <p>Description: <textarea rows="4" cols="50" @bind="_accommodation.Description" /></p>
+        <p>Price per night: <input type="number" @bind="_accommodation.PricePerNight" /></p>
+        <p>Cancellation deadline in days: <input type="number" @bind="_accommodation.CancellationDeadlineInDays" /></p>
+        <p>Days to create schedule for: <input type="number" @bind="_daysToCreateScheduleFor" /></p>
+        <p>
+            <button @onclick="@CreateAccommodationAsync">
+                Create
+            </button>
+        </p>
+        @if (_allCustomers != null)
+        {
+            <p>
+                Users: <select @bind="_id">
+                    <option></option>
+                    @foreach (var cust in _allCustomers)
+                    {
+                        <option value="@cust.Id">@cust.Id</option>
+                    }
+                </select>
+            </p>
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private Accommodation _accommodation = new Accommodation { Owner = new User(), Address = new Address() };
+    private int _daysToCreateScheduleFor = 1;
+    private List<string> _countries = new List<string>();
+    private List<string> _cities = new List<string>();
+    private string _country;
+    private string _csrfToken;
+    private int _id = 1;
+    private bool _isAdmin = false;
+    private List<User> _allCustomers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authstate = await AuthenticationStateAsync.GetAuthenticationStateAsync();
+        var user = authstate.User;
+        var role = user.FindFirst(ClaimTypes.Role)?.Value;
+
+        if (role.ToUpper().CompareTo("admin".ToUpper()) == 0)
+        {
+            _isAdmin = true;
+            await GetAllCustomersAsync();
+        }
+        else
+            _id = int.Parse(user.Identity.Name);
+
+
+        _csrfToken = await _jSRuntime.InvokeAsync<string>("csrfCookieReader");
+        _countries = await _apiCaller.GetAllAsync<string>("world/countries");
+    }
+
+    private async Task GetAllCustomersAsync()
+    {
+        try
+        {
+            _allCustomers = await _apiCaller.GetAllAsync<User>("user/allcustomers");
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+
+    private async Task CountryChangedAsync(ChangeEventArgs e)
+    {
+        _country = e.Value.ToString();
+        try
+        {
+            _cities = await _apiCaller.GetAllAsync<string>("world/cities/" + _country);
+        }
+        catch
+        {
+            _cities = new List<string>();
+        }
+    }
+
+    private async Task CreateAccommodationAsync()
+    {
+        try
+        {
+            _accommodation.Address.Country = _country;
+            await _apiCaller.PostAsync("accommodation/" + _daysToCreateScheduleFor + "/" + _id, _accommodation, _csrfToken);
+            _navigationManager.NavigateTo("/accommodations", true);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+}

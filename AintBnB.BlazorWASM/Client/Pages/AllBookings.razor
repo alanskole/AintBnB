@@ -1,0 +1,40 @@
+﻿@page "/bookings"
+
+<h3>All Bookings</h3>
+
+<AuthorizeView>
+    <NotAuthorized>
+        @if (true) { _navigationManager.NavigateTo("/search", true); }
+    </NotAuthorized>
+    <Authorized>
+        @if (_all != null)
+        {
+            @foreach (var booking in _all)
+            {
+                var link = "./booking/" + booking.Id;
+
+                <p>
+                    @booking.ToString()
+                    &nbsp;&nbsp;&nbsp;
+                    <a href=@link>Open</a>
+                </p>
+            }
+        }
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private List<Booking> _all;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _all = await _apiCaller.GetAllAsync<Booking>("booking");
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+}

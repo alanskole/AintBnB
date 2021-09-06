@@ -34,7 +34,7 @@ namespace AintBnB.App.Helpers
             }
         }
 
-        internal static async Task GetCsrfToken(HttpClientProvider clientProvider, string url = "https://localhost:44342/api/authentication/login")
+        internal static async Task GetCsrfToken(HttpClientProvider clientProvider, string url = "https://localhost:44348/api/authentication/login")
         {
             await clientProvider.client.GetAsync(url);
 

@@ -118,18 +118,5 @@ namespace Test.Integration
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
-
-        [TestMethod]
-        public async Task LogIn_ShouldReturn_BadRequestIfAlreadyLoggedIn()
-        {
-            var response = await _client.PostAsync("api/authentication/login",
-                new StringContent(
-                    JsonConvert.SerializeObject(new string[] { _factory.userAdmin.UserName, "aaaaaa" }),
-                    Encoding.UTF8,
-                    "application/json"));
-
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-        }
     }
 }

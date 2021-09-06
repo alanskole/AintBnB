@@ -15,7 +15,7 @@ namespace AintBnB.App.ViewModels
     {
         private int _idOfLoggedInUser;
         private User _user = new User();
-        private string _uri;
+        private string _uri = "authentication/";
 
         public int IdOfLoggedInUser
         {
@@ -37,14 +37,6 @@ namespace AintBnB.App.ViewModels
             }
         }
 
-        public AuthenticationViewModel()
-        {
-            using (var _clientProvider = new HttpClientProvider())
-            {
-                _uri = _clientProvider.LocalHostAddress + _clientProvider.LocalHostPort + "api/authentication/"; ;
-            }
-        }
-
         public async Task LoginAsync()
         {
             using (var _clientProvider = new HttpClientProvider())
@@ -59,7 +51,7 @@ namespace AintBnB.App.ViewModels
 
                 await PostAsync(_uri + uniquePartOfUri, userAndPass, _clientProvider);
 
-                await AddCookiesToLocalSettings(_clientProvider.clientHandler, new Uri(_uri + uniquePartOfUri));
+                await AddCookiesToLocalSettings(_clientProvider.clientHandler, new Uri(_clientProvider.client.BaseAddress + _uri + uniquePartOfUri));
             }
         }
 
