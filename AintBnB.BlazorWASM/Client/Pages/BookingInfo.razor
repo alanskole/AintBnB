@@ -1,6 +1,5 @@
 ﻿@page "/booking/{Id}"
 
-
 <h3>Booking Info</h3>
 
 <AuthorizeView>
@@ -10,7 +9,63 @@
     <Authorized>
         @if (_booking != null)
         {
-            <p>@_booking.ToString()</p>
+            <p>Username of booker: @_booking.BookedBy.UserName</p>
+            <p>Name of booker: @_booking.BookedBy.FirstName @_booking.BookedBy.LastName</p>
+            <p>Accommodation @_booking.Accommodation.Address</p>
+            <p>Total price: @_booking.Price</p>
+            <p>Cancellation deadlline: @_booking.Accommodation.CancellationDeadlineInDays days</p>
+            @if (_booking.Rating > 0)
+            {
+                <p>Rating: @_booking.Rating</p>
+            }
+            else if (DateTime.Today > DateTime.Parse(_booking.Dates[_booking.Dates.Count - 1]))
+            {
+                <p> Rate the booking. Rating is final and cannot be changed!</p>
+                <p>
+                    <select @bind="_rating">
+                        <option></option>
+                        <option value=1>1</option>
+                        <option value=2>2</option>
+                        <option value=3>3</option>
+                        <option value=4>4</option>
+                        <option value=5>5</option>
+                    </select>
+                    &nbsp; &nbsp; &nbsp;
+                    <button @onclick="@RateBookingAsync">
+                        Rate
+                    </button>
+                </p>
+            }
+            <p>
+                Dates booked:
+                @for (var i = 0; i < _booking.Dates.Count; i++)
+                {
+                    if (i + 1 == _booking.Dates.Count)
+                    {
+                        <span>@_booking.Dates[i]</span>
+                    }
+                    else
+                    {
+                        <span>@_booking.Dates[i], </span>
+                    }
+                }
+            </p>
+            <p>
+                New startdate: <input type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" @onchange="@((e) => DateChanged(DateTime.Parse(e.Value.ToString())))" />
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                Nights: <input type="number" @bind="_nights" />
+                &nbsp;&nbsp;&nbsp;&nbsp;
+                <button @onclick="@UpdateBookingAsync">
+                    Update
+                </button>
+            </p>
+            <br />
+            <p>
+                <button @onclick="@DeleteBookingAsync">
+                    Delete
+                </button>
+            </p>
+            <br />
         }
     </Authorized>
 </AuthorizeView>
@@ -19,12 +74,68 @@
     [Parameter]
     public string Id { get; set; }
     private Booking _booking;
+    private string _token;
+    private string _newDate = DateTime.Today.ToString("yyyy-MM-dd");
+    private int _nights;
+    private int _rating;
 
     protected override async Task OnInitializedAsync()
     {
+        _token = await _jSRuntime.InvokeAsync<string>("csrfCookieReader");
+
         try
         {
             _booking = await _apiCaller.GetAsync<Booking>("booking/" + Id);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+
+    private async Task DeleteBookingAsync()
+    {
+        try
+        {
+            await _apiCaller.DeleteAsync("booking/" + Id, _token);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", "Deleted successfully!");
+            _navigationManager.NavigateTo("/bookings/", true);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+
+    private async Task RateBookingAsync()
+    {
+        try
+        {
+            await _apiCaller.PostAsync("booking/rate/" + Id, _rating, _token);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", "Rated successfully!");
+            _navigationManager.NavigateTo("/booking/" + Id, true);
+        }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+    }
+
+    private void DateChanged(DateTime newDate)
+    {
+        _newDate = newDate.ToString("yyyy-MM-dd");
+    }
+
+    private async Task UpdateBookingAsync()
+    {
+        if (string.IsNullOrWhiteSpace(_newDate))
+            return;
+
+        try
+        {
+            await _apiCaller.PutAsync("booking/" + Id, new string[] { _newDate, _nights.ToString(), Id }, _token);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", "Updated successfully!");
+            _navigationManager.NavigateTo("/booking/" + Id, true);
         }
         catch (Exception ex)
         {

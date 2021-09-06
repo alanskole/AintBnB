@@ -31,10 +31,18 @@
 
     private async Task LoginAsync()
     {
-        if (!string.IsNullOrWhiteSpace(_username) && !string.IsNullOrWhiteSpace(_password))
+        try
         {
-            await _apiCaller.PostAsync("authentication/login", new string[] { _username.Trim(), _password.Trim() }, _token);
-            _navigationManager.NavigateTo("/userinfo", true);
+            if (!string.IsNullOrWhiteSpace(_username) && !string.IsNullOrWhiteSpace(_password))
+            {
+                await _apiCaller.PostAsync("authentication/login", new string[] { _username.Trim(), _password.Trim() }, _token);
+                _navigationManager.NavigateTo("/search", true);
+            }
         }
+        catch (Exception ex)
+        {
+            await _jSRuntime.InvokeAsync<string>("alertMessage", ex.Message);
+        }
+
     }
 }

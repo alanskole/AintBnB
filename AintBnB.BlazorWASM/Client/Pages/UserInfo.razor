@@ -71,8 +71,8 @@
         try
         {
             await _apiCaller.DeleteAsync("user/" + Id, _token);
-            await _jSRuntime.InvokeAsync<string>("alertMessage", "Deleted succesfully!");
-            await NavigateAfterDeletingUserAsync();
+            await _jSRuntime.InvokeAsync<string>("alertMessage", "Deleted successfully!");
+            NavigateAfterDeletingUser();
         }
         catch (Exception ex)
         {
@@ -85,7 +85,7 @@
         try
         {
             await _apiCaller.PutAsync("user/" + Id, _user, _token);
-            await _jSRuntime.InvokeAsync<string>("alertMessage", "Updated succesfully!");
+            await _jSRuntime.InvokeAsync<string>("alertMessage", "Updated successfully!");
             _navigationManager.NavigateTo("/user/" + Id, true);
         }
         catch (Exception ex)
@@ -94,7 +94,7 @@
         }
     }
 
-    private async Task NavigateAfterDeletingUserAsync()
+    private void NavigateAfterDeletingUser()
     {
         if (_id == int.Parse(Id))
             _navigationManager.NavigateTo("/logout", true);

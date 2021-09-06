@@ -1,4 +1,4 @@
-﻿@page "/accommodationinfo/{Id}"
+﻿@page "/accommodation/{Id}"
 
 <h3>Accommodation Info</h3>
 
@@ -142,7 +142,7 @@
         try
         {
             await _apiCaller.PutAsync("accommodation/" + Id, _accommodation, _token);
-            _navigationManager.NavigateTo("/accommodationinfo/" + Id, true);
+            _navigationManager.NavigateTo("/accommodation/" + Id, true);
         }
         catch (Exception ex)
         {
@@ -157,7 +157,7 @@
         try
         {
             await _apiCaller.PostAsync("accommodation/" + Id + "/expand", _daysToExpandScheduleBy, _token);
-            _navigationManager.NavigateTo("/accommodationinfo/" + Id, true);
+            _navigationManager.NavigateTo("/accommodation/" + Id, true);
         }
         catch (Exception ex)
         {
@@ -209,7 +209,7 @@
         try
         {
             await _apiCaller.PostAsync("image", image, _token);
-            _navigationManager.NavigateTo("/accommodationinfo/" + Id, true);
+            _navigationManager.NavigateTo("/accommodation/" + Id, true);
         }
         catch (Exception ex)
         {
@@ -225,7 +225,7 @@
         {
             await _apiCaller.DeleteAsync("image/" + id, _token);
 
-            _navigationManager.NavigateTo("/accommodationinfo/" + Id, true);
+            _navigationManager.NavigateTo("/accommodation/" + Id, true);
         }
         catch (Exception ex)
         {
