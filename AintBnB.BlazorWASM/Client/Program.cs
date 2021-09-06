@@ -1,6 +1,7 @@
 using AintBnB.BlazorWASM.Client.ApiCalls;
 using AintBnB.BlazorWASM.Client.CustomAuthentication;
 using AintBnB.Core.Models;
+using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +19,7 @@ namespace AintBnB.BlazorWASM.Client
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddAuthorizationCore();
+            builder.Services.AddBlazoredLocalStorage();
 
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
             builder.Services.AddTransient<ApiCaller, ApiCaller>();

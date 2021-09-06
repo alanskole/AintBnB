@@ -1,12 +1,19 @@
 ﻿@page "/logout"
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
 
 @code {
-    private string _token;
-
     protected override async Task OnInitializedAsync()
     {
-        _token = await _jSRuntime.InvokeAsync<string>("csrfCookieReader");
-        await _apiCaller.PostAsync("authentication/logout", null, _token);
-        _navigationManager.NavigateTo("", true);
+        var token = await _jSRuntime.InvokeAsync<string>("csrfCookieReader");
+        try
+        {
+            await _apiCaller.PostAsync("authentication/logout", null, token);
+            await localStorage.ClearAsync();
+            StateHasChanged();
+            _navigationManager.NavigateTo("", true);
+        }
+        catch
+        {
+        }
     }
 }

@@ -1,9 +1,6 @@
-﻿using AintBnB.Core.Models;
+﻿using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -11,26 +8,24 @@ namespace AintBnB.BlazorWASM.Client.CustomAuthentication
 {
     public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private HttpClient _httpClient;
+        private ILocalStorageService _localStorage;
 
-        public CustomAuthenticationStateProvider(HttpClient httpClient)
+        public CustomAuthenticationStateProvider(ILocalStorageService localStorage)
         {
-            _httpClient = httpClient;
+            _localStorage = localStorage;
         }
 
         public async override Task<AuthenticationState> GetAuthenticationStateAsync()
         {
-            var response = await _httpClient.GetAsync(new Uri(_httpClient.BaseAddress + "authentication/currentUserIdAndRole"));
-
-            if (response.IsSuccessStatusCode)
+            if (await _localStorage.ContainKeyAsync("id") && await _localStorage.ContainKeyAsync("role"))
             {
-                var json = await response.Content.ReadAsStringAsync();
-                var currentUser = JsonConvert.DeserializeObject<User>(json);
+                var id = await _localStorage.GetItemAsync<string>("id");
+                var role = await _localStorage.GetItemAsync<string>("role");
 
                 var userClaims = new List<Claim>()
                 {
-                    new Claim(ClaimTypes.Name, currentUser.Id.ToString()),
-                    new Claim(ClaimTypes.Role, currentUser.UserType.ToString())
+                    new Claim(ClaimTypes.Name, id),
+                    new Claim(ClaimTypes.Role, role)
                 };
 
                 var claimsId = new ClaimsIdentity(userClaims, "User Identity");
