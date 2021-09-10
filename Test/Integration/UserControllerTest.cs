@@ -70,7 +70,7 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task CreateUser_ShouldReturn_BadRequestIfAlreadyLoggedIn()
+        public async Task CreateUser_ShouldReturn_BadRequestIfError2()
         {
             User usr = new User
             {
@@ -119,11 +119,11 @@ namespace Test.Integration
                     Encoding.UTF8,
                     "application/json"));
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [TestMethod]
-        public async Task UpdateUser_ShouldReturn_BadRequestIfError()
+        public async Task UpdateUser_ShouldReturn_NotFoundIfError()
         {
             User usr = new User
             {
@@ -135,7 +135,7 @@ namespace Test.Integration
                     Encoding.UTF8,
                     "application/json"));
 
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
@@ -149,7 +149,7 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetAllUser_ShouldReturn_NotFoundIfError()
+        public async Task GetAllUser_ShouldReturn_BadRequestIfError()
         {
             _client = _factory.CreateClient();
 
@@ -157,7 +157,7 @@ namespace Test.Integration
 
             var response = await _client.GetAsync("api/user");
 
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
@@ -171,7 +171,7 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetAllCustomers_ShouldReturn_NotFoundIfError()
+        public async Task GetAllCustomers_ShouldReturn_BadRequestIfError()
         {
             _client = _factory.CreateClient();
 
@@ -179,7 +179,7 @@ namespace Test.Integration
 
             var response = await _client.GetAsync("api/user/allcustomers");
 
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
@@ -188,34 +188,34 @@ namespace Test.Integration
         {
             var response = await _client.DeleteAsync("api/user/3");
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [TestMethod]
-        public async Task DeleteUser_ShouldReturn_BadRequestIfError()
+        public async Task DeleteUser_ShouldReturn_NotFoundIfError()
         {
             var response = await _client.DeleteAsync("api/user/600");
 
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
         [TestMethod]
         public async Task ChangePassword_ShouldReturn_SuccessStatus()
         {
-            var response = await _client.PostAsync("api/user/change",
+            var response = await _client.PutAsync("api/user/change",
                 new StringContent(
                     JsonConvert.SerializeObject(new string[] { "aaaaaa", "1", "bbbbbb", "bbbbbb" }),
                     Encoding.UTF8,
                     "application/json"));
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [TestMethod]
         public async Task ChangePassword_ShouldReturn_BadRequestIfError()
         {
-            var response = await _client.PostAsync("api/user/change",
+            var response = await _client.PutAsync("api/user/change",
                 new StringContent(
                     JsonConvert.SerializeObject(new string[] { "aaaaaaaaaaaaaa", "1", "bbbbbb", "bbbbbb" }),
                     Encoding.UTF8,

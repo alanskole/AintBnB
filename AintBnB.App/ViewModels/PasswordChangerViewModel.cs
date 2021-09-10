@@ -64,7 +64,7 @@ namespace AintBnB.App.ViewModels
 
                 await GetCsrfToken(_clientProvider);
 
-                await PostAsync(_uri, elements, _clientProvider);
+                await PutAsync(_uri, elements, _clientProvider);
             }
         }
     }

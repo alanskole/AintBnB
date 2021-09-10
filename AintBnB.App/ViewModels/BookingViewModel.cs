@@ -111,7 +111,7 @@ namespace AintBnB.App.ViewModels
 
                 await GetCsrfToken(_clientProvider);
 
-                await PostAsync(_uri + uniquePartOfUri, Booking.Rating, _clientProvider);
+                await PutAsync(_uri + uniquePartOfUri, Booking.Rating, _clientProvider);
 
                 await GetABookingAsync();
             }

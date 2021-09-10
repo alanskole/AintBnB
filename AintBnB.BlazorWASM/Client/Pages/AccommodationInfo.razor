@@ -115,7 +115,7 @@
     {
         try
         {
-            _images = await _apiCaller.GetAllAsync<Image>("image/" + _accommodation.Id);
+            _images = await _apiCaller.GetAllAsync<Image>("image/all/" + _accommodation.Id);
         }
         catch
         {
@@ -156,7 +156,8 @@
 
         try
         {
-            await _apiCaller.PostAsync("accommodation/" + Id + "/expand", _daysToExpandScheduleBy, _token);
+            await _apiCaller.PutAsync("accommodation/" + Id + "/expand", _daysToExpandScheduleBy, _token);
+            await _jSRuntime.InvokeAsync<string>("alertMessage", "Expanded the schedule successfully!");
             _navigationManager.NavigateTo("/accommodation/" + Id, true);
         }
         catch (Exception ex)

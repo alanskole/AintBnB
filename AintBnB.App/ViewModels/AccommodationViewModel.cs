@@ -220,7 +220,7 @@ namespace AintBnB.App.ViewModels
 
                 await GetCsrfToken(_clientProvider);
 
-                await PostAsync(_uri + uniquePartOfUri, ExpandScheduleByDays, _clientProvider);
+                await PutAsync(_uri + uniquePartOfUri, ExpandScheduleByDays, _clientProvider);
             }
         }
     }

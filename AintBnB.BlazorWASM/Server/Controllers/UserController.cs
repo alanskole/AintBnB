@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.BlazorWASM.Server.Helpers.CurrentUserDetails;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
@@ -38,7 +39,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             try
             {
                 var newUser = await _userService.CreateUserAsync(user.UserName, user.Password, user.FirstName, user.LastName, user.UserType);
-                return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + newUser.Id, newUser);
+                return CreatedAtAction(nameof(GetUserAsync), new { id = newUser.Id }, newUser);
             }
             catch (Exception ex)
             {
@@ -49,7 +50,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         /// <summary>API PUT request to update a user.</summary>
         /// <param name="id">The ID of the user to update.</param>
         /// <param name="user">The updated user object.</param>
-        /// <returns>Status 200 and the updated user if successful, otherwise status code 400</returns>
+        /// <returns>Status 204 and the updated user if successful, otherwise status code 400 or 404</returns>
         [HttpPut]
         [Route("api/[controller]/{id}")]
         public async Task<IActionResult> UpdateUserAsync([FromRoute] int id, [FromBody] User user)
@@ -62,18 +63,18 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                     return BadRequest(new AccessException().Message);
 
                 await _userService.UpdateUserAsync(id, user, GetUsertypeOfLoggedInUser(HttpContext));
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
         }
 
         /// <summary>API POST request to change password of a user.</summary>
         /// <param name="elements">An array containing the original password, the user-ID of the user to change the password of, the new password and a confirmation of the new password.</param>
-        /// <returns>Status 200 if successful, otherwise status code 400</returns>
-        [HttpPost]
+        /// <returns>Status 204 if successful, otherwise status code 400</returns>
+        [HttpPut]
         [Route("api/[controller]/change")]
         public async Task<IActionResult> ChangePasswordAsync([FromBody] string[] elements)
         {
@@ -84,7 +85,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
 
                 await _userService.ChangePasswordAsync(elements[0], int.Parse(elements[1]), elements[2], elements[3]);
 
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -93,17 +94,17 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         }
 
         /// <summary>API GET request that gets all users.</summary>
-        /// <returns>Status 200 and all the users if successful, otherwise status code 404</returns>
+        /// <returns>Status 200 and all the users if successful, otherwise status code 404 or 400</returns>
         [HttpGet]
         [Route("api/[controller]")]
-        public async Task<IActionResult> GetAllUsersAsync()
+        public async Task<ActionResult<List<User>>> GetAllUsersAsync()
         {
             try
             {
                 if (!AdminChecker(GetUsertypeOfLoggedInUser(HttpContext)))
-                    return NotFound(new AccessException().Message);
+                    return BadRequest(new AccessException().Message);
 
-                return Ok(await _userService.GetAllUsersAsync());
+                return await _userService.GetAllUsersAsync();
             }
             catch (Exception ex)
             {
@@ -112,17 +113,17 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         }
 
         /// <summary>API GET request that gets all users with usertype customer.</summary>
-        /// <returns>Status 200 and all the users with usertype customer if successful, otherwise status code 404</returns>
+        /// <returns>Status 204 and all the users with usertype customer if successful, otherwise status code 404 or 400</returns>
         [HttpGet]
         [Route("api/[controller]/allcustomers")]
-        public async Task<IActionResult> GetAllCustomersAsync()
+        public async Task<ActionResult<List<User>>> GetAllCustomersAsync()
         {
             try
             {
                 if (!AdminChecker(GetUsertypeOfLoggedInUser(HttpContext)))
-                    return NotFound(new AccessException().Message);
+                    return BadRequest(new AccessException().Message);
 
-                return Ok(await _userService.GetAllUsersWithTypeCustomerAsync());
+                return await _userService.GetAllUsersWithTypeCustomerAsync();
             }
             catch (Exception ex)
             {
@@ -132,19 +133,20 @@ namespace AintBnB.BlazorWASM.Server.Controllers
 
         /// <summary>API GET request to fetch a user from the database.</summary>
         /// <param name="id">The ID of the user to get.</param>
-        /// <returns>Status 200 and the requested user if successful, otherwise status code 404</returns>
+        /// <returns>Status 200 and the requested user if successful, otherwise status code 404 or 400</returns>
+        [ActionName("GetUserAsync")]
         [HttpGet]
         [Route("api/[controller]/{id}")]
-        public async Task<IActionResult> GetUserAsync([FromRoute] int id)
+        public async Task<ActionResult<User>> GetUserAsync([FromRoute] int id)
         {
             try
             {
                 var user = await _userService.GetUserAsync(id);
 
                 if (!CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return NotFound(new AccessException().Message);
+                    return BadRequest(new AccessException().Message);
 
-                return Ok(user);
+                return user;
             }
             catch (Exception ex)
             {
@@ -154,7 +156,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
 
         /// <summary>API DELETE request to delete a user from the database.</summary>
         /// <param name="id">The ID of the user to delete.</param>
-        /// <returns>Status 200 if successful, otherwise status code 400</returns>
+        /// <returns>Status 204 if successful, otherwise status code 400 or 404</returns>
         [HttpDelete]
         [Route("api/[controller]/{id}")]
         public async Task<IActionResult> DeleteUserAsync([FromRoute] int id)
@@ -171,11 +173,11 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 if (!AdminChecker(GetUsertypeOfLoggedInUser(HttpContext)))
                     await HttpContext.SignOutAsync();
 
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
         }
     }

@@ -14,6 +14,9 @@ namespace AintBnB.App.ViewModels
     public class AuthenticationViewModel : Observable
     {
         private int _idOfLoggedInUser;
+        private UserTypes _userTypeOfLoggedInUser;
+        private bool _alreadyFetchedLoggedInUser = false;
+        private bool _isLoggedIn = false;
         private User _user = new User();
         private string _uri = "authentication/";
 
@@ -24,6 +27,36 @@ namespace AintBnB.App.ViewModels
             {
                 _idOfLoggedInUser = value;
                 NotifyPropertyChanged("IdOfLoggedInUser");
+            }
+        }
+
+        public UserTypes UserTypeOfLoggedInUser
+        {
+            get { return _userTypeOfLoggedInUser; }
+            set
+            {
+                _userTypeOfLoggedInUser = value;
+                NotifyPropertyChanged("UserTypeOfLoggedInUser");
+            }
+        }
+
+        public bool AlreadyFetchedLoggedInUser
+        {
+            get { return _alreadyFetchedLoggedInUser; }
+            set
+            {
+                _alreadyFetchedLoggedInUser = value;
+                NotifyPropertyChanged("AlreadyFetchedLoggedInUser");
+            }
+        }
+
+        public bool IsLoggedIn
+        {
+            get { return _isLoggedIn; }
+            set
+            {
+                _isLoggedIn = value;
+                NotifyPropertyChanged("NotLoggedIn");
             }
         }
 
@@ -76,52 +109,45 @@ namespace AintBnB.App.ViewModels
 
         public async Task<bool> IsUserLoggedInAsync()
         {
+            if (!AlreadyFetchedLoggedInUser)
+                await LoggedInUserIdAndUserType();
+
+            return IsLoggedIn;
+        }
+
+        public async Task LoggedInUserIdAndUserType()
+        {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = "isLoggedIn";
+                var uniquePartOfUri = "currentUserIdAndRole";
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
                 try
                 {
-                    await GetAsync(_uri + uniquePartOfUri, _clientProvider);
-                    return true;
+                    var user = await GetAsync<User>(_uri + uniquePartOfUri, _clientProvider);
+
+                    IdOfLoggedInUser = user.Id;
+
+                    UserTypeOfLoggedInUser = user.UserType;
+
+                    AlreadyFetchedLoggedInUser = true;
+
+                    IsLoggedIn = true;
                 }
                 catch
                 {
-                    return false;
                 }
-            }
-        }
-
-        public async Task IdOfLoggedInUserAsync()
-        {
-            using (var _clientProvider = new HttpClientProvider())
-            {
-                var uniquePartOfUri = "loggedinUserId";
-
-                await AddAuthCookieAsync(_clientProvider.clientHandler);
-
-                IdOfLoggedInUser = await GetAsync<int>(_uri + uniquePartOfUri, _clientProvider);
             }
         }
 
         public async Task IsAdminAsync()
         {
-            using (var _clientProvider = new HttpClientProvider())
-            {
-                var uniquePartOfUri = "admin";
+            if (!AlreadyFetchedLoggedInUser)
+                await LoggedInUserIdAndUserType();
 
-                await AddAuthCookieAsync(_clientProvider.clientHandler);
-                try
-                {
-                    await GetAsync(_uri + uniquePartOfUri, _clientProvider);
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-            }
+            if (UserTypeOfLoggedInUser != UserTypes.Admin)
+                throw new Exception("Not admin!");
         }
 
         public async Task LogoutFromAppAsync()

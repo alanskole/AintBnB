@@ -137,7 +137,6 @@ namespace AintBnB.App.Views
             }
             catch (Exception)
             {
-                await AuthenticationViewModel.IdOfLoggedInUserAsync();
                 BookingViewModel.Booking.BookedBy.Id = AuthenticationViewModel.IdOfLoggedInUser;
             }
         }

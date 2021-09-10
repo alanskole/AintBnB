@@ -82,7 +82,7 @@ namespace AintBnB.App.CommonMethodsAndProperties
         public static async Task<List<T>> SortListAsync<T>(string uri, List<T> listJson, HttpClientProvider clientProvider)
         {
             var json = JsonConvert.SerializeObject(listJson);
-            var response = await clientProvider.client.PostAsync(
+            var response = await clientProvider.client.PutAsync(
                 new Uri(clientProvider.client.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
             return JsonConvert.DeserializeObject<List<T>>(await response.Content.ReadAsStringAsync());

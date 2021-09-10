@@ -37,9 +37,8 @@ namespace AintBnB.App.Views
         {
             try
             {
-                await AuthenticationViewModel.IdOfLoggedInUserAsync();
-                var userid = AuthenticationViewModel.IdOfLoggedInUser;
-                await FindUserTypeAsync(userid);
+                await AuthenticationViewModel.LoggedInUserIdAndUserType();
+                await FindUserTypeAsync(AuthenticationViewModel.IdOfLoggedInUser);
             }
             catch (Exception ex)
             {
@@ -50,10 +49,8 @@ namespace AintBnB.App.Views
 
         private async Task FindUserTypeAsync(int userid)
         {
-            try
+            if (AuthenticationViewModel.UserTypeOfLoggedInUser.ToString().ToLower() == "admin")
             {
-                await AuthenticationViewModel.IsAdminAsync();
-
                 AllUsersButton.Visibility = Visibility.Visible;
 
                 await FillComboBoxWithUserIdsAsync();
@@ -61,10 +58,8 @@ namespace AintBnB.App.Views
                 if (ComboBoxUsers.SelectedIndex == -1)
                     ComboBoxUsers.SelectedValue = userid;
             }
-            catch (Exception)
-            {
+            else
                 await GetCustomerByIdAsync(userid);
-            }
         }
 
         private async Task FillComboBoxWithUserIdsAsync()

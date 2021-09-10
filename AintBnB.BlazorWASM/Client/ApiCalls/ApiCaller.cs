@@ -30,6 +30,22 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
             ResponseChecker(response);
         }
 
+        /// <summary>Makes a API POST call to create a new object.</summary>
+        /// <param name="uri">The URI of the API call.</param>
+        /// <param name="objJson">The object that will be created.</param>
+        /// <param name="_httpClient">_httpClient that will be used to make the API call.</param>
+        public async Task<T> PostAsync<T>(string uri, object objJson, string csrfToken)
+        {
+            _httpClient.DefaultRequestHeaders.Add("X-XSRF-TOKEN", csrfToken);
+
+            var json = JsonConvert.SerializeObject(objJson);
+            var response = await _httpClient.PostAsync(
+                new Uri(_httpClient.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
+            ResponseChecker(response);
+            var objectJson = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<T>(objectJson); 
+        }
+
         /// <summary>Makes a API GET call to get an object.</summary>
         /// <typeparam name="T">The type of the object</typeparam>
         /// <param name="uri">The URI of the API call.</param>
@@ -89,7 +105,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         public async Task<List<T>> SortListAsync<T>(string uri, List<T> listJson)
         {
             var json = JsonConvert.SerializeObject(listJson);
-            var response = await _httpClient.PostAsync(
+            var response = await _httpClient.PutAsync(
                 new Uri(_httpClient.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
             return JsonConvert.DeserializeObject<List<T>>(await response.Content.ReadAsStringAsync());

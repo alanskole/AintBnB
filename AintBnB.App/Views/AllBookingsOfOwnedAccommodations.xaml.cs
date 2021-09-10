@@ -32,7 +32,6 @@ namespace AintBnB.App.Views
             }
             catch (Exception)
             {
-                await AuthenticationViewModel.IdOfLoggedInUserAsync();
                 await FillListWithBookingsAsync(AuthenticationViewModel.IdOfLoggedInUser);
             }
         }

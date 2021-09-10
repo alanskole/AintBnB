@@ -65,7 +65,7 @@ namespace Test.Integration
 
             var response = await _client.PutAsync("api/booking/1", new StringContent(newDates, Encoding.UTF8, "application/json"));
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [TestMethod]
@@ -143,15 +143,15 @@ namespace Test.Integration
         {
             var response = await _client.DeleteAsync("api/booking/1");
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [TestMethod]
-        public async Task DeleteBooking_ShouldReturn_BadRequestIfError()
+        public async Task DeleteBooking_ShouldReturn_NotFoundIfError()
         {
             var response = await _client.DeleteAsync("api/booking/100");
 
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
     }

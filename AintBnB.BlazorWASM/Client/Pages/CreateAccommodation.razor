@@ -68,7 +68,7 @@
     private List<string> _cities = new List<string>();
     private string _country;
     private string _csrfToken;
-    private int _id = 1;
+    private int _id;
     private bool _isAdmin = false;
     private List<User> _allCustomers;
 
@@ -118,11 +118,14 @@
 
     private async Task CreateAccommodationAsync()
     {
+        if (_accommodation.CancellationDeadlineInDays == 0)
+            _accommodation.CancellationDeadlineInDays = 1;
+
         try
         {
             _accommodation.Address.Country = _country;
-            await _apiCaller.PostAsync("accommodation/" + _daysToCreateScheduleFor + "/" + _id, _accommodation, _csrfToken);
-            _navigationManager.NavigateTo("/accommodations", true);
+            var accommodation = await _apiCaller.PostAsync<Accommodation>("accommodation/" + _daysToCreateScheduleFor + "/" + _id, _accommodation, _csrfToken);
+            _navigationManager.NavigateTo("/accommodation/" + accommodation.Id, true);
         }
         catch (Exception ex)
         {

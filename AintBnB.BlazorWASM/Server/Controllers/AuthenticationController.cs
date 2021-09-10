@@ -23,42 +23,21 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             _userService = userService;
         }
 
-        /// <summary>API GET request to get the user that's logged in.</summary>
-        /// <returns>Status 200 and the user if successful, otherwise status code 404</returns>
-        [HttpGet]
-        [Route("api/[controller]/isLoggedIn")]
-        [AllowAnonymous]
-        public IActionResult IsLoggedIn()
-        {
-            if (HttpContext.User.Identity.IsAuthenticated)
-                return Ok();
-            else
-                return NotFound();
-        }
-
-        /// <summary>API GET request to get the user that's logged in.</summary>
-        /// <returns>Status 200 and the user if successful, otherwise status code 404</returns>
-        [HttpGet]
-        [Route("api/[controller]/loggedinUserId")]
-        public IActionResult GetLoggedInUserId()
-        {
-            var id = GetIdOfLoggedInUser(HttpContext);
-            return Ok(id);
-        }
-
+        /// <summary>API GET request to get the id and the usertype of the user that's logged in.</summary>
+        /// <returns>Status 200 and a user object with the id and usertype of the logged in user, otherwise status 400</returns>
         [HttpGet]
         [Route("api/[controller]/currentUserIdAndRole")]
         [AllowAnonymous]
-        public IActionResult GetLoggedInUserIdAndRole()
+        public ActionResult<User> GetLoggedInUserIdAndRole()
         {
             if (HttpContext.User.Identity.IsAuthenticated)
             {
                 var id = GetIdOfLoggedInUser(HttpContext);
                 var userType = GetUsertypeOfLoggedInUser(HttpContext);
-                return Ok(new User { Id = id, UserType = userType });
+                return new User { Id = id, UserType = userType };
             }
             else
-                return NotFound();
+                return BadRequest();
         }
 
         [HttpGet]
@@ -72,43 +51,29 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
 
             if (CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                return Ok();
+                return NoContent();
             else
                 return BadRequest("Restricted access!");
         }
 
-        /// <summary>API GET request to check if the user that's logged in is admin</summary>
-        /// <returns>Status 200 if true, otherwise status code 400</returns>
-        [HttpGet]
-        [Route("api/[controller]/admin")]
-        public IActionResult IsUserAdmin()
-        {
-            var userType = GetUsertypeOfLoggedInUser(HttpContext);
-
-            if (AdminChecker(userType))
-                return Ok("Admin");
-            else
-                return BadRequest("Not admin!");
-        }
-
         /// <summary>API POST request to logout the user</summary>
-        /// <returns>Status 200 if successful, otherwise status code 400</returns>
+        /// <returns>Status 204 if successful</returns>
         [HttpPost]
         [Route("api/[controller]/logout")]
         public async Task<IActionResult> LogoutUserAsync()
         {
             await HttpContext.SignOutAsync();
-            return Ok();
+            return NoContent();
         }
 
 
         /// <summary>API POST request that logs in a user.</summary>
         /// <param name="usernameAndPassword">An array with the username and password of the user that tries to log in.</param>
-        /// <returns>Status 200 if successful, otherwise status code 404</returns>
+        /// <returns>Status 204 if successful, otherwise status code 400</returns>
         [HttpPost]
         [Route("api/[controller]/login")]
         [AllowAnonymous]
@@ -138,11 +103,11 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                         IsPersistent = true
                     });
 
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
     }

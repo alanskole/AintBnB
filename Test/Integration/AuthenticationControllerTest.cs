@@ -28,9 +28,9 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetLoggedInUser_ShouldReturn_SuccessStatus()
+        public async Task GetLoggedInUserIdAndRole_ShouldReturn_SuccessStatus()
         {
-            var response = await _client.GetAsync("api/authentication/loggedinUserId");
+            var response = await _client.GetAsync("api/authentication/currentUserIdAndRole");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
@@ -41,7 +41,7 @@ namespace Test.Integration
         {
             var response = await _client.GetAsync("api/authentication/1");
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [TestMethod]
@@ -58,27 +58,6 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task IsAdmin_ShouldReturn_SuccessStatus()
-        {
-            var response = await _client.GetAsync("api/authentication/admin");
-
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [TestMethod]
-        public async Task IsAdmin_ShouldReturn_BadRequestIfError()
-        {
-            _client = _factory.CreateClient();
-
-            await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
-
-            var response = await _client.GetAsync("api/authentication/admin");
-
-            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-        }
-
-        [TestMethod]
         public async Task LogoutUser_ShouldReturn_SuccessStatus()
         {
             var response = await _client.PostAsync("api/authentication/logout",
@@ -87,7 +66,7 @@ namespace Test.Integration
                     Encoding.UTF8,
                     "application/json"));
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [TestMethod]
@@ -101,11 +80,11 @@ namespace Test.Integration
                     Encoding.UTF8,
                     "application/json"));
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [TestMethod]
-        public async Task LogIn_ShouldReturn_NotFoundIfError()
+        public async Task LogIn_ShouldReturn_BadRequestError()
         {
             _client = _factory.CreateClient();
 
@@ -115,7 +94,7 @@ namespace Test.Integration
                     Encoding.UTF8,
                     "application/json"));
 
-            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
     }

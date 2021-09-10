@@ -44,7 +44,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                     return BadRequest($"Must be performed by a customer with ID {owner.Id}, or by admin on behalf of a customer with ID {owner.Id}!");
 
                 var newAccommodation = await _accommodationService.CreateAccommodationAsync(owner, accommodation.Address, accommodation.SquareMeters, accommodation.AmountOfBedrooms, accommodation.KilometersFromCenter, accommodation.Description, accommodation.PricePerNight, accommodation.CancellationDeadlineInDays, days);
-                return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + accommodation.Id, accommodation);
+                return CreatedAtAction(nameof(GetAccommodationAsync), new { id = newAccommodation.Id }, newAccommodation);
             }
             catch (Exception ex)
             {
@@ -60,11 +60,11 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         /// <returns>Status 200 and all the accommodations if successful, otherwise status code 404</returns>
         [HttpGet]
         [Route("api/[controller]/{country}/{city}/{startdate}/{nights}")]
-        public async Task<IActionResult> FindAvailableAsync([FromRoute] string city, [FromRoute] string country, [FromRoute] string startdate, [FromRoute] int nights)
+        public async Task<ActionResult<List<Accommodation>>> FindAvailableAsync([FromRoute] string city, [FromRoute] string country, [FromRoute] string startdate, [FromRoute] int nights)
         {
             try
             {
-                return Ok(await _accommodationService.FindAvailableAsync(country, city, startdate, nights));
+                return await _accommodationService.FindAvailableAsync(country, city, startdate, nights);
             }
             catch (Exception ex)
             {
@@ -72,31 +72,31 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             }
         }
 
-        /// <summary>API POST request to sort a list of accommodations in a specific order</summary>
+        /// <summary>API PUT request to sort a list of accommodations in a specific order</summary>
         /// <param name="available">The list of accommodations that must be sorted.</param>
         /// <param name="sortBy">The order to sort by: Price, Distance, Rating or Size.</param>
         /// <param name="ascOrDesc">Sort in ascending or descending order</param>
-        /// <returns>Status 200 and the correct sorting order if successful, otherwise status code 404</returns>
-        [HttpPost]
+        /// <returns>Status 200 and the correct sorting order if successful, otherwise status code 400</returns>
+        [HttpPut]
         [Route("api/[controller]/sort/{sortBy}/{ascOrDesc}")]
         [IgnoreAntiforgeryToken]
-        public IActionResult SortAvailableList([FromBody] List<Accommodation> available, [FromRoute] string sortBy, [FromRoute] string ascOrDesc)
+        public ActionResult<List<Accommodation>> SortAvailableList([FromBody] List<Accommodation> available, [FromRoute] string sortBy, [FromRoute] string ascOrDesc)
         {
             try
             {
-                return Ok(_accommodationService.SortListOfAccommodations(available, sortBy, ascOrDesc));
+                return _accommodationService.SortListOfAccommodations(available, sortBy, ascOrDesc);
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
         }
 
-        /// <summary>API POST request to expand the schedule of an accommodation by x amount of days</summary>
+        /// <summary>API PUT request to expand the schedule of an accommodation by x amount of days</summary>
         /// <param name="id">The ID of the accommodation to expand the schedule of.</param>
         /// <param name="days">The amount of days to expand the schedule by.</param>
-        /// <returns>Status 200 and the accommodation if successful, otherwise status code 400</returns>
-        [HttpPost]
+        /// <returns>Status 204 and the accommodation if successful, otherwise status code 400 or 404</returns>
+        [HttpPut]
         [Route("api/[controller]/{id}/expand")]
         public async Task<IActionResult> ExpandScheduleAsync([FromRoute] int id, [FromBody] int days)
         {
@@ -109,7 +109,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 try
                 {
                     await _accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(id, days);
-                    return Ok();
+                    return NoContent();
                 }
                 catch (Exception ex)
                 {
@@ -122,7 +122,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         /// <summary>API PUT request to update an existing accommodation</summary>
         /// <param name="id">The ID of the accommodation to update.</param>
         /// <param name="accommodation">The updated accommodation object.</param>
-        /// <returns>Status 200 and the updated accommodation if successful, otherwise status code 400</returns>
+        /// <returns>Status 204 and the updated accommodation if successful, otherwise status code 400</returns>
         [HttpPut]
         [Route("api/[controller]/{id}")]
         public async Task<IActionResult> UpdateAccommodationAsync([FromRoute] int id, Accommodation accommodation)
@@ -135,7 +135,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 if (CorrectUserOrAdmin(acc.Owner.Id, GetIdOfLoggedInUser(HttpContext), userType))
                 {
                     await _accommodationService.UpdateAccommodationAsync(id, accommodation);
-                    return Ok();
+                    return NoContent();
                 }
                 return BadRequest(new AccessException().Message);
             }
@@ -149,11 +149,11 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         /// <returns>Status 200 and all the accommodations if successful, otherwise status code 404</returns>
         [HttpGet]
         [Route("api/[controller]")]
-        public async Task<IActionResult> GetAllAccommodationsInTheSystemAsync()
+        public async Task<ActionResult<List<Accommodation>>> GetAllAccommodationsInTheSystemAsync()
         {
             try
             {
-                return Ok(await _accommodationService.GetAllAccommodationsAsync());
+                return await _accommodationService.GetAllAccommodationsAsync();
             }
             catch (Exception ex)
             {
@@ -166,11 +166,11 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         /// <returns>Status 200 and all the accommodations owned by the user if successful, otherwise status code 404</returns>
         [HttpGet]
         [Route("api/[controller]/{userid}/allaccommodations")]
-        public async Task<IActionResult> GetAllAccommodationsOfAUserAsync([FromRoute] int userid)
+        public async Task<ActionResult<List<Accommodation>>> GetAllAccommodationsOfAUserAsync([FromRoute] int userid)
         {
             try
             {
-                return Ok(await _accommodationService.GetAllOwnedAccommodationsAsync(userid));
+                return await _accommodationService.GetAllOwnedAccommodationsAsync(userid);
             }
             catch (Exception ex)
             {
@@ -181,13 +181,14 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         /// <summary>API GET request to fetch an accommodation from the database</summary>
         /// <param name="id">The ID of the accommodation to get.</param>
         /// <returns>Status 200 and the requested accommodation if successful, otherwise status code 404</returns>
+        [ActionName("GetAccommodationAsync")]
         [HttpGet]
         [Route("api/[controller]/{id}")]
-        public async Task<IActionResult> GetAccommodationAsync([FromRoute] int id)
+        public async Task<ActionResult<Accommodation>> GetAccommodationAsync([FromRoute] int id)
         {
             try
             {
-                return Ok(await _accommodationService.GetAccommodationAsync(id));
+                return await _accommodationService.GetAccommodationAsync(id);
             }
             catch (Exception ex)
             {
@@ -197,7 +198,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
 
         /// <summary>API DELETE request to delete an accommodation</summary>
         /// <param name="id">The ID of the accommodation to get.</param>
-        /// <returns>Status 200 if successful, otherwise status code 400</returns>
+        /// <returns>Status 204 if successful, otherwise status code 400</returns>
         [HttpDelete]
         [Route("api/[controller]/{id}")]
         public async Task<IActionResult> DeleteAccommodationAsync([FromRoute] int id)
@@ -210,7 +211,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                     return BadRequest(new AccessException($"Administrator or user with ID {accommodation.Owner.Id} only!").Message);
 
                 await _deletionService.DeleteAccommodationAsync(id);
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {

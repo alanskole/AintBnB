@@ -29,7 +29,6 @@ namespace AintBnB.App.Views
             }
             catch
             {
-                await AuthenticationViewModel.IdOfLoggedInUserAsync();
                 AccommodationViewMode.UserId = AuthenticationViewModel.IdOfLoggedInUser;
                 normalUserLoggedIn = true;
             }

@@ -1,8 +1,10 @@
 ﻿using AintBnB.BusinessLogic.CustomExceptions;
 using AintBnB.BusinessLogic.Interfaces;
+using AintBnB.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.BlazorWASM.Server.Helpers.CurrentUserDetails;
 using static AintBnB.BusinessLogic.Helpers.Authentication;
@@ -45,7 +47,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                     return BadRequest($"Must be performed by a customer with ID {booker.Id}, or by admin on behalf of a customer with ID {booker.Id}!");
 
                 var booking = await _bookingService.BookAsync(bookingInfo[0], booker, int.Parse(bookingInfo[2]), accommodation);
-                return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + booking.Id, booking);
+                return CreatedAtAction(nameof(GetBookingAsync), new { id = booking.Id}, booking);
             }
             catch (Exception ex)
             {
@@ -54,15 +56,22 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         }
 
         /// <summary>API PUT request to update an existing booking.</summary>
-        /// <param name="newStartDate">The updated start date of the booking.</param>
-        /// <param name="nights">The amount of nights to book.</param>
+        /// <param name="newDates">The updated start date of the booking and the amount of nights to book for in a list.</param>
         /// <param name="bookingId">The ID of the booking to update.</param>
-        /// <returns>Status 200 and the updated booking if successful, otherwise status code 400</returns>
+        /// <returns>Status 204 if successful, otherwise status code 400 or 404</returns>
         [HttpPut]
         [Route("api/[controller]/{bookingId}")]
         public async Task<IActionResult> UpdateBookingAsync([FromBody] string[] newDates, [FromRoute] int bookingId)
         {
-            var booking = await _bookingService.GetBookingAsync(bookingId);
+            Booking booking;
+            try
+            {
+                booking = await _bookingService.GetBookingAsync(bookingId);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
 
             if (!CheckIfUserIsAllowedToPerformAction(booking.BookedBy, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
                 return BadRequest($"Must be performed by the booker, or by admin on behalf of the booker!");
@@ -70,7 +79,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             try
             {
                 await _bookingService.UpdateBookingAsync(newDates[0], int.Parse(newDates[1]), bookingId);
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -78,23 +87,31 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             }
         }
 
-        /// <summary>API POST request to leave a rating on a booking</summary>
+        /// <summary>API PUT request to leave a rating on a booking</summary>
         /// <param name="bookingId">The ID of the booking to leave a rating for</param>
         /// <param name="rating">The rating from 1-5</param>
-        /// <returns>Status 200 if successful, otherwise status code 400</returns>
-        [HttpPost]
+        /// <returns>Status 204 if successful, otherwise status code 400 or 404</returns>
+        [HttpPut]
         [Route("api/[controller]/rate/{bookingId}")]
         public async Task<IActionResult> LeaveRatingAsync([FromRoute] int bookingId, [FromBody] int rating)
         {
-            var booker = await _bookingService.GetBookingAsync(bookingId);
+            Booking booking;
+            try
+            {
+                booking = await _bookingService.GetBookingAsync(bookingId);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
 
-            if (booker.BookedBy.Id != GetIdOfLoggedInUser(HttpContext))
+            if (booking.BookedBy.Id != GetIdOfLoggedInUser(HttpContext))
                 return BadRequest(new AccessException("Only the booker can leave a rating!").Message);
 
             try
             {
                 await _bookingService.RateAsync(bookingId, rating);
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
@@ -104,19 +121,20 @@ namespace AintBnB.BlazorWASM.Server.Controllers
 
         /// <summary>API GET request to fetch a booking from the database</summary>
         /// <param name="id">The ID of the booking to get.</param>
-        /// <returns>Status 200 and the requested booking if successful, otherwise status code 404</returns>
+        /// <returns>Status 200 and the requested booking if successful, otherwise status code 400 or 404</returns>
+        [ActionName("GetBookingAsync")]
         [HttpGet]
         [Route("api/[controller]/{id}")]
-        public async Task<IActionResult> GetBookingAsync([FromRoute] int id)
+        public async Task<ActionResult<Booking>> GetBookingAsync([FromRoute] int id)
         {
             try
             {
                 var booking = await _bookingService.GetBookingAsync(id);
 
                 if (CorrectUserOrOwnerOrAdmin(booking.Accommodation.Owner.Id, booking.BookedBy.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return Ok(booking);
+                    return booking;
                 else
-                    return NotFound(new AccessException().Message);
+                    return BadRequest(new AccessException().Message);
             }
             catch (Exception ex)
             {
@@ -126,10 +144,10 @@ namespace AintBnB.BlazorWASM.Server.Controllers
 
         /// <summary>API GET request to return all the bookings that are made on the accommodations of a user</summary>
         /// <param name="id">The ID of the user to return the bookings of their accommodations of.</param>
-        /// <returns>Status 200 and the all the bookings if successful, otherwise status code 404</returns>
+        /// <returns>Status 200 and the all the bookings if successful, otherwise status code 404 or 400</returns>
         [HttpGet]
         [Route("api/[controller]/{id}/bookingsownaccommodation")]
-        public async Task<IActionResult> GetBookingsOnOwnedAccommodationsAsync([FromRoute] int id)
+        public async Task<ActionResult<List<Booking>>> GetBookingsOnOwnedAccommodationsAsync([FromRoute] int id)
         {
             var user = await _userService.GetUserAsync(id);
 
@@ -137,7 +155,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             {
                 try
                 {
-                    return Ok(await _bookingService.GetBookingsOfOwnedAccommodationAsync(id));
+                    return await _bookingService.GetBookingsOfOwnedAccommodationAsync(id);
                 }
                 catch (Exception ex)
                 {
@@ -145,23 +163,23 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 }
             }
             else
-                return NotFound(new AccessException().Message);
+                return BadRequest(new AccessException().Message);
         }
 
         /// <summary>API GET request to return all the bookings from the database</summary>
         /// <returns>Status 200 and all the bookings if successful, otherwise status code 404</returns>
         [HttpGet]
         [Route("api/[controller]")]
-        public async Task<IActionResult> GetAllBookingsAsync()
+        public async Task<ActionResult<List<Booking>>> GetAllBookingsAsync()
         {
             try
             {
                 var user = await _userService.GetUserAsync(GetIdOfLoggedInUser(HttpContext));
 
                 if (AdminChecker(user.UserType))
-                    return Ok(await _bookingService.GetAllInSystemAsync());
+                    return await _bookingService.GetAllInSystemAsync();
                 else
-                    return Ok(await _bookingService.GetOnlyOnesOwnedByUserAsync(GetIdOfLoggedInUser(HttpContext)));
+                    return await _bookingService.GetOnlyOnesOwnedByUserAsync(GetIdOfLoggedInUser(HttpContext));
             }
             catch (Exception ex)
             {
@@ -171,7 +189,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
 
         /// <summary>API DELETE request to delete a booking</summary>
         /// <param name="id">The ID of the booking to cancel.</param>
-        /// <returns>Status 200 if successful, otherwise status code 400</returns>
+        /// <returns>Status 204 if successful, otherwise status code 400 or 404</returns>
         [HttpDelete]
         [Route("api/[controller]/{id}")]
         public async Task<IActionResult> DeleteBookingAsync([FromRoute] int id)
@@ -185,11 +203,11 @@ namespace AintBnB.BlazorWASM.Server.Controllers
 
                 await _deletionService.DeleteBookingAsync(id);
 
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return NotFound(ex.Message);
             }
         }
     }

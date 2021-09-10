@@ -31,7 +31,7 @@ namespace AintBnB.App.Views
         {
             try
             {
-                await AuthenticationViewModel.IdOfLoggedInUserAsync();
+                await AuthenticationViewModel.LoggedInUserIdAndUserType();
                 BookingViewModel.UserId = AuthenticationViewModel.IdOfLoggedInUser;
 
                 await FillComboboxWithAllBookingsAsync();

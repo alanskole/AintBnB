@@ -60,7 +60,6 @@ namespace AintBnB.App.Views
         {
             if (normalUserLoggedIn)
             {
-                await AuthenticationViewModel.IdOfLoggedInUserAsync();
                 AccommodationViewModel.UserId = AuthenticationViewModel.IdOfLoggedInUser;
 
                 try

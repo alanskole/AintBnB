@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using static AintBnB.BusinessLogic.Helpers.AllCountriesAndCities;
 
@@ -15,11 +16,11 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         /// <returns>Status code 200 and all the countires if successful otherwise status code 404 if an error occured</returns>
         [HttpGet]
         [Route("api/[controller]/countries")]
-        public async Task<IActionResult> GetAllCountriesInTheWorldAsync()
+        public async Task<ActionResult<List<string>>> GetAllCountriesInTheWorldAsync()
         {
             try
             {
-                return Ok(await GetAllTheCountriesAsync());
+                return await GetAllTheCountriesAsync();
             }
             catch (Exception ex)
             {
@@ -32,11 +33,11 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         /// <returns>Status code 200 and all the cities of a country if successful otherwise status code 404 if an error occured</returns>
         [HttpGet]
         [Route("api/[controller]/cities/{country}")]
-        public async Task<IActionResult> GetAllCitiesOfAllTheCountriesAsync([FromRoute] string country)
+        public async Task<ActionResult<List<string>>> GetAllCitiesOfAllTheCountriesAsync([FromRoute] string country)
         {
             try
             {
-                return Ok(await GetCitiesOfACountryAsync(country));
+                return await GetCitiesOfACountryAsync(country);
             }
             catch (Exception ex)
             {

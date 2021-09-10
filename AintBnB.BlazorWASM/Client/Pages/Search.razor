@@ -95,7 +95,7 @@
     private int _id;
     private bool _isAdmin = false;
     private List<Accommodation> _available;
-    private int _nights;
+    private int _nights = 1;
     private string _startDate = DateTime.Today.ToString("yyyy-MM-dd");
     private bool _visibilityRatingAsc { get; set; } = false;
     private bool _visibilityRatingDsc { get; set; } = true;
@@ -170,9 +170,9 @@
     {
         try
         {
-            await _apiCaller.PostAsync("booking/book", new string[] { _startDate, _id.ToString(), _nights.ToString(), accommodationId.ToString() }, _csrfToken);
+            var booking = await _apiCaller.PostAsync<Booking>("booking/book", new string[] { _startDate, _id.ToString(), _nights.ToString(), accommodationId.ToString() }, _csrfToken);
             await _jSRuntime.InvokeAsync<string>("alertMessage", "Booked successfully!");
-            _navigationManager.NavigateTo("/bookings", true);
+            _navigationManager.NavigateTo("/booking/" + booking.Id, true);
         }
         catch (Exception ex)
         {

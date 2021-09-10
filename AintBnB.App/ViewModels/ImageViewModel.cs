@@ -90,7 +90,7 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = _image.Accommodation.Id.ToString();
+                var uniquePartOfUri = "all/" + _image.Accommodation.Id.ToString();
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 

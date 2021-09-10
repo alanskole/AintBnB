@@ -34,7 +34,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             try
             {
                 var newImg = await _imageService.AddPictureAsync(img.Accommodation.Id, img.Img);
-                return Created(HttpContext.Request.Scheme + "://" + HttpContext.Request.Host + HttpContext.Request.Path + "/" + newImg.Id, img);
+                return CreatedAtAction(nameof(GetImageAsync), new { id = newImg.Id}, newImg);
             }
             catch (Exception ex)
             {
@@ -42,10 +42,29 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             }
         }
 
+        /// <summary>API GET request that gets an image.</summary>
+        /// <param name="imageId">The Id of the image to fetch</param>
+        /// <returns>Status 200 and the image if successful, otherwise status code 404</returns>
+        [ActionName("GetImageAsync")]
+        [HttpGet]
+        [Route("api/[controller]/{imageId}")]
+        public async Task<ActionResult<Image>> GetImageAsync([FromRoute] int imageId)
+        {
+            try
+            {
+                return await _imageService.GetPicture(imageId);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+        }
+
         /// <summary>API GET request that gets all images of an accommodation.</summary>
+        /// <param name="accommodationId">The Id of the accommodation to fetch the pictures of</param>
         /// <returns>Status 200 and all the images if successful, otherwise status code 404</returns>
         [HttpGet]
-        [Route("api/[controller]/{accommodationId}")]
+        [Route("api/[controller]/all/{accommodationId}")]
         public IActionResult GetAllImages([FromRoute] int accommodationId)
         {
             try
@@ -60,7 +79,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
 
         /// <summary>API DELETE request to delete an image from the database.</summary>
         /// <param name="imageId">The ID of the image to delete.</param>
-        /// <returns>Status 200 if successful, otherwise status code 404</returns>
+        /// <returns>Status 204 if successful, otherwise status code 404 or 400</returns>
         [HttpDelete]
         [Route("api/[controller]/{imageId}")]
         public async Task<IActionResult> DeleteImageAsync([FromRoute] int imageId)
@@ -70,10 +89,10 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 var img = await _imageService.GetPicture(imageId);
 
                 if (!CorrectUserOrAdmin(img.Accommodation.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return NotFound(new AccessException("Only the accommodation's owner or admin can remove photos from an accommodation!").Message);
+                    return BadRequest(new AccessException("Only the accommodation's owner or admin can remove photos from an accommodation!").Message);
 
                 await _imageService.RemovePictureAsync(imageId);
-                return Ok();
+                return NoContent();
             }
             catch (Exception ex)
             {
