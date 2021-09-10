@@ -43,7 +43,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
                 new Uri(_httpClient.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
             var objectJson = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<T>(objectJson); 
+            return JsonConvert.DeserializeObject<T>(objectJson);
         }
 
         /// <summary>Makes a API GET call to get an object.</summary>

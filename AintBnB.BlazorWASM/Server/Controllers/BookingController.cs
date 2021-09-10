@@ -47,7 +47,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                     return BadRequest($"Must be performed by a customer with ID {booker.Id}, or by admin on behalf of a customer with ID {booker.Id}!");
 
                 var booking = await _bookingService.BookAsync(bookingInfo[0], booker, int.Parse(bookingInfo[2]), accommodation);
-                return CreatedAtAction(nameof(GetBookingAsync), new { id = booking.Id}, booking);
+                return CreatedAtAction(nameof(GetBookingAsync), new { id = booking.Id }, booking);
             }
             catch (Exception ex)
             {

@@ -1,6 +1,5 @@
 using AintBnB.BlazorWASM.Client.ApiCalls;
 using AintBnB.BlazorWASM.Client.CustomAuthentication;
-using AintBnB.Core.Models;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -22,8 +21,7 @@ namespace AintBnB.BlazorWASM.Client
             builder.Services.AddBlazoredLocalStorage();
 
             builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
-            builder.Services.AddTransient<ApiCaller, ApiCaller>();
-            builder.Services.AddScoped<User, User>();
+            builder.Services.AddTransient<ApiCaller>();
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress + "api/") });
 
             await builder.Build().RunAsync();

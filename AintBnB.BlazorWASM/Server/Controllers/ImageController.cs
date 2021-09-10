@@ -34,7 +34,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             try
             {
                 var newImg = await _imageService.AddPictureAsync(img.Accommodation.Id, img.Img);
-                return CreatedAtAction(nameof(GetImageAsync), new { id = newImg.Id}, newImg);
+                return CreatedAtAction(nameof(GetImageAsync), new { id = newImg.Id }, newImg);
             }
             catch (Exception ex)
             {
@@ -43,16 +43,16 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         }
 
         /// <summary>API GET request that gets an image.</summary>
-        /// <param name="imageId">The Id of the image to fetch</param>
+        /// <param name="id">The Id of the image to fetch</param>
         /// <returns>Status 200 and the image if successful, otherwise status code 404</returns>
         [ActionName("GetImageAsync")]
         [HttpGet]
-        [Route("api/[controller]/{imageId}")]
-        public async Task<ActionResult<Image>> GetImageAsync([FromRoute] int imageId)
+        [Route("api/[controller]/{id}")]
+        public async Task<ActionResult<Image>> GetImageAsync([FromRoute] int id)
         {
             try
             {
-                return await _imageService.GetPicture(imageId);
+                return await _imageService.GetPicture(id);
             }
             catch (Exception ex)
             {
