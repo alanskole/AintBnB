@@ -4,7 +4,7 @@ using Windows.UI.Popups;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
-namespace AintBnB.App.CommonMethodsAndProperties
+namespace AintBnB.App.Helpers
 {
     internal static class CommonViewMethods
     {

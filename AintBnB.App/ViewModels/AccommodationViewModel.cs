@@ -1,9 +1,8 @@
-﻿using AintBnB.App.CommonMethodsAndProperties;
-using AintBnB.App.Helpers;
+﻿using AintBnB.App.Helpers;
 using AintBnB.Core.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.ApiCalls;
 using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels

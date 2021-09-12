@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AintBnB.App.CommonMethodsAndProperties
+namespace AintBnB.App.Helpers
 {
     internal static class ApiCalls
     {

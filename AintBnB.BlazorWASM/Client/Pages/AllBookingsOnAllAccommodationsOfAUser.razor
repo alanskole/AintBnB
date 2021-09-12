@@ -20,6 +20,11 @@
                     }
                 </select>
             </p>
+            <p>
+                <button @onclick="GetAllOfLoggedInCustomerAsync">
+                    Get
+                </button>
+            </p>
         }
 
         @if (_allBookings != null)
@@ -27,13 +32,29 @@
             @foreach (var booking in _allBookings)
             {
                 <p>
-                <p>
-                    @booking.ToString()
-                    &nbsp;&nbsp;&nbsp;
+                    ID: @booking.Id
+                    <br />
+                    Username of booker: @booking.BookedBy.UserName
+                    <br />
+                    Total price: @booking.Price
+                    <br />
+                    Dates: @for (var i = 0; i < booking.Dates.Count; i++)
+                    {
+                        if (i + 1 == booking.Dates.Count)
+                        {
+                            <span>@booking.Dates[i]</span>
+                        }
+                        else
+                        {
+                            <span>@booking.Dates[i], </span>
+                        }
+                    }
+                    <br />
+                    Accommodation: @booking.Accommodation.Address.Street @booking.Accommodation.Address.Number, @booking.Accommodation.Address.Zip @booking.Accommodation.Address.Area, @booking.Accommodation.Address.City, @booking.Accommodation.Address.Country
+                    <br />
                     <button @onclick="@(async () => await DeleteBookingAsync(booking.Id))">
                         Cancel Booking
                     </button>
-                </p>
                 </p>
             }
         }

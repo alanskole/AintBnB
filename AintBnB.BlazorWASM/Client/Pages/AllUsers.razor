@@ -11,9 +11,15 @@
                 var link = "./user/" + user.Id;
 
                 <p>
-                    @user.ToString()
-                    &nbsp;&nbsp;&nbsp;
+                    ID: @user.Id
+                    <br />
+                    Username: @user.UserName
+                    <br />
+                    Name: @user.FirstName @user.LastName
+                    <br />
                     <a href=@link>Open</a>
+                    <br />
+                    <br />
                 </p>
             }
         }

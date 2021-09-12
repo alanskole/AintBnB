@@ -44,7 +44,7 @@
         }
         Startdate: <input type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" @onchange="@((e) => DateChanged(DateTime.Parse(e.Value.ToString())))" />
 
-        <p>Nights: <input type="number" @bind="_nights" placeholder="1" onKeyUp="if(this.value < 1){this.value = '1';}"/></p>
+        <p>Nights: <input type="number" @bind="_nights" placeholder="1" onKeyUp="if(this.value < 1){this.value = '1';}" /></p>
 
         <button @onclick="@SearchAsync">
             Search
@@ -72,13 +72,27 @@
                 var link = "./accommodation/" + acc.Id;
 
                 <p>
-                    @acc
-
+                    Price Per Night: @acc.PricePerNight
+                    <br />
+                    Total Price: @(acc.PricePerNight * _nights)
+                    <br />
+                    Address: @acc.Address.Street @acc.Address.Number, @acc.Address.Zip @acc.Address.Area, @acc.Address.City, @acc.Address.Country
+                    <br />
+                    Square meters: @acc.SquareMeters
+                    <br />
+                    Bedrooms: @acc.AmountOfBedrooms
+                    <br />
+                    Kilometers from city center: @acc.KilometersFromCenter
+                    <br />
+                    Cancellation deadline: @acc.CancellationDeadlineInDays days
+                    <br />
                     <a href="@link" target="_blank">More info</a>
-
+                    <br />
                     <button @onclick="@(async () => await BookAsync(acc.Id))">
                         Book
                     </button>
+                    <br />
+                    <br />
                 </p>
             }
         }

@@ -7,16 +7,25 @@
 
 <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
     <ul class="nav flex-column">
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <li class="nav-item px-3">
+                    <NavLink class="nav-link" href="users">
+                        <span aria-hidden="true"></span> All Users
+                    </NavLink>
+                </li>
+            </Authorized>
+        </AuthorizeView>
         <AuthorizeView>
             <Authorized>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="search">
-                        <span aria-hidden="true"></span> Search
+                    <NavLink class="nav-link" href="user">
+                        <span aria-hidden="true"></span> Account Info
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="user">
-                        <span aria-hidden="true"></span> User Info
+                    <NavLink class="nav-link" href="search">
+                        <span aria-hidden="true"></span> Search
                     </NavLink>
                 </li>
                 <li class="nav-item px-3">
@@ -57,15 +66,6 @@
                     </NavLink>
                 </li>
             </NotAuthorized>
-        </AuthorizeView>
-        <AuthorizeView Roles="Admin">
-            <Authorized>
-                <li class="nav-item px-3">
-                    <NavLink class="nav-link" href="users">
-                        <span aria-hidden="true"></span> All Users
-                    </NavLink>
-                </li>
-            </Authorized>
         </AuthorizeView>
     </ul>
 </div>

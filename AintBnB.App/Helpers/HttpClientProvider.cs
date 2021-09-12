@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Http;
 
-namespace AintBnB.App.CommonMethodsAndProperties
+namespace AintBnB.App.Helpers
 {
     internal class HttpClientProvider : IDisposable
     {

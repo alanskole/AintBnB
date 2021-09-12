@@ -16,9 +16,19 @@
                 var link = "./accommodation/" + acc.Id;
 
                 <p>
-                    @acc.ToString()
-                    &nbsp;&nbsp;&nbsp;
+                    ID: @acc.Id
+                    <br />
+                    Address: @acc.Address.Street @acc.Address.Number, @acc.Address.Zip @acc.Address.Area, @acc.Address.City, @acc.Address.Country
+                    <br />
+                    Price Per Night: @acc.PricePerNight
+                    <br />
+                    Square meters: @acc.SquareMeters
+                    <br />
+                    Bedrooms: @acc.AmountOfBedrooms
+                    <br />
                     <a href=@link>Open</a>
+                    <br />
+                    <br />
                 </p>
             }
         }

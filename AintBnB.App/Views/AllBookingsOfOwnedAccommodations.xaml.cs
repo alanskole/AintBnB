@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using static AintBnB.App.CommonMethodsAndProperties.CommonViewMethods;
+using static AintBnB.App.Helpers.CommonViewMethods;
 
 namespace AintBnB.App.Views
 {

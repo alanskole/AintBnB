@@ -19,7 +19,6 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         /// <summary>Makes a API POST call to create a new object.</summary>
         /// <param name="uri">The URI of the API call.</param>
         /// <param name="objJson">The object that will be created.</param>
-        /// <param name="_httpClient">_httpClient that will be used to make the API call.</param>
         public async Task PostAsync(string uri, object objJson, string csrfToken)
         {
             _httpClient.DefaultRequestHeaders.Add("X-XSRF-TOKEN", csrfToken);
@@ -33,7 +32,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         /// <summary>Makes a API POST call to create a new object.</summary>
         /// <param name="uri">The URI of the API call.</param>
         /// <param name="objJson">The object that will be created.</param>
-        /// <param name="_httpClient">_httpClient that will be used to make the API call.</param>
+        /// <returns>The object that was created</returns>
         public async Task<T> PostAsync<T>(string uri, object objJson, string csrfToken)
         {
             _httpClient.DefaultRequestHeaders.Add("X-XSRF-TOKEN", csrfToken);
@@ -47,7 +46,6 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         }
 
         /// <summary>Makes a API GET call to get an object.</summary>
-        /// <typeparam name="T">The type of the object</typeparam>
         /// <param name="uri">The URI of the API call.</param>
         /// <returns>The object that was requested</returns>
         public async Task<T> GetAsync<T>(string uri)
@@ -67,7 +65,6 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         }
 
         /// <summary>Makes a API GET call to get a list of objects.</summary>
-        /// <typeparam name="T">The type of the object</typeparam>
         /// <param name="uri">The URI of the API call.</param>
         /// <returns>A list of the objects that was requested</returns>
         public async Task<List<T>> GetAllAsync<T>(string uri)

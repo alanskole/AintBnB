@@ -7,7 +7,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
-using static AintBnB.App.CommonMethodsAndProperties.CommonViewMethods;
+using static AintBnB.App.Helpers.CommonViewMethods;
 
 namespace AintBnB.App.Views
 {

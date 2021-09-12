@@ -1,5 +1,4 @@
-﻿using AintBnB.App.CommonMethodsAndProperties;
-using AintBnB.App.Helpers;
+﻿using AintBnB.App.Helpers;
 using AintBnB.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Threading.Tasks;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml.Media.Imaging;
-using static AintBnB.App.CommonMethodsAndProperties.ApiCalls;
+using static AintBnB.App.Helpers.ApiCalls;
 using static AintBnB.App.Helpers.UwpCookieHelper;
 
 namespace AintBnB.App.ViewModels
