@@ -86,6 +86,8 @@
                     <br />
                     Cancellation deadline: @acc.CancellationDeadlineInDays days
                     <br />
+                    Average rating: @acc.AverageRating (@acc.AmountOfRatings ratings)
+                    <br />
                     <a href="@link" target="_blank">More info</a>
                     <br />
                     <button @onclick="@(async () => await BookAsync(acc.Id))">
