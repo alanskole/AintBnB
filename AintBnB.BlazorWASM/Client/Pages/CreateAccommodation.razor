@@ -44,11 +44,11 @@
         @if (_allCustomers != null)
         {
             <p>
-                Users: <select @bind="_id">
+                Create for user: <select @bind="_id">
                     <option></option>
                     @foreach (var cust in _allCustomers)
                     {
-                        <option value="@cust.Id">@cust.Id</option>
+                        <option value="@cust.Id">@cust.Id, @cust.UserName</option>
                     }
                 </select>
             </p>
