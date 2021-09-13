@@ -78,7 +78,7 @@ namespace AintBnB.App.ViewModels
 
                 await GetCsrfToken(_clientProvider);
 
-                await PostAsync(_uri + uniquePartOfUri, bookingInfo, _clientProvider);
+                await PostAsync($"{_uri}{uniquePartOfUri}", bookingInfo, _clientProvider);
             }
         }
 
@@ -86,7 +86,7 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = Booking.Id.ToString();
+                var uniquePartOfUri = Booking.Id;
 
                 var newDates = new string[] { StartDate, Nights.ToString() };
 
@@ -94,7 +94,7 @@ namespace AintBnB.App.ViewModels
 
                 await GetCsrfToken(_clientProvider);
 
-                await PutAsync(_uri + uniquePartOfUri, newDates, _clientProvider);
+                await PutAsync($"{_uri}{uniquePartOfUri}", newDates, _clientProvider);
 
                 await GetABookingAsync();
             }
@@ -104,13 +104,13 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = "rate/" + Booking.Id + "/";
+                var uniquePartOfUri = $"rate/{Booking.Id}";
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
                 await GetCsrfToken(_clientProvider);
 
-                await PutAsync(_uri + uniquePartOfUri, Booking.Rating, _clientProvider);
+                await PutAsync($"{_uri}{uniquePartOfUri}", Booking.Rating, _clientProvider);
 
                 await GetABookingAsync();
             }
@@ -120,11 +120,11 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = Booking.Id.ToString();
+                var uniquePartOfUri = Booking.Id;
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-                Booking = await GetAsync<Booking>(_uri + uniquePartOfUri, _clientProvider);
+                Booking = await GetAsync<Booking>($"{_uri}{uniquePartOfUri}", _clientProvider);
             }
         }
 
@@ -142,11 +142,11 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = UserId + "/" + "bookingsownaccommodation";
+                var uniquePartOfUri = $"{UserId}/bookingsownaccommodation";
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-                AllBookings = await GetAllAsync<Booking>(_uri + uniquePartOfUri, _clientProvider);
+                AllBookings = await GetAllAsync<Booking>($"{_uri}{uniquePartOfUri}", _clientProvider);
             }
         }
 
@@ -154,13 +154,13 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = Booking.Id.ToString();
+                var uniquePartOfUri = Booking.Id;
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
                 await GetCsrfToken(_clientProvider);
 
-                await DeleteAsync(_uri + uniquePartOfUri, _clientProvider);
+                await DeleteAsync($"{_uri}{uniquePartOfUri}", _clientProvider);
             }
         }
     }

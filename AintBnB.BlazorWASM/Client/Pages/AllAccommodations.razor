@@ -13,7 +13,7 @@
         {
             @foreach (var acc in _all)
             {
-                var link = "./accommodation/" + acc.Id;
+                var link = $"./accommodation/{acc.Id}";
 
                 <p>
                     ID: @acc.Id
@@ -51,7 +51,7 @@
         {
             try
             {
-                _all = await _apiCaller.GetAllAsync<Accommodation>("accommodation/" + id + "/allaccommodations");
+                _all = await _apiCaller.GetAllAsync<Accommodation>($"accommodation/{id}/allaccommodations");
             }
             catch (Exception ex)
             {

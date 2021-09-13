@@ -62,11 +62,11 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = User.Id.ToString();
+                var uniquePartOfUri = User.Id;
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-                User = await GetAsync<User>(_uri + uniquePartOfUri, _clientProvider);
+                User = await GetAsync<User>($"{_uri}{uniquePartOfUri}", _clientProvider);
             }
         }
 
@@ -88,7 +88,7 @@ namespace AintBnB.App.ViewModels
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-                AllUsers = await GetAllAsync<User>(_uri + uniquePartOfUri, _clientProvider);
+                AllUsers = await GetAllAsync<User>($"{_uri}{uniquePartOfUri}", _clientProvider);
             }
         }
 
@@ -96,13 +96,13 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = User.Id.ToString();
+                var uniquePartOfUri = User.Id;
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
                 await GetCsrfToken(_clientProvider);
 
-                await DeleteAsync(_uri + uniquePartOfUri, _clientProvider);
+                await DeleteAsync($"{_uri}{uniquePartOfUri}", _clientProvider);
             }
         }
 
@@ -110,13 +110,13 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = User.Id.ToString();
+                var uniquePartOfUri = User.Id;
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
                 await GetCsrfToken(_clientProvider);
 
-                await PutAsync(_uri + uniquePartOfUri, User, _clientProvider);
+                await PutAsync($"{_uri}{uniquePartOfUri}", User, _clientProvider);
             }
         }
     }

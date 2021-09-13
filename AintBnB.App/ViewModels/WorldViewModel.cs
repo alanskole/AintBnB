@@ -63,7 +63,7 @@ namespace AintBnB.App.ViewModels
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-                AllCountries = await GetAllAsync<string>(_uri + uniquePartOfUri, _clientProvider);
+                AllCountries = await GetAllAsync<string>($"{_uri}{uniquePartOfUri}", _clientProvider);
             }
         }
 
@@ -71,11 +71,11 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = "cities/" + Country;
+                var uniquePartOfUri = $"cities/{Country}";
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-                AllCitiesOfACountry = await GetAllAsync<string>(_uri + uniquePartOfUri, _clientProvider);
+                AllCitiesOfACountry = await GetAllAsync<string>($"{_uri}{uniquePartOfUri}", _clientProvider);
             }
         }
     }

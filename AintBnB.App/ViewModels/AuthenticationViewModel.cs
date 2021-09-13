@@ -81,9 +81,9 @@ namespace AintBnB.App.ViewModels
 
                 var userAndPass = new string[] { User.UserName.Trim(), User.Password.Trim() };
 
-                await PostAsync(_uri + uniquePartOfUri, userAndPass, _clientProvider);
+                await PostAsync($"{_uri}{uniquePartOfUri}", userAndPass, _clientProvider);
 
-                await AddCookiesToLocalSettings(_clientProvider.clientHandler, new Uri(_clientProvider.client.BaseAddress + _uri + uniquePartOfUri));
+                await AddCookiesToLocalSettings(_clientProvider.clientHandler, new Uri($"{_clientProvider.client.BaseAddress}{_uri}{uniquePartOfUri}"));
             }
         }
 
@@ -124,7 +124,7 @@ namespace AintBnB.App.ViewModels
 
                 try
                 {
-                    var user = await GetAsync<User>(_uri + uniquePartOfUri, _clientProvider);
+                    var user = await GetAsync<User>($"{_uri}{uniquePartOfUri}", _clientProvider);
 
                     IdOfLoggedInUser = user.Id;
 
@@ -159,7 +159,7 @@ namespace AintBnB.App.ViewModels
 
                 await GetCsrfToken(_clientProvider);
 
-                await PostAsync(_uri + uniquePartOfUri, null, _clientProvider);
+                await PostAsync($"{_uri}{uniquePartOfUri}", null, _clientProvider);
 
                 if (localSettings.Values.ContainsKey(DefaultCookieName))
                 {

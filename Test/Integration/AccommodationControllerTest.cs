@@ -86,12 +86,12 @@ namespace Test.Integration
         [TestMethod]
         public async Task FindAvailable_ShouldReturn_SuccessStatus()
         {
-            string city = _factory.accommodation1.Address.City + "/";
-            string country = _factory.accommodation1.Address.Country + "/";
-            string startDate = _factory.accommodation1.Schedule.Keys.Last() + "/";
+            string city = _factory.accommodation1.Address.City;
+            string country = _factory.accommodation1.Address.Country;
+            string startDate = _factory.accommodation1.Schedule.Keys.Last();
 
 
-            var response = await _client.GetAsync("api/accommodation/" + country + city + startDate + "1");
+            var response = await _client.GetAsync($"api/accommodation/{country}/{city}/{startDate}/1");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
@@ -100,12 +100,12 @@ namespace Test.Integration
         [TestMethod]
         public async Task FindAvailable_ShouldReturn_NotFoundIfError()
         {
-            string city = _factory.accommodation1.Address.City + "/";
-            string country = _factory.accommodation1.Address.Country + "/";
-            string startDate = _factory.accommodation1.Schedule.Keys.Last() + "/";
+            string city = _factory.accommodation1.Address.City;
+            string country = _factory.accommodation1.Address.Country;
+            string startDate = _factory.accommodation1.Schedule.Keys.Last();
 
 
-            var response = await _client.GetAsync("api/accommodation/" + country + city + startDate + "2");
+            var response = await _client.GetAsync($"api/accommodation/{country}/{city}/{startDate}/2");
 
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());

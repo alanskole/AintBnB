@@ -108,7 +108,7 @@
         _country = e.Value.ToString();
         try
         {
-            _cities = await _apiCaller.GetAllAsync<string>("world/cities/" + _country);
+            _cities = await _apiCaller.GetAllAsync<string>($"world/cities/{_country}");
         }
         catch
         {
@@ -123,8 +123,8 @@
         try
         {
             _accommodation.Address.Country = _country;
-            var accommodation = await _apiCaller.PostAsync<Accommodation>("accommodation/" + _daysToCreateScheduleFor + "/" + _id, _accommodation, _csrfToken);
-            _navigationManager.NavigateTo("/accommodation/" + accommodation.Id, true);
+            var accommodation = await _apiCaller.PostAsync<Accommodation>($"accommodation/{_daysToCreateScheduleFor}/{_id}", _accommodation, _csrfToken);
+            _navigationManager.NavigateTo($"/accommodation/{accommodation.Id}", true);
         }
         catch (Exception ex)
         {

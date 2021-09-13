@@ -69,7 +69,7 @@
 
             foreach (var acc in _available)
             {
-                var link = "./accommodation/" + acc.Id;
+                var link = $"./accommodation/{acc.Id}";
                 <p>
                     Price Per Night: @acc.PricePerNight
                     <br />
@@ -154,7 +154,7 @@
         _country = e.Value.ToString();
         try
         {
-            _cities = await _apiCaller.GetAllAsync<string>("world/cities/" + _country);
+            _cities = await _apiCaller.GetAllAsync<string>($"world/cities/{_country}");
         }
         catch
         {
@@ -171,7 +171,7 @@
     {
         try
         {
-            _available = await _apiCaller.GetAllAsync<Accommodation>("accommodation/" + _country + "/" + _city + "/" + _startDate + "/" + _nights);
+            _available = await _apiCaller.GetAllAsync<Accommodation>($"accommodation/{_country}/{_city}/{_startDate}/{_nights}");
         }
         catch (Exception ex)
         {
@@ -181,11 +181,14 @@
 
     private async Task BookAsync(int accommodationId)
     {
+        if (!await _jSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to book the accommodation?"))
+            return;
+
         try
         {
             var booking = await _apiCaller.PostAsync<Booking>("booking/book", new string[] { _startDate, _id.ToString(), _nights.ToString(), accommodationId.ToString() }, _csrfToken);
             await _jSRuntime.InvokeAsync<string>("alertMessage", "Booked successfully!");
-            _navigationManager.NavigateTo("/booking/" + booking.Id, true);
+            _navigationManager.NavigateTo($"/booking/{booking.Id}", true);
         }
         catch (Exception ex)
         {
@@ -253,7 +256,7 @@
     {
         try
         {
-            _available = await _apiCaller.SortListAsync<Accommodation>("accommodation/sort/" + sortBy + "/" + ascOrDesc, _available);
+            _available = await _apiCaller.SortListAsync<Accommodation>($"accommodation/sort/{sortBy}/{ascOrDesc}", _available);
         }
         catch (Exception ex)
         {

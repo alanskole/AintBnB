@@ -25,7 +25,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
 
             var json = JsonConvert.SerializeObject(objJson);
             var response = await _httpClient.PostAsync(
-                new Uri(_httpClient.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
+                new Uri($"{_httpClient.BaseAddress}{uri}"), new StringContent(json, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }
 
@@ -39,7 +39,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
 
             var json = JsonConvert.SerializeObject(objJson);
             var response = await _httpClient.PostAsync(
-                new Uri(_httpClient.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
+                new Uri($"{_httpClient.BaseAddress}{uri}"), new StringContent(json, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
             var objectJson = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(objectJson);
@@ -50,7 +50,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         /// <returns>The object that was requested</returns>
         public async Task<T> GetAsync<T>(string uri)
         {
-            var response = await _httpClient.GetAsync(new Uri(_httpClient.BaseAddress + uri));
+            var response = await _httpClient.GetAsync(new Uri($"{_httpClient.BaseAddress}{uri}"));
             ResponseChecker(response);
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<T>(json);
@@ -60,7 +60,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         /// <param name="uri">The URI of the API call.</param>
         public async Task GetAsync(string uri)
         {
-            var response = await _httpClient.GetAsync(new Uri(_httpClient.BaseAddress + uri));
+            var response = await _httpClient.GetAsync(new Uri($"{_httpClient.BaseAddress}{uri}"));
             ResponseChecker(response);
         }
 
@@ -69,7 +69,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         /// <returns>A list of the objects that was requested</returns>
         public async Task<List<T>> GetAllAsync<T>(string uri)
         {
-            var response = await _httpClient.GetAsync(new Uri(_httpClient.BaseAddress + uri));
+            var response = await _httpClient.GetAsync(new Uri($"{_httpClient.BaseAddress}{uri}"));
             ResponseChecker(response);
             var json = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<T>>(json);
@@ -85,7 +85,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
             var json = JsonConvert.SerializeObject(objJson);
 
             var response = await _httpClient.PutAsync(
-                new Uri(_httpClient.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
+                new Uri($"{_httpClient.BaseAddress}{uri}"), new StringContent(json, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
         }
 
@@ -95,7 +95,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         {
             _httpClient.DefaultRequestHeaders.Add("X-XSRF-TOKEN", csrfToken);
 
-            var response = await _httpClient.DeleteAsync(new Uri(_httpClient.BaseAddress + uri));
+            var response = await _httpClient.DeleteAsync(new Uri($"{_httpClient.BaseAddress}{uri}"));
             ResponseChecker(response);
         }
 
@@ -103,7 +103,7 @@ namespace AintBnB.BlazorWASM.Client.ApiCalls
         {
             var json = JsonConvert.SerializeObject(listJson);
             var response = await _httpClient.PutAsync(
-                new Uri(_httpClient.BaseAddress + uri), new StringContent(json, Encoding.UTF8, "application/json"));
+                new Uri($"{_httpClient.BaseAddress}{uri}"), new StringContent(json, Encoding.UTF8, "application/json"));
             ResponseChecker(response);
             return JsonConvert.DeserializeObject<List<T>>(await response.Content.ReadAsStringAsync());
         }

@@ -103,7 +103,7 @@
     {
         try
         {
-            _allBookings = await _apiCaller.GetAllAsync<Booking>("booking/" + _id + "/bookingsownaccommodation");
+            _allBookings = await _apiCaller.GetAllAsync<Booking>($"booking/{_id}/bookingsownaccommodation");
         }
         catch (Exception ex)
         {
@@ -113,11 +113,14 @@
 
     private async Task DeleteBookingAsync(int id)
     {
+        if (!await _jSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to cancel the booking with ID {id}?"))
+            return;
+
         var csrfToken = await _jSRuntime.InvokeAsync<string>("csrfCookieReader");
 
         try
         {
-            await _apiCaller.DeleteAsync("booking/" + id, csrfToken);
+            await _apiCaller.DeleteAsync($"booking/{id}", csrfToken);
             await _jSRuntime.InvokeAsync<string>("alertMessage", "Cancellation successful!");
             _navigationManager.NavigateTo("/bookingsonallaccommodationsofauser", true);
         }

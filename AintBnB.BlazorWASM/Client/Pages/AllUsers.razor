@@ -8,7 +8,7 @@
         {
             @foreach (var user in _all)
             {
-                var link = "./user/" + user.Id;
+                var link = $"./user/{user.Id}";
 
                 <p>
                     ID: @user.Id

@@ -89,11 +89,11 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = "all/" + _image.Accommodation.Id.ToString();
+                var uniquePartOfUri = $"all/{_image.Accommodation.Id}";
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
-                AllImages = await GetAllAsync<Image>(_uri + uniquePartOfUri, _clientProvider);
+                AllImages = await GetAllAsync<Image>($"{_uri}{uniquePartOfUri}", _clientProvider);
 
                 _allImagesBytes = new List<byte[]>();
 
@@ -172,13 +172,13 @@ namespace AintBnB.App.ViewModels
         {
             using (var _clientProvider = new HttpClientProvider())
             {
-                var uniquePartOfUri = _imageId.ToString();
+                var uniquePartOfUri = _imageId;
 
                 await AddAuthCookieAsync(_clientProvider.clientHandler);
 
                 await GetCsrfToken(_clientProvider);
 
-                await DeleteAsync(_uri + uniquePartOfUri, _clientProvider);
+                await DeleteAsync($"{_uri}{uniquePartOfUri}", _clientProvider);
             }
         }
     }

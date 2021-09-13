@@ -85,7 +85,7 @@
 
         try
         {
-            _booking = await _apiCaller.GetAsync<Booking>("booking/" + Id);
+            _booking = await _apiCaller.GetAsync<Booking>($"booking/{Id}");
         }
         catch (Exception ex)
         {
@@ -95,9 +95,12 @@
 
     private async Task DeleteBookingAsync()
     {
+        if (!await _jSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to cancel the booking?"))
+            return;
+
         try
         {
-            await _apiCaller.DeleteAsync("booking/" + Id, _token);
+            await _apiCaller.DeleteAsync($"booking/{Id}", _token);
             await _jSRuntime.InvokeAsync<string>("alertMessage", "Deleted successfully!");
             _navigationManager.NavigateTo("/bookings/", true);
         }
@@ -109,11 +112,14 @@
 
     private async Task RateBookingAsync()
     {
+        if (!await _jSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to rate the booking {_rating}/5? Ratings can't be changed!"))
+            return;
+
         try
         {
-            await _apiCaller.PutAsync("booking/rate/" + Id, _rating, _token);
+            await _apiCaller.PutAsync($"booking/rate/{Id}", _rating, _token);
             await _jSRuntime.InvokeAsync<string>("alertMessage", "Rated successfully!");
-            _navigationManager.NavigateTo("/booking/" + Id, true);
+            _navigationManager.NavigateTo($"booking/{Id}", true);
         }
         catch (Exception ex)
         {
@@ -128,14 +134,17 @@
 
     private async Task UpdateBookingAsync()
     {
+        if (!await _jSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to update the booking dates?"))
+            return;
+
         if (string.IsNullOrWhiteSpace(_newDate))
             return;
 
         try
         {
-            await _apiCaller.PutAsync("booking/" + Id, new string[] { _newDate, _nights.ToString(), Id }, _token);
+            await _apiCaller.PutAsync($"booking/{Id}", new string[] { _newDate, _nights.ToString(), Id }, _token);
             await _jSRuntime.InvokeAsync<string>("alertMessage", "Updated successfully!");
-            _navigationManager.NavigateTo("/booking/" + Id, true);
+            _navigationManager.NavigateTo($"booking/{Id}", true);
         }
         catch (Exception ex)
         {

@@ -11,7 +11,7 @@
         {
             @foreach (var booking in _all)
             {
-                var link = "./booking/" + booking.Id;
+                var link = $"./booking/{booking.Id}";
 
                 <p>
                     ID: @booking.Id

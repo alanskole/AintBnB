@@ -96,7 +96,7 @@
 
         try
         {
-            _accommodation = await _apiCaller.GetAsync<Accommodation>("accommodation/" + Id);
+            _accommodation = await _apiCaller.GetAsync<Accommodation>($"accommodation/{Id}");
             foundAccommodation = true;
         }
         catch (Exception ex)
@@ -115,7 +115,7 @@
     {
         try
         {
-            _images = await _apiCaller.GetAllAsync<Image>("image/all/" + _accommodation.Id);
+            _images = await _apiCaller.GetAllAsync<Image>($"image/all/{_accommodation.Id}");
         }
         catch
         {
@@ -126,7 +126,7 @@
     {
         try
         {
-            await _apiCaller.GetAsync("authentication/" + _accommodation.Owner.Id);
+            await _apiCaller.GetAsync($"authentication/{_accommodation.Owner.Id}");
             OwnerOrAdmin = true;
         }
         catch
@@ -141,8 +141,8 @@
 
         try
         {
-            await _apiCaller.PutAsync("accommodation/" + Id, _accommodation, _token);
-            _navigationManager.NavigateTo("/accommodation/" + Id, true);
+            await _apiCaller.PutAsync($"accommodation/{Id}", _accommodation, _token);
+            _navigationManager.NavigateTo($"/accommodation/{Id}", true);
         }
         catch (Exception ex)
         {
@@ -156,9 +156,9 @@
 
         try
         {
-            await _apiCaller.PutAsync("accommodation/" + Id + "/expand", _daysToExpandScheduleBy, _token);
+            await _apiCaller.PutAsync($"accommodation/{Id}/expand", _daysToExpandScheduleBy, _token);
             await _jSRuntime.InvokeAsync<string>("alertMessage", "Expanded the schedule successfully!");
-            _navigationManager.NavigateTo("/accommodation/" + Id, true);
+            _navigationManager.NavigateTo($"accommodation/{Id}", true);
         }
         catch (Exception ex)
         {
@@ -168,11 +168,14 @@
 
     private async Task DeleteAccommodationAsync()
     {
+        if (!await _jSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete the accommodation?"))
+            return;
+
         await SetTokenAsync();
 
         try
         {
-            await _apiCaller.DeleteAsync("accommodation/" + Id, _token);
+            await _apiCaller.DeleteAsync($"accommodation/{Id}", _token);
             _navigationManager.NavigateTo("/accommodations", true);
         }
         catch (Exception ex)
@@ -210,7 +213,7 @@
         try
         {
             await _apiCaller.PostAsync("image", image, _token);
-            _navigationManager.NavigateTo("/accommodation/" + Id, true);
+            _navigationManager.NavigateTo($"accommodation/{Id}", true);
         }
         catch (Exception ex)
         {
@@ -220,13 +223,16 @@
 
     private async Task DeletePhotoAsync(int id)
     {
+        if (!await _jSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete the image?"))
+            return;
+
         await SetTokenAsync();
 
         try
         {
-            await _apiCaller.DeleteAsync("image/" + id, _token);
+            await _apiCaller.DeleteAsync($"image/{id}", _token);
 
-            _navigationManager.NavigateTo("/accommodation/" + Id, true);
+            _navigationManager.NavigateTo($"accommodation/{Id}", true);
         }
         catch (Exception ex)
         {
