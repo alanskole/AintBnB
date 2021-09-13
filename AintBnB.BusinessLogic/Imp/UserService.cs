@@ -147,7 +147,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="id">The ID of the user to update.</param>
         /// <param name="updatedUser">The updated user object.</param>
         /// <param name="userTypeOfLoggedInUser">The usertype of the user sending the request.</param>
-        /// <exception cref="AccessException">Only the owner of the account or admin ployee can update a user</exception>
         public async Task UpdateUserAsync(int id, User updatedUser, UserTypes userTypeOfLoggedInUser)
         {
             var old = await GetUserAsync(id);

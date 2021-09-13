@@ -15,5 +15,9 @@ namespace AintBnB.BusinessLogic.Interfaces
         /// <summary>Delete a user.</summary>
         /// <param name="id">The user-ID of the user to delete.</param>
         Task DeleteUserAsync(int id);
+
+        /// <summary>Deletes an image from the list of images of an accommodation.</summary>
+        /// <param name="imageId">The Id of the image to delete.</param>
+        Task DeletePictureAsync(int imageId);
     }
 }

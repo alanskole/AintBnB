@@ -32,8 +32,10 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="cancellationDeadlineInDays">The cancellation deadline in days.</param>
         /// <param name="daysToCreateScheduleFor">How many days to create the schedule for.</param>
         /// <returns>The newly created accommodation object</returns>
-        /// <exception cref="ParameterException">If the days to create the schedule for is less than one</exception>
-        /// <exception cref="AccessException">If a non admin user tries to create an accommodation for another user than themselves</exception>
+        /// <exception cref="ParameterException">If the days to create the schedule for is less than one
+        /// or
+        /// Validation of the parameters passed fails
+        /// </exception>
         public async Task<Accommodation> CreateAccommodationAsync(User owner, Address address, int squareMeters, int amountOfBedroooms, double kilometersFromCenter, string description, int pricePerNight, int cancellationDeadlineInDays, int daysToCreateScheduleFor)
         {
             if (daysToCreateScheduleFor < 1)
@@ -129,7 +131,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Fetches an accommodation from the database.</summary>
         /// <param name="id">The ID of the accommodation to fetch.</param>
         /// <returns>The accommodation object.</returns>
-        /// <exception cref="IdNotFoundException">If the ID doesn't match any accommodation-IDs from the database</exception>
+        /// <exception cref="NotFoundException">If the ID doesn't match any accommodation-IDs from the database</exception>
         public async Task<Accommodation> GetAccommodationAsync(int id)
         {
             var acc = await _unitOfWork.AccommodationRepository.ReadAsync(id);
@@ -184,12 +186,8 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Updates an accommodation.</summary>
         /// <param name="id">The ID of the accommodation to update.</param>
         /// <param name="accommodation">The accommodation object with the updated values.</param>
-        /// <exception cref="AccessException">If the user that tries to update the accommodation isn't the owner or admin</exception>
         public async Task UpdateAccommodationAsync(int id, Accommodation accommodation)
         {
-            var acc = await _unitOfWork.AccommodationRepository.ReadAsync(id);
-
-            var owner = acc.Owner;
             await GetAccommodationAsync(id);
 
             accommodation.Description = accommodation.Description.Trim();
@@ -230,7 +228,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="id">The ID of the accommodation.</param>
         /// <param name="days">The amount of days to expand the schedule by.</param>
         /// <exception cref="ParameterException">Days is less than one</exception>
-        /// <exception cref="AccessException">If the user that calls this method isn't the owner of the accommodation or admin</exception>
         public async Task ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(int id, int days)
         {
             if (days < 1)

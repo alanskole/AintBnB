@@ -29,10 +29,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         }
 
         /// <summary>API POST request to make a booking.</summary>
-        /// <param name="startDate">The start date of the booking.</param>
-        /// <param name="bookerId">The user-ID of the booker.</param>
-        /// <param name="nights">The amount of nights to book.</param>
-        /// <param name="accommodationId">The ID of the accommodation to book.</param>
+        /// <param name="bookingInfo">An array containing the booking details.</param>
         /// <returns>Status 200 and the booking if successful, otherwise status code 400</returns>
         [HttpPost]
         [Route("api/[controller]/book")]

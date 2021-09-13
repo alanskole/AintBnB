@@ -14,10 +14,12 @@ namespace AintBnB.BlazorWASM.Server.Controllers
     public class ImageController : Controller
     {
         private IImageService _imageService;
+        private IDeletionService _deletionService;
 
-        public ImageController(IImageService imageService)
+        public ImageController(IImageService imageService, IDeletionService deletionService)
         {
             _imageService = imageService;
+            _deletionService = deletionService;
         }
 
         /// <summary>API POST request to create a new image.</summary>
@@ -90,7 +92,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 if (!CorrectUserOrAdmin(img.Accommodation.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
                     return BadRequest("Only the accommodation's owner or admin can remove photos from an accommodation!");
 
-                await _imageService.RemovePictureAsync(imageId);
+                await _deletionService.DeletePictureAsync(imageId);
                 return NoContent();
             }
             catch (Exception ex)

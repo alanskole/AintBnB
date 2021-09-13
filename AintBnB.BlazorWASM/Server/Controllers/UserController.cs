@@ -74,7 +74,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             }
         }
 
-        /// <summary>API POST request to change password of a user.</summary>
+        /// <summary>API PUT request to change password of a user.</summary>
         /// <param name="elements">An array containing the original password, the user-ID of the user to change the password of, the new password and a confirmation of the new password.</param>
         /// <returns>Status 204 if successful, otherwise status code 400</returns>
         [HttpPut]

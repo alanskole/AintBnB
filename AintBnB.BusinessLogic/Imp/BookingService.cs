@@ -53,7 +53,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="nights">The amount of nights to book for.</param>
         /// <param name="accommodation">The accommodation to book.</param>
         /// <returns>The booking object</returns>
-        /// <exception cref="AccessException">If the user that wants to book isn't the booker or admin booking on behalf of the booker</exception>
         private Booking BookIfAvailable(string startDate, User booker, int nights, Accommodation accommodation)
         {
             startDate = startDate.Trim();
@@ -172,7 +171,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="newStartDate">The new start date.</param>
         /// <param name="nights">The amount of nights to book.</param>
         /// <param name="originalBooking">The original booking that needs to be updated.</param>
-        /// <exception cref="AccessException">Must be performed by the booker, or by admin on behalf of the booker!</exception>
         /// <exception cref="ParameterException">Nights can't be less than one
         /// or
         /// Updated dates can't the same as original dates</exception>
@@ -279,8 +277,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Fetches a booking.</summary>
         /// <param name="id">The ID of the booking to get.</param>
         /// <returns>The booking object</returns>
-        /// <exception cref="IdNotFoundException">No bookings found with the booking-ID</exception>
-        /// <exception cref="AccessException">The user wants to get the booking isn't the booker, the owner of the accommodation that was booked or admin</exception>
+        /// <exception cref="NotFoundException">No bookings found with the booking-ID</exception>
         public async Task<Booking> GetBookingAsync(int id)
         {
             var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
@@ -295,7 +292,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="userid">The user-ID of the owner of the accommoations.</param>
         /// <returns>A list of all the booking objects</returns>
         /// <exception cref="NotFoundException">No bookings found</exception>
-        /// <exception cref="AccessException">The user that calls this method isn't the owner of the accommodations or admin</exception>
         public async Task<List<Booking>> GetBookingsOfOwnedAccommodationAsync(int userid)
         {
             var bookingsOfOwnedAccommodation = new List<Booking>();
@@ -334,7 +330,7 @@ namespace AintBnB.BusinessLogic.Imp
         }
 
         /// <summary>Gets all bookings in the database belonging to a user.</summary>
-        /// <param name="userid">The user-ID of the user to get the bookings of.</param>
+        /// <param name="userId">The user-ID of the user to get the bookings of.</param>
         /// <returns>A list of all the bookings of the user</returns>
         /// <exception cref="NotFoundException">No bookings belonging to the user found in the database</exception>
         public async Task<List<Booking>> GetOnlyOnesOwnedByUserAsync(int userId)
@@ -387,7 +383,6 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Determines whether a rating can be given.</summary>
         /// <param name="booking">The booking to leave the rating for.</param>
         /// <param name="rating">The rating between 1-5.</param>
-        /// <exception cref="AccessException">If any other user than the booker tries to rate</exception>
         /// <exception cref="ParameterException">Rating can't be less than 1 or bigger than 5
         /// or
         /// Rating can't be given twice

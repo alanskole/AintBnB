@@ -20,9 +20,6 @@ namespace AintBnB.BusinessLogic.Imp
 
         /// <summary>Delete a user.</summary>
         /// <param name="id">The user-ID of the user to delete.</param>
-        /// <exception cref="AccessException">If a customer tries to delete the account of another customer.
-        /// or
-        /// Only an admin or the user can delete the user's account</exception>
         public async Task DeleteUserAsync(int id)
         {
             var user = await _unitOfWork.UserRepository.ReadAsync(id);
@@ -35,7 +32,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         /// <summary>Checks if the user can be deleted.</summary>
         /// <param name="user">The user that will be deleted.</param>
-        /// <exception cref="IdNotFoundException">User is not found in the database</exception>
+        /// <exception cref="NotFoundException">User is not found in the database</exception>
         /// <exception cref="AccessException">If the user to be deleted is an admin because admin can't be deleted!</exception>
         private void CheckIfUserCanBeDeleted(User user)
         {
@@ -73,11 +70,25 @@ namespace AintBnB.BusinessLogic.Imp
             foreach (var acc in accommodationsToBeDeleted)
             {
                 await _unitOfWork.AccommodationRepository.DeleteAsync(acc.Id);
-                DeletePicturesOfAccommodation(acc.Id);
+                DeleteAllPicturesOfAccommodation(acc.Id);
             }
         }
 
-        private void DeletePicturesOfAccommodation(int accommodationId)
+        /// <summary>Deletes an image from the list of images of an accommodation.</summary>
+        /// <param name="imageId">The Id of the image to delete.</param>
+        public async Task DeletePictureAsync(int imageId)
+        {
+            var img = await _unitOfWork.ImageRepository.ReadAsync(imageId);
+
+            if (img == null)
+                throw new NotFoundException("Image", imageId);
+
+            _unitOfWork.ImageRepository.Delete(img);
+
+            await _unitOfWork.CommitAsync();
+        }
+
+        private void DeleteAllPicturesOfAccommodation(int accommodationId)
         {
             foreach (var pic in _unitOfWork.ImageRepository.GetAll(accommodationId))
                 _unitOfWork.ImageRepository.Delete(pic);
@@ -123,7 +134,7 @@ namespace AintBnB.BusinessLogic.Imp
             await CanAccommodationBookingsBeDeletedAsync(accommodation.Id);
 
             await _unitOfWork.AccommodationRepository.DeleteAsync(id);
-            DeletePicturesOfAccommodation(id);
+            DeleteAllPicturesOfAccommodation(id);
             await _unitOfWork.CommitAsync();
         }
 
@@ -157,7 +168,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         /// <summary>Deletes a booking.</summary>
         /// <param name="id">The ID of the booking to be deleted.</param>
-        /// <exception cref="IdNotFoundException">Booking not found in the database</exception>
+        /// <exception cref="NotFoundException">Booking not found in the database</exception>
         public async Task DeleteBookingAsync(int id)
         {
             var booking = await _unitOfWork.BookingRepository.ReadAsync(id);

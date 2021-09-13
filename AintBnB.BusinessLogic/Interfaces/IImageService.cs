@@ -12,10 +12,6 @@ namespace AintBnB.BusinessLogic.Interfaces
         /// <returns>The newly created image object</returns>
         Task<Image> AddPictureAsync(int accommoationId, byte[] img);
 
-        /// <summary>Deletes an image from the list of images of an accommodation.</summary>
-        /// <param name="imageId">The Id of the image to delete.</param>
-        Task RemovePictureAsync(int imageId);
-
         /// <summary>Gets an image by id.</summary>
         /// <param name="imageId">The Id of the image to fetch.</param>
         /// <returns>An image object with the requested image</returns>

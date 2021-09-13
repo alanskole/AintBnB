@@ -16,7 +16,7 @@ namespace AintBnB.BusinessLogic.Interfaces
         Task<List<Booking>> GetAllInSystemAsync();
 
         /// <summary>Gets all bookings in the database belonging to a user.</summary>
-        /// <param name="userid">The user-ID of the user to get the bookings of.</param>
+        /// <param name="userId">The user-ID of the user to get the bookings of.</param>
         /// <returns>A list of all the bookings of the user</returns>
         Task<List<Booking>> GetOnlyOnesOwnedByUserAsync(int userId);
 
@@ -29,7 +29,7 @@ namespace AintBnB.BusinessLogic.Interfaces
         Task<Booking> BookAsync(string startDate, User booker, int nights, Accommodation accommodation);
 
         /// <summary>Gets all the bookings of a users accommodations.</summary>
-        /// <param name="userid">The user-ID of the owner of the accommoations.</param>
+        /// <param name="userId">The user-ID of the owner of the accommoations.</param>
         /// <returns>A list of all the booking objects</returns>
         Task<List<Booking>> GetBookingsOfOwnedAccommodationAsync(int userId);
 
