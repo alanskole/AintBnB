@@ -45,7 +45,15 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task DoesUserHaveCorrectRights_ShouldReturn_BadRequestIfError()
+        public async Task DoesUserHaveCorrectRights_ShouldReturn_NotFoundIfErrorWithFecthingObject()
+        {
+            var response = await _client.GetAsync("api/authentication/100");
+
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [TestMethod]
+        public async Task DoesUserHaveCorrectRights_ShouldReturn_BadRequestIfErrorWithAuthorization()
         {
             _client = _factory.CreateClient();
 
@@ -84,7 +92,7 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task LogIn_ShouldReturn_BadRequestError()
+        public async Task LogIn_ShouldReturn_BadRequestIfError()
         {
             _client = _factory.CreateClient();
 

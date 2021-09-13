@@ -1,5 +1,4 @@
-﻿using AintBnB.BusinessLogic.CustomExceptions;
-using AintBnB.BusinessLogic.Interfaces;
+﻿using AintBnB.BusinessLogic.Interfaces;
 using AintBnB.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +28,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         public async Task<IActionResult> CreateImageAsync([FromBody] Image img)
         {
             if (!CorrectUserOrAdmin(img.Accommodation.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                throw new AccessException("Only the accommodation's owner or admin can upload photos to an accommodation!");
+                return BadRequest("Only the accommodation's owner or admin can upload photos to an accommodation!");
 
             try
             {
@@ -89,7 +88,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 var img = await _imageService.GetPicture(imageId);
 
                 if (!CorrectUserOrAdmin(img.Accommodation.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return BadRequest(new AccessException("Only the accommodation's owner or admin can remove photos from an accommodation!").Message);
+                    return BadRequest("Only the accommodation's owner or admin can remove photos from an accommodation!");
 
                 await _imageService.RemovePictureAsync(imageId);
                 return NoContent();

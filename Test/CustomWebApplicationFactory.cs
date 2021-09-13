@@ -22,15 +22,18 @@ namespace Test
         public User userAdmin;
         public User userCustomer1;
         public User userCustomer2;
+        public User userCustomer3;
         public Address adr = new Address("str", "1", "1111", "ar", "Fredrikstad", "Norway");
         public Address adr2 = new Address("anotherstr", "10A", "1414", "frstd", "Fredrikstad", "Norway");
         public Address adr3 = new Address("capitalstr", "42", "0531", "osl", "Oslo", "Norway");
         public Accommodation accommodation1;
         public Accommodation accommodation2;
         public Accommodation accommodation3;
+        public Accommodation accommodation4;
         public Booking booking1;
         public Booking booking2;
         public Booking booking3;
+        public Booking booking4;
         public DatabaseContext db;
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -89,11 +92,22 @@ namespace Test
                     UserType = UserTypes.Customer
                 };
 
+                userCustomer3 = new User
+                {
+                    UserName = "customer3",
+                    Password = HashPassword("aaaaaa"),
+                    FirstName = "Third",
+                    LastName = "Customer",
+                    UserType = UserTypes.Customer
+                };
+
                 db.Add(userAdmin);
                 db.SaveChanges();
                 db.Add(userCustomer1);
                 db.SaveChanges();
                 db.Add(userCustomer2);
+                db.SaveChanges();
+                db.Add(userCustomer3);
                 db.SaveChanges();
 
                 var schedule = new SortedDictionary<string, bool>();
@@ -149,11 +163,26 @@ namespace Test
                     Schedule = new SortedDictionary<string, bool>(schedule),
                 };
 
+                accommodation4 = new Accommodation
+                {
+                    Owner = userCustomer2,
+                    Address = adr3,
+                    SquareMeters = 30,
+                    AmountOfBedrooms = 2,
+                    KilometersFromCenter = 3.8,
+                    Description = "bla and bla",
+                    PricePerNight = 1000,
+                    CancellationDeadlineInDays = 1,
+                    Schedule = new SortedDictionary<string, bool>(schedule),
+                };
+
                 db.Add(accommodation1);
                 db.SaveChanges();
                 db.Add(accommodation2);
                 db.SaveChanges();
                 db.Add(accommodation3);
+                db.SaveChanges();
+                db.Add(accommodation4);
                 db.SaveChanges();
 
                 var bkdt = DateTime.Today.AddDays(2);
@@ -185,6 +214,15 @@ namespace Test
                     dates3.Add(dt.ToString("yyyy-MM-dd"));
                 }
 
+                var dates4 = new List<string>();
+
+                for (int i = 0; i < 4; i++)
+                {
+                    var dt = DateTime.Today.AddDays(i);
+                    accommodation4.Schedule[dt.ToString("yyyy-MM-dd")] = false;
+                    dates4.Add(dt.ToString("yyyy-MM-dd"));
+                }
+
                 booking1 = new Booking
                 {
                     BookedBy = userCustomer2,
@@ -209,11 +247,21 @@ namespace Test
                     Price = (accommodation3.PricePerNight * dates3.Count)
                 };
 
+                booking4 = new Booking
+                {
+                    BookedBy = userCustomer3,
+                    Accommodation = accommodation4,
+                    Dates = dates4,
+                    Price = (accommodation4.PricePerNight * dates4.Count)
+                };
+
                 db.Add(booking1);
                 db.SaveChanges();
                 db.Add(booking2);
                 db.SaveChanges();
                 db.Add(booking3);
+                db.SaveChanges();
+                db.Add(booking4);
                 db.SaveChanges();
             });
         }

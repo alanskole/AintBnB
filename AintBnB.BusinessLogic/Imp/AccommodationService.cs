@@ -135,20 +135,20 @@ namespace AintBnB.BusinessLogic.Imp
             var acc = await _unitOfWork.AccommodationRepository.ReadAsync(id);
 
             if (acc == null)
-                throw new IdNotFoundException("Accommodation", id);
+                throw new NotFoundException("Accommodation", id);
 
             return acc;
         }
 
         /// <summary>Gets a list of all the accommodations.</summary>
         /// <returns>A list with all the accommodation objects</returns>
-        /// <exception cref="NoneFoundInDatabaseTableException">No accommodations found in the database</exception>
+        /// <exception cref="NotFoundException">No accommodations found in the database</exception>
         public async Task<List<Accommodation>> GetAllAccommodationsAsync()
         {
             var all = await _unitOfWork.AccommodationRepository.GetAllAsync();
 
             if (all.Count == 0)
-                throw new NoneFoundInDatabaseTableException("accommodations");
+                throw new NotFoundException("accommodations");
 
             return all;
         }
@@ -156,7 +156,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Gets all accommodations of a user.</summary>
         /// <param name="userid">The user-ID to get the accommodations of.</param>
         /// <returns>A list with all the accommodations of the user</returns>
-        /// <exception cref="NoneFoundInDatabaseTableException">The user doesn't have any accommodations</exception>
+        /// <exception cref="NotFoundException">The user doesn't have any accommodations</exception>
         public async Task<List<Accommodation>> GetAllOwnedAccommodationsAsync(int userid)
         {
             var all = new List<Accommodation>();
@@ -164,7 +164,7 @@ namespace AintBnB.BusinessLogic.Imp
             await FindAllAccommodationsOfAUserAsync(all, userid);
 
             if (all.Count == 0)
-                throw new NoneFoundInDatabaseTableException(userid, "accommodations");
+                throw new NotFoundException(userid, "accommodations");
 
             return all;
         }
@@ -313,11 +313,11 @@ namespace AintBnB.BusinessLogic.Imp
         /// <param name="sortBy">What to sort by; can be sorted by: Price, Distance, Size or Rating.</param>
         /// <param name="ascOrDesc">Sort in ascending or descending order.</param>
         /// <returns>A list with the accommodations that are sorted in the desired order</returns>
-        /// <exception cref="NoneFoundInDatabaseTableException">If the list of accommodations are empty</exception>
+        /// <exception cref="NotFoundException">If the list of accommodations are empty</exception>
         public List<Accommodation> SortListOfAccommodations(List<Accommodation> available, string sortBy, string ascOrDesc)
         {
             if (available == null || available.Count == 0)
-                throw new NoneFoundInDatabaseTableException("available accommodations");
+                throw new NotFoundException("available accommodations");
 
             if (sortBy == "Price")
             {

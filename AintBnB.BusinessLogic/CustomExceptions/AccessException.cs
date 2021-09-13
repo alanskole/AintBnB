@@ -8,9 +8,5 @@ namespace AintBnB.BusinessLogic.CustomExceptions
         public AccessException(string message) : base(message)
         {
         }
-
-        public AccessException() : base("Restricted access!")
-        {
-        }
     }
 }

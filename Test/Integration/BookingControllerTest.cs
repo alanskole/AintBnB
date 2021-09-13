@@ -48,10 +48,42 @@ namespace Test.Integration
         {
             string startDate = _factory.accommodation1.Schedule.Keys.Last();
 
+            var bookingInfo = JsonConvert.SerializeObject(new string[] { startDate, "3", "10000", "1" });
+
+            var response = await _client.PostAsync(
+                "api/booking/book", new StringContent(bookingInfo, Encoding.UTF8, "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task Book_ShouldReturn_NotFoundIfErrorWithFecthingObject()
+        {
+            string startDate = _factory.accommodation1.Schedule.Keys.Last();
+
             var bookingInfo = JsonConvert.SerializeObject(new string[] { startDate, "6", "2", "1" });
 
             var response = await _client.PostAsync(
                 "api/booking/book", new StringContent(bookingInfo, Encoding.UTF8, "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task Book_ShouldReturn_BadRequestIfErrorWithAuthorization()
+        {
+            _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
+
+            string startDate = _factory.accommodation1.Schedule.Keys.Last();
+
+            var bookingInfo = JsonConvert.SerializeObject(new string[] { startDate, _factory.userCustomer2.Id.ToString(), "10000", "1" });
+
+            var response = await _client.PostAsync(
+                "api/booking/book", new StringContent(bookingInfo, Encoding.UTF8, "application/json"));
+
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
@@ -69,6 +101,19 @@ namespace Test.Integration
         }
 
         [TestMethod]
+        public async Task UpdateBooking_ShouldReturn_NotFoundIfErrorWithFecthingObject()
+        {
+            string startDate = _factory.accommodation1.Schedule.Keys.Last();
+
+            var newDates = JsonConvert.SerializeObject(new string[] { startDate, "1" });
+
+            var response = await _client.PutAsync("api/booking/1000", new StringContent(newDates, Encoding.UTF8, "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
         public async Task UpdateBooking_ShouldReturn_BadRequestIfError()
         {
             string startDate = _factory.accommodation1.Schedule.Keys.Last();
@@ -76,6 +121,22 @@ namespace Test.Integration
             var newDates = JsonConvert.SerializeObject(new string[] { startDate, "2" });
 
             var response = await _client.PutAsync("api/booking/1", new StringContent(newDates, Encoding.UTF8, "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task UpdateBooking_ShouldReturn_BadRequestIfErrorWithAuthorization()
+        {
+            _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
+
+            string startDate = _factory.accommodation1.Schedule.Keys.Last();
+
+            var newDates = JsonConvert.SerializeObject(new string[] { startDate, "2" });
+
+            var response = await _client.PutAsync("api/booking/4", new StringContent(newDates, Encoding.UTF8, "application/json"));
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
@@ -91,11 +152,23 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetBooking_ShouldReturn_NotFoundIfError()
+        public async Task GetBooking_ShouldReturn_NotFoundIfErrorWithFecthingObject()
         {
             var response = await _client.GetAsync("api/booking/100");
 
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task GetBooking_ShouldReturn_BadRequestIfErrorWithAuthorization()
+        {
+            _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
+
+            var response = await _client.GetAsync("api/booking/4");
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
         }
 
@@ -109,7 +182,19 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetBookingsOnOwnedAccommodations_ShouldReturn_NotFoundIfError()
+        public async Task GetBookingsOnOwnedAccommodations_ShouldReturn_BadRequestIfErrorWithAuthorization()
+        {
+            _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
+
+            var response = await _client.GetAsync($"api/booking/{_factory.userCustomer2.Id}/bookingsownaccommodation");
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task GetBookingsOnOwnedAccommodations_ShouldReturn_NotFoundIfErrorWithFecthingObject()
         {
             var userCustomer3 = new User
             {
@@ -147,7 +232,28 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task DeleteBooking_ShouldReturn_NotFoundIfError()
+        public async Task DeleteBooking_ShouldReturn_BadRequestIfError()
+        {
+            var response = await _client.DeleteAsync("api/booking/4");
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task DeleteBooking_ShouldReturn_BadRequestIfErrorWithAuthorization()
+        {
+            _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
+
+            var response = await _client.DeleteAsync("api/booking/4");
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task DeleteBooking_ShouldReturn_NotFoundIfErrorWithFecthingObject()
         {
             var response = await _client.DeleteAsync("api/booking/100");
 

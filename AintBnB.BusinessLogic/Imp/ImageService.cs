@@ -37,7 +37,12 @@ namespace AintBnB.BusinessLogic.Imp
         /// <returns>An image object with the requested image</returns>
         public async Task<Image> GetPicture(int imageId)
         {
-            return await _unitOfWork.ImageRepository.ReadAsync(imageId);
+            var img = await _unitOfWork.ImageRepository.ReadAsync(imageId);
+
+            if (img == null)
+                throw new NotFoundException("Image", imageId);
+
+            return img;
         }
 
         /// <summary>Gets a list of all the images of an accommodation.</summary>
@@ -45,7 +50,12 @@ namespace AintBnB.BusinessLogic.Imp
         /// <returns>A list with all the images of an accommodation</returns>
         public List<Image> GetAllPictures(int accommoationId)
         {
-            return _unitOfWork.ImageRepository.GetAll(accommoationId);
+            var all = _unitOfWork.ImageRepository.GetAll(accommoationId);
+
+            if (all == null)
+                throw new NotFoundException("images");
+
+            return all;
         }
 
         /// <summary>Deletes an image from the list of images of an accommodation.</summary>
@@ -53,7 +63,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <exception cref="AccessException">Only the accommodation's owner or admin can remove photos from an accommodation!</exception>
         public async Task RemovePictureAsync(int imageId)
         {
-            var img = await _unitOfWork.ImageRepository.ReadAsync(imageId);
+            var img = await GetPicture(imageId);
 
             _unitOfWork.ImageRepository.Delete(img);
 

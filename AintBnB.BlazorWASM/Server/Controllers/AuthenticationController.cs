@@ -44,20 +44,19 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         [Route("api/[controller]/{id}")]
         public async Task<IActionResult> DoesUserHaveCorrectRightsAsync([FromRoute] int id)
         {
-            User user;
             try
             {
-                user = await _userService.GetUserAsync(id);
+                var user = await _userService.GetUserAsync(id);
+
+                if (!CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return BadRequest("Restricted access!");
+
+                return NoContent();
             }
             catch (Exception ex)
             {
                 return NotFound(ex.Message);
             }
-
-            if (CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                return NoContent();
-            else
-                return BadRequest("Restricted access!");
         }
 
         /// <summary>API POST request to logout the user</summary>

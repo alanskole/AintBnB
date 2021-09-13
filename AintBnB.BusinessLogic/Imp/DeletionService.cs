@@ -40,7 +40,7 @@ namespace AintBnB.BusinessLogic.Imp
         private void CheckIfUserCanBeDeleted(User user)
         {
             if (user == null)
-                throw new IdNotFoundException("User", user.Id);
+                throw new NotFoundException("User", user.Id);
 
             if (user.UserType == UserTypes.Admin)
                 throw new AccessException("Admin cannot be deleted!");
@@ -118,7 +118,7 @@ namespace AintBnB.BusinessLogic.Imp
             var accommodation = await _unitOfWork.AccommodationRepository.ReadAsync(id);
 
             if (accommodation == null)
-                throw new IdNotFoundException("Accommodation", accommodation.Id);
+                throw new NotFoundException("Accommodation", accommodation.Id);
 
             await CanAccommodationBookingsBeDeletedAsync(accommodation.Id);
 
@@ -163,7 +163,7 @@ namespace AintBnB.BusinessLogic.Imp
             var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
 
             if (booking == null)
-                throw new IdNotFoundException("Booking", id);
+                throw new NotFoundException("Booking", id);
 
             await DeadLineExpirationAsync(id, booking.Accommodation.CancellationDeadlineInDays);
 

@@ -312,7 +312,7 @@ namespace Test.Unit
         {
             await CreateDummyBookingAsync();
 
-            var ex = await Assert.ThrowsExceptionAsync<IdNotFoundException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async ()
                 => await bookingService.GetBookingAsync(100));
 
             Assert.AreEqual("Booking with ID 100 not found!", ex.Message);
@@ -345,7 +345,7 @@ namespace Test.Unit
 
             await accommodationService.CreateAccommodationAsync(user, adr1, 1, 2, 1, "d", 1, 1, 10);
 
-            var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async ()
                 => await bookingService.GetBookingsOfOwnedAccommodationAsync(user.Id));
 
             Assert.AreEqual($"User with Id {user.Id} doesn't have any bookings of owned accommodations!", ex.Message);
@@ -379,7 +379,7 @@ namespace Test.Unit
         [TestMethod]
         public async Task GetAllBookingsAsync_ShouldFail_IfThereAreNoBookingsInTheSystemAsync()
         {
-            var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async ()
                 => await bookingService.GetAllInSystemAsync());
 
             Assert.AreEqual("No bookings found!", ex.Message);
@@ -388,7 +388,7 @@ namespace Test.Unit
         [TestMethod]
         public async Task GetAllBookingsAsync_ShouldFail_IfCustomerDoesNotHaveAnyBookingsAsync()
         {
-            var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async ()
                 => await bookingService.GetAllInSystemAsync());
 
             Assert.AreEqual($"No bookings found!", ex.Message);

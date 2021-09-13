@@ -197,7 +197,7 @@ namespace Test.Unit
         {
             await CreateDummyAccommodationAsync();
 
-            var ex = await Assert.ThrowsExceptionAsync<IdNotFoundException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async ()
                 => await accommodationService.GetAccommodationAsync(1000));
 
             Assert.AreEqual("Accommodation with ID 1000 not found!", ex.Message);
@@ -216,7 +216,7 @@ namespace Test.Unit
         [TestMethod]
         public async Task GetAllAccommodationsAsync_ShouldFail_IfNoAccommodationsInDatabaseAsync()
         {
-            var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async ()
                 => await accommodationService.GetAllAccommodationsAsync());
 
             Assert.AreEqual("No accommodations found!", ex.Message);
@@ -241,7 +241,7 @@ namespace Test.Unit
         {
             await CreateDummyAccommodationAsync();
 
-            var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async ()
                 => await accommodationService.GetAllOwnedAccommodationsAsync(1));
 
             Assert.AreEqual("User with Id 1 doesn't have any accommodations!", ex.Message);
@@ -299,7 +299,7 @@ namespace Test.Unit
         {
             await CreateDummyAccommodationAsync();
 
-            var ex = await Assert.ThrowsExceptionAsync<IdNotFoundException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async ()
                 => await accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(100, 10));
 
             Assert.AreEqual("Accommodation with ID 100 not found!", ex.Message);

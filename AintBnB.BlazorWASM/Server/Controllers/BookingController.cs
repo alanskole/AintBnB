@@ -51,7 +51,10 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
             }
         }
 
@@ -63,27 +66,22 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         [Route("api/[controller]/{bookingId}")]
         public async Task<IActionResult> UpdateBookingAsync([FromBody] string[] newDates, [FromRoute] int bookingId)
         {
-            Booking booking;
             try
             {
-                booking = await _bookingService.GetBookingAsync(bookingId);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+                var booking = await _bookingService.GetBookingAsync(bookingId);
 
-            if (!CheckIfUserIsAllowedToPerformAction(booking.BookedBy, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                return BadRequest($"Must be performed by the booker, or by admin on behalf of the booker!");
+                if (!CheckIfUserIsAllowedToPerformAction(booking.BookedBy, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return BadRequest($"Must be performed by the booker, or by admin on behalf of the booker!");
 
-            try
-            {
                 await _bookingService.UpdateBookingAsync(newDates[0], int.Parse(newDates[1]), bookingId);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
             }
         }
 
@@ -95,27 +93,22 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         [Route("api/[controller]/rate/{bookingId}")]
         public async Task<IActionResult> LeaveRatingAsync([FromRoute] int bookingId, [FromBody] int rating)
         {
-            Booking booking;
             try
             {
-                booking = await _bookingService.GetBookingAsync(bookingId);
-            }
-            catch (Exception ex)
-            {
-                return NotFound(ex.Message);
-            }
+                var booking = await _bookingService.GetBookingAsync(bookingId);
 
-            if (booking.BookedBy.Id != GetIdOfLoggedInUser(HttpContext))
-                return BadRequest(new AccessException("Only the booker can leave a rating!").Message);
+                if (booking.BookedBy.Id != GetIdOfLoggedInUser(HttpContext))
+                    return BadRequest("Only the booker can leave a rating!");
 
-            try
-            {
                 await _bookingService.RateAsync(bookingId, rating);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
             }
         }
 
@@ -131,10 +124,10 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             {
                 var booking = await _bookingService.GetBookingAsync(id);
 
-                if (CorrectUserOrOwnerOrAdmin(booking.Accommodation.Owner.Id, booking.BookedBy.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return booking;
-                else
-                    return BadRequest(new AccessException().Message);
+                if (!CorrectUserOrOwnerOrAdmin(booking.Accommodation.Owner.Id, booking.BookedBy.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return BadRequest("Restricted access!");
+
+                return booking;
             }
             catch (Exception ex)
             {
@@ -149,21 +142,19 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         [Route("api/[controller]/{id}/bookingsownaccommodation")]
         public async Task<ActionResult<List<Booking>>> GetBookingsOnOwnedAccommodationsAsync([FromRoute] int id)
         {
-            var user = await _userService.GetUserAsync(id);
-
-            if (CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+            try
             {
-                try
-                {
-                    return await _bookingService.GetBookingsOfOwnedAccommodationAsync(id);
-                }
-                catch (Exception ex)
-                {
-                    return NotFound(ex.Message);
-                }
+                var user = await _userService.GetUserAsync(id);
+
+                if (!CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return BadRequest("Restricted access!");
+
+                return await _bookingService.GetBookingsOfOwnedAccommodationAsync(id);
             }
-            else
-                return BadRequest(new AccessException().Message);
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         /// <summary>API GET request to return all the bookings from the database</summary>
@@ -199,7 +190,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 var booking = await _bookingService.GetBookingAsync(id);
 
                 if (!CorrectUserOrOwnerOrAdmin(booking.Accommodation.Owner.Id, booking.BookedBy.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return BadRequest(new AccessException().Message);
+                    return BadRequest("Restricted access, action can only be done by the booker, owner of the accommodation or admin!");
 
                 await _deletionService.DeleteBookingAsync(id);
 
@@ -207,7 +198,10 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
             }
         }
     }

@@ -52,7 +52,7 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task CreateUser_ShouldReturn_BadRequestIfError()
+        public async Task CreateUser_ShouldReturn_BadRequestIfAlreadyLoggedIn()
         {
             _client = _factory.CreateClient();
 
@@ -70,7 +70,7 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task CreateUser_ShouldReturn_BadRequestIfError2()
+        public async Task CreateUser_ShouldReturn_BadRequestIfError()
         {
             User usr = new User
             {
@@ -95,7 +95,19 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetUser_ShouldReturn_NotFoundIfError()
+        public async Task GetUser_ShouldReturn_BadRequestIfErrorWithAuthorization()
+        {
+            _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
+
+            var response = await _client.GetAsync($"api/user/{_factory.userCustomer2.Id}");
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task GetUser_ShouldReturn_NotFoundIfErrorWithFecthingObject()
         {
             var response = await _client.GetAsync("api/user/10000");
 
@@ -123,7 +135,47 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task UpdateUser_ShouldReturn_NotFoundIfError()
+        public async Task UpdateUser_ShouldReturn_BadRequestIfErrorWithAuthorization()
+        {
+            _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
+
+            User usr = new User
+            {
+                FirstName = "dd",
+                LastName = "ff",
+                UserType = UserTypes.Customer
+            };
+
+            var response = await _client.PutAsync($"api/user/{_factory.userCustomer2.Id}",
+                new StringContent(
+                    JsonConvert.SerializeObject(usr),
+                    Encoding.UTF8,
+                    "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task UpdateUser_ShouldReturn_BadRequestIfError()
+        {
+            User usr = new User
+            {
+            };
+
+            var response = await _client.PutAsync("api/user/3",
+                new StringContent(
+                    JsonConvert.SerializeObject(usr),
+                    Encoding.UTF8,
+                    "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task UpdateUser_ShouldReturn_NotFoundIfErrorWithFecthingObject()
         {
             User usr = new User
             {
@@ -140,7 +192,7 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetAllUser_ShouldReturn_SuccessStatus()
+        public async Task GetAllUsers_ShouldReturn_SuccessStatus()
         {
             var response = await _client.GetAsync("api/user");
 
@@ -149,10 +201,9 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetAllUser_ShouldReturn_BadRequestIfError()
+        public async Task GetAllUsers_ShouldReturn_BadRequestIfErrorWithAuthorization()
         {
             _client = _factory.CreateClient();
-
             await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
 
             var response = await _client.GetAsync("api/user");
@@ -171,7 +222,7 @@ namespace Test.Integration
         }
 
         [TestMethod]
-        public async Task GetAllCustomers_ShouldReturn_BadRequestIfError()
+        public async Task GetAllCustomers_ShouldReturn_BadRequestIfErrorWithAuthorization()
         {
             _client = _factory.CreateClient();
 
@@ -186,13 +237,34 @@ namespace Test.Integration
         [TestMethod]
         public async Task DeleteUser_ShouldReturn_SuccessStatus()
         {
-            var response = await _client.DeleteAsync("api/user/3");
+            var response = await _client.DeleteAsync("api/user/2");
 
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
 
         [TestMethod]
-        public async Task DeleteUser_ShouldReturn_NotFoundIfError()
+        public async Task DeleteUser_ShouldReturn_BadRequestIfErrorWithAuthorization()
+        {
+            _client = _factory.CreateClient();
+            await _factory.LoginUserAsync(_client, new string[] { _factory.userCustomer1.UserName, "aaaaaa" });
+
+            var response = await _client.DeleteAsync($"api/user/{_factory.userCustomer2.Id}");
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task DeleteUser_ShouldReturn_BadRequestIfError()
+        {
+            var response = await _client.DeleteAsync($"api/user/{_factory.booking4.BookedBy.Id}");
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task DeleteUser_ShouldReturn_NotFoundIfErrorWithFecthingObject()
         {
             var response = await _client.DeleteAsync("api/user/600");
 
@@ -218,6 +290,19 @@ namespace Test.Integration
             var response = await _client.PutAsync("api/user/change",
                 new StringContent(
                     JsonConvert.SerializeObject(new string[] { "aaaaaaaaaaaaaa", "1", "bbbbbb", "bbbbbb" }),
+                    Encoding.UTF8,
+                    "application/json"));
+
+            Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.AreEqual("text/plain; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+        }
+
+        [TestMethod]
+        public async Task ChangePassword_ShouldReturn_BadRequestIfErrorWithAuthorization()
+        {
+            var response = await _client.PutAsync("api/user/change",
+                new StringContent(
+                    JsonConvert.SerializeObject(new string[] { "aaaaaa", _factory.userCustomer2.Id.ToString(), "bbbbbb", "bbbbbb" }),
                     Encoding.UTF8,
                     "application/json"));
 

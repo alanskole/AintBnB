@@ -60,14 +60,17 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 var old = await _userService.GetUserAsync(id);
 
                 if (!CorrectUserOrAdmin(old.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return BadRequest(new AccessException().Message);
+                    return BadRequest("Restricted access!");
 
                 await _userService.UpdateUserAsync(id, user, GetUsertypeOfLoggedInUser(HttpContext));
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
             }
         }
 
@@ -81,7 +84,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             try
             {
                 if (GetIdOfLoggedInUser(HttpContext) != int.Parse(elements[1]))
-                    return BadRequest(new AccessException("Only the owner of the account can change their password!").Message);
+                    return BadRequest("Only the owner of the account can change their password!");
 
                 await _userService.ChangePasswordAsync(elements[0], int.Parse(elements[1]), elements[2], elements[3]);
 
@@ -89,7 +92,10 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
             }
         }
 
@@ -102,7 +108,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             try
             {
                 if (!AdminChecker(GetUsertypeOfLoggedInUser(HttpContext)))
-                    return BadRequest(new AccessException().Message);
+                    return BadRequest("Admin only!");
 
                 return await _userService.GetAllUsersAsync();
             }
@@ -121,7 +127,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             try
             {
                 if (!AdminChecker(GetUsertypeOfLoggedInUser(HttpContext)))
-                    return BadRequest(new AccessException().Message);
+                    return BadRequest("Admin only!");
 
                 return await _userService.GetAllUsersWithTypeCustomerAsync();
             }
@@ -144,7 +150,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 var user = await _userService.GetUserAsync(id);
 
                 if (!CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return BadRequest(new AccessException().Message);
+                    return BadRequest("Restricted access!");
 
                 return user;
             }
@@ -166,7 +172,7 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 var user = await _userService.GetUserAsync(id);
 
                 if (!CorrectUserOrAdmin(user.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return BadRequest(new AccessException($"Administrator or user with ID {id} only!").Message);
+                    return BadRequest("Administrator or account owner only!");
 
                 await _deletionService.DeleteUserAsync(id);
 
@@ -177,7 +183,10 @@ namespace AintBnB.BlazorWASM.Server.Controllers
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
             }
         }
     }

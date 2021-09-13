@@ -40,14 +40,17 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 var owner = await _userService.GetUserAsync(userId);
 
                 if (!CheckIfUserIsAllowedToPerformAction(owner, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return BadRequest($"Must be performed by a customer with ID {owner.Id}, or by admin on behalf of a customer with ID {owner.Id}!");
+                    return BadRequest("Restricted acces, this action can only be done by administrator or the user that will be the owner of the accommodation!");
 
                 var newAccommodation = await _accommodationService.CreateAccommodationAsync(owner, accommodation.Address, accommodation.SquareMeters, accommodation.AmountOfBedrooms, accommodation.KilometersFromCenter, accommodation.Description, accommodation.PricePerNight, accommodation.CancellationDeadlineInDays, days);
                 return CreatedAtAction(nameof(GetAccommodationAsync), new { id = newAccommodation.Id }, newAccommodation);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
             }
         }
 
@@ -99,23 +102,23 @@ namespace AintBnB.BlazorWASM.Server.Controllers
         [Route("api/[controller]/{id}/expand")]
         public async Task<IActionResult> ExpandScheduleAsync([FromRoute] int id, [FromBody] int days)
         {
-            var acc = await _accommodationService.GetAccommodationAsync(id);
-            if (acc == null)
-                return NotFound("Accommodation not found!");
-
-            if (CorrectUserOrAdmin(acc.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+            try
             {
-                try
-                {
-                    await _accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(id, days);
-                    return NoContent();
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest(ex.Message);
-                }
+                var acc = await _accommodationService.GetAccommodationAsync(id);
+
+                if (!CorrectUserOrAdmin(acc.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
+                    return BadRequest("Restricted acces, this action can only be done by administrator or owner of the accommodation!");
+
+                await _accommodationService.ExpandScheduleOfAccommodationWithXAmountOfDaysAsync(id, days);
+                return NoContent();
             }
-            return BadRequest($"Must be performed by the accommodation owner, or by admin on behalf of the accommodation owner!");
+            catch (Exception ex)
+            {
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
+            }
         }
 
         /// <summary>API PUT request to update an existing accommodation</summary>
@@ -131,16 +134,18 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 var acc = await _accommodationService.GetAccommodationAsync(id);
                 var userType = GetUsertypeOfLoggedInUser(HttpContext);
 
-                if (CorrectUserOrAdmin(acc.Owner.Id, GetIdOfLoggedInUser(HttpContext), userType))
-                {
-                    await _accommodationService.UpdateAccommodationAsync(id, accommodation);
-                    return NoContent();
-                }
-                return BadRequest(new AccessException().Message);
+                if (!CorrectUserOrAdmin(acc.Owner.Id, GetIdOfLoggedInUser(HttpContext), userType))
+                    return BadRequest("Restricted access!");
+
+                await _accommodationService.UpdateAccommodationAsync(id, accommodation);
+                return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
             }
         }
 
@@ -207,14 +212,17 @@ namespace AintBnB.BlazorWASM.Server.Controllers
                 var accommodation = await _accommodationService.GetAccommodationAsync(id);
 
                 if (!CorrectUserOrAdmin(accommodation.Owner.Id, GetIdOfLoggedInUser(HttpContext), GetUsertypeOfLoggedInUser(HttpContext)))
-                    return BadRequest(new AccessException($"Administrator or user with ID {accommodation.Owner.Id} only!").Message);
+                    return BadRequest("Restricted acces, this action can only be done by administrator or owner of the accommodation!");
 
                 await _deletionService.DeleteAccommodationAsync(id);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                if (ex.GetType().IsAssignableFrom(typeof(NotFoundException)))
+                    return NotFound(ex.Message);
+                else
+                    return BadRequest(ex.Message);
             }
         }
     }

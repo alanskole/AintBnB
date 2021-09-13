@@ -174,7 +174,7 @@ namespace Test.Unit
         {
             await CreateDummyUsersAsync();
 
-            var ex = await Assert.ThrowsExceptionAsync<IdNotFoundException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async ()
                 => await userService.GetUserAsync(600));
 
             Assert.AreEqual("User with ID 600 not found!", ex.Message);
@@ -193,7 +193,7 @@ namespace Test.Unit
         [TestMethod]
         public async Task GetAllUsersAsync_ShouldFail_WhenNoUsersExist()
         {
-            var ex = await Assert.ThrowsExceptionAsync<NoneFoundInDatabaseTableException>(async ()
+            var ex = await Assert.ThrowsExceptionAsync<NotFoundException>(async ()
                 => await userService.GetAllUsersAsync());
 
             Assert.AreEqual(ex.Message, "No users found!");

@@ -100,14 +100,13 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Fetches a user.</summary>
         /// <param name="id">The ID of the user to get.</param>
         /// <returns>The user object</returns>
-        /// <exception cref="IdNotFoundException">No users found with the provided ID</exception>
-        /// <exception cref="AccessException">Only the owner of the account or admin can get fetch the user account</exception>
+        /// <exception cref="NotFoundException">No users found with the provided ID</exception>
         public async Task<User> GetUserAsync(int id)
         {
             var user = await _unitOfWork.UserRepository.ReadAsync(id);
 
             if (user == null)
-                throw new IdNotFoundException("User", id);
+                throw new NotFoundException("User", id);
 
             return user;
         }
@@ -123,7 +122,7 @@ namespace AintBnB.BusinessLogic.Imp
 
         /// <summary>Gets all users with usertype customer.</summary>
         /// <returns>A list of all the users with usertype customer</returns>
-        /// <exception cref="AccessException">Only admin can do this</exception>
+        /// <exception cref="NotFoundException">If no users found</exception>
         public async Task<List<User>> GetAllUsersWithTypeCustomerAsync()
         {
             var all = new List<User>();
@@ -141,7 +140,7 @@ namespace AintBnB.BusinessLogic.Imp
         private static void IsListEmpty(List<User> all)
         {
             if (all.Count == 0)
-                throw new NoneFoundInDatabaseTableException("users");
+                throw new NotFoundException("users");
         }
 
         /// <summary>Updates a user.</summary>
@@ -181,7 +180,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <exception cref="PasswordChangeException">new or old</exception>
         public async Task ChangePasswordAsync(string old, int userId, string new1, string new2)
         {
-            var user = await _unitOfWork.UserRepository.ReadAsync(userId);
+            var user = await GetUserAsync(userId);
 
             if (old == new1)
                 throw new PasswordChangeException();

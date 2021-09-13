@@ -286,7 +286,7 @@ namespace AintBnB.BusinessLogic.Imp
             var booking = await _unitOfWork.BookingRepository.ReadAsync(id);
 
             if (booking == null)
-                throw new IdNotFoundException("Booking", id);
+                throw new NotFoundException("Booking", id);
 
             return booking;
         }
@@ -294,7 +294,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Gets all the bookings of a users accommodations.</summary>
         /// <param name="userid">The user-ID of the owner of the accommoations.</param>
         /// <returns>A list of all the booking objects</returns>
-        /// <exception cref="NoneFoundInDatabaseTableException">No bookings found</exception>
+        /// <exception cref="NotFoundException">No bookings found</exception>
         /// <exception cref="AccessException">The user that calls this method isn't the owner of the accommodations or admin</exception>
         public async Task<List<Booking>> GetBookingsOfOwnedAccommodationAsync(int userid)
         {
@@ -303,7 +303,7 @@ namespace AintBnB.BusinessLogic.Imp
             await FindAllBookingsOfOwnedAccommodationAsync(userid, bookingsOfOwnedAccommodation);
 
             if (bookingsOfOwnedAccommodation.Count == 0)
-                throw new NoneFoundInDatabaseTableException(userid, "bookings of owned accommodations");
+                throw new NotFoundException(userid, "bookings of owned accommodations");
 
             return bookingsOfOwnedAccommodation;
         }
@@ -322,13 +322,13 @@ namespace AintBnB.BusinessLogic.Imp
 
         /// <summary>Gets all the bookings in the database.</summary>
         /// <returns>A list of all the bookings</returns>
-        /// <exception cref="NoneFoundInDatabaseTableException">No bookings found in the database</exception>
+        /// <exception cref="NotFoundException">No bookings found in the database</exception>
         public async Task<List<Booking>> GetAllInSystemAsync()
         {
             var all = await _unitOfWork.BookingRepository.GetAllAsync();
 
             if (all.Count == 0)
-                throw new NoneFoundInDatabaseTableException("bookings");
+                throw new NotFoundException("bookings");
 
             return all;
         }
@@ -336,7 +336,7 @@ namespace AintBnB.BusinessLogic.Imp
         /// <summary>Gets all bookings in the database belonging to a user.</summary>
         /// <param name="userid">The user-ID of the user to get the bookings of.</param>
         /// <returns>A list of all the bookings of the user</returns>
-        /// <exception cref="NoneFoundInDatabaseTableException">No bookings belonging to the user found in the database</exception>
+        /// <exception cref="NotFoundException">No bookings belonging to the user found in the database</exception>
         public async Task<List<Booking>> GetOnlyOnesOwnedByUserAsync(int userId)
         {
             var bookingsOfLoggedInUser = new List<Booking>();
@@ -344,7 +344,7 @@ namespace AintBnB.BusinessLogic.Imp
             await FindAllBookingsOfLoggedInUserAsync(bookingsOfLoggedInUser, userId);
 
             if (bookingsOfLoggedInUser.Count == 0)
-                throw new NoneFoundInDatabaseTableException(userId, "bookings");
+                throw new NotFoundException(userId, "bookings");
 
             return bookingsOfLoggedInUser;
         }
